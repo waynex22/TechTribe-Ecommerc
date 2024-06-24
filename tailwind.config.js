@@ -27,7 +27,8 @@ module.exports = {
         primary: '#577BEA',
         secondary: '#579CEA',
         mint : '#82B3C2',
-        mints: '#9ABFC7'
+        mints: '#9ABFC7',
+        bg_gray:' #efefef',
       },
       backgroundImage: {
         hero: "url('./img/herobg.png')",

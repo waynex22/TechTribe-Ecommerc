@@ -1,18 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import AuthModal from "../../../Component/auth/authModal";
 const Header: React.FC = () => {
+  const [showModal, setShowModal] = useState(false);
+  const handleOpenModal = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
   return (
     <>
-      <div className="h-[72px]">
+      <div className="h-[72px] bg-white text-center">
         <div className="container mx-auto flex items-center justify-between">
           <div>
-            <img
-              src="./logo-nontext.png"
-              className="w-[60px] h-[60px]"
-              alt=""
-            />
+            <img src="" className="w-[60px] h-[60px]" alt="" />
           </div>
           <div>
-            <div className="flex items-center border border-gray-300 rounded-lg w-[900px] min-w-[400px]">
+            <div className="flex items-center border-solid border-b-2 border-gray-3 outline-noneborder-gray-300 rounded-lg w-[900px] min-w-[400px]">
               <span className="pl-5 text-gray-400">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +48,7 @@ const Header: React.FC = () => {
           </div>
           <div className="flex items-center justify-center">
             <div>
-              <div className="flex mx-2 text-primary">
+              <div className="flex mx-2 text-primary hover:bg-blue-200 p-2 rounded-lg ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
@@ -55,11 +61,16 @@ const Header: React.FC = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="text-[14px]">Trang chủ</span>
+                <Link to="/" className="text-[14px]">
+                  Trang chủ
+                </Link>
               </div>
             </div>
-            <div className="flex items-center justify-center">
-              <div className="flex mx-2 text-primary">
+            <div className="flex items-center justify-center cursor-pointer">
+              <div
+                onClick={() => handleOpenModal()}
+                className="flex mx-2 text-primary  hover:bg-blue-200 p-2 rounded-lg"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
@@ -75,6 +86,7 @@ const Header: React.FC = () => {
                 <span className="text-[14px]">Tài khoản</span>
               </div>
             </div>
+            <AuthModal show={showModal} onClose={handleCloseModal}></AuthModal>
             <div className="flex items-center justify-center">
               <div className="flex mx-2 text-primary">
                 <svg
