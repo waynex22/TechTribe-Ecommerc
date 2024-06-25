@@ -1,11 +1,17 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+import withMT from "@material-tailwind/html/utils/withMT";
+
+
+module.exports =  withMT({
   content: [
     './index.html'
-    ,'./src/**/*.{js,jsx,ts,tsx}',
-  'node_modules/flowbite-react/lib/esm/**/*.js',
-  './node_modules/tw-elements/dist/js/**/*.js'],
-  
+    , './src/**/*.{js,jsx,ts,tsx}',
+    'node_modules/flowbite-react/lib/esm/**/*.js',
+    'node_modules/flowbite-react/lib/esm/**/*.js',
+    './node_modules/tw-elements/dist/js/**/*.js']
+  ,
+
+
   theme: {
     fontFamily: {
       primary: 'Poppins',
@@ -35,5 +41,8 @@ module.exports = {
       },
     },
   },
+  plugins: [
+    require('flowbite/plugin')
+  ]
   // plugins: [require('flowbite/plugin'), require("tw-elements/dist/plugin.cjs")],
-};
+});
