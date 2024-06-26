@@ -1,16 +1,17 @@
 import React from "react";
+import { Link } from "react-router-dom";
 const Header: React.FC = () => {
   return (
     <>
       <div className="h-[72px]">
         <div className="container mx-auto flex items-center justify-between">
-          <div>
+          <Link to="/">
             <img
               src="./logo-nontext.png"
               className="w-[60px] h-[60px]"
               alt=""
             />
-          </div>
+          </Link>
           <div>
             <div className="flex items-center border border-gray-300 rounded-lg w-[900px] min-w-[400px]">
               <span className="pl-5 text-gray-400">
