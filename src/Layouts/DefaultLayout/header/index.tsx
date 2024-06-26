@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import AuthModal from "../../../Component/auth/authModal";
+import AuthModal from "../../../Components/auth/authModal";
 const Header: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const handleOpenModal = () => {
@@ -17,6 +17,13 @@ const Header: React.FC = () => {
           <div>
             <img src="" className="w-[60px] h-[60px]" alt="" />
           </div>
+          <Link to="/">
+            <img
+              src="./logo-nontext.png"
+              className="w-[60px] h-[60px]"
+              alt=""
+            />
+          </Link>
           <div>
             <div className="flex items-center border-solid border-b-2 border-gray-3 outline-noneborder-gray-300 rounded-lg w-[900px] min-w-[400px]">
               <span className="pl-5 text-gray-400">
