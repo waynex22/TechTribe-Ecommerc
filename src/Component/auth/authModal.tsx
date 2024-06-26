@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useLoginMutation } from "../../services/authApi";
+import { useLoginMutation , useRegisterMutation } from "../../services/authApi";
 interface AuthModalProps {
   show: boolean;
   onClose: () => void;
@@ -14,6 +14,7 @@ interface FormData {
 
 const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
   const [login , { data: loginData , isLoading: loginLoading, isSuccess: loginSuccess, isError: isError, error: loginError }] = useLoginMutation();
+  const [register, { data: registerData, isLoading: registerLoading, isSuccess: registerSuccess, isError: registerError, error: registerErrorObject }] = useRegisterMutation();
   const [isRegister, setIsRegister] = useState<boolean>(true);
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -33,12 +34,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (isRegister) {
-      console.log("Registering user:", formData);
+      if(formData.name && formData.phone && formData.password && formData.confirmPassword){
+        register({name: formData.name, phone: formData.phone, password: formData.password});
+      }
     } else {
       if(formData.phone && formData.password){
         login({phone: formData.phone, password: formData.password});
         console.log();
-        
       }
     }
   }, [formData, isRegister]);
@@ -56,12 +58,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
     resetForm();
   }, [isRegister, resetForm]);
   useEffect(() => {
-    if (loginSuccess) {
+    if (loginSuccess || registerSuccess) {
       console.log('Login successful:', loginData);
-    } else if (loginError) {
+      console.log('register successful:', registerData);
+    } else if (loginError || registerError) {
       console.error('Login failed:', loginError);
+      console.error('register failed:', registerError);
     }
-  }, [loginSuccess, loginError, loginData, loginError]);
+  }, [loginSuccess, loginError, loginData, loginError, registerSuccess, registerError, registerData, registerErrorObject]);
   if (!show) {
     return null;
   }
