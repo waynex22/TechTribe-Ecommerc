@@ -5,6 +5,7 @@ import DefaultLayout from "./Layouts/DefaultLayout"; // Ensure correct import pa
 import "./App.css";
 import { sellerRoutes } from "./Routes/seller";
 import SellerLayout from "./Layouts/SellerLayout";
+import PrivateRoute from "./Routes/PrivateRoute";
 
 const App: React.FC = () => {
   return (
@@ -35,9 +36,11 @@ const App: React.FC = () => {
                 key={index}
                 path={route.path}
                 element={
-                  <Layout>
-                    <Page />
-                  </Layout>
+                  <PrivateRoute>
+                    <Layout>
+                      <Page />
+                    </Layout>
+                  </PrivateRoute>
                 }>
                 {route.children &&
                   route.children.map((child, childIndex) => {

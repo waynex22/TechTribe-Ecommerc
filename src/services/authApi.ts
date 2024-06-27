@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { apiUrl } from '../config';
 
 interface LoginRequest {
   phone: string;
@@ -6,12 +7,13 @@ interface LoginRequest {
 }
 
 interface LoginResponse {
-  token: string;
+  access_token: string;
+  refresh_token: string;
 }
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `http://localhost:3000/auth/` }),
+  baseQuery: fetchBaseQuery({ baseUrl: `${apiUrl}auth/` }),
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (credentials) => ({
