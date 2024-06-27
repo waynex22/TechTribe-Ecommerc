@@ -14,12 +14,9 @@ const Header: React.FC = () => {
     <>
       <div className="h-[72px] bg-white text-center">
         <div className="container mx-auto flex items-center justify-between">
-          <div>
-            <img src="" className="w-[60px] h-[60px]" alt="" />
-          </div>
           <Link to="/">
             <img
-              src=""
+              src="logo-nontext.png"
               className="w-[60px] h-[60px]"
               alt=""
             />

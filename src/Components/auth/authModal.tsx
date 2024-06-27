@@ -66,7 +66,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
     } else if (isError) {
       console.error('Login failed:', isError);
     }
-  }, [loginSuccess, isError, loginData, isError, registerSuccess, registerError, registerData, registerErrorObject]);
+  }, [loginSuccess, isError, loginData, registerSuccess, registerError, registerData, registerErrorObject]);
   if (!show) {
     return null;
   }

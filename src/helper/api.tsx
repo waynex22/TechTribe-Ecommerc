@@ -24,9 +24,9 @@ export default function requestApi(
 
     const instance = axios.create({ headers });
     
-    instance.interceptors.response.use((response) => {
+    instance.interceptors.response.use((response: any) => {
         return response;
-    }, async (error) => {
+    }, async (error: any) => {
         const originalRequest = error.config;
         console.log(error.response);
         

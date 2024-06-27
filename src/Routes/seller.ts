@@ -1,6 +1,6 @@
-import SellerComponent from "../Component/Seller/inedex";
-import AddProduct from "../Component/Seller/product/add";
-import AddVoucher from "../Component/Seller/voucher/add";
+import SellerComponent from "../Components/Seller/inedex";
+import AddProduct from "../Components/Seller/product/add";
+import AddVoucher from "../Components/Seller/voucher/add";
 import SellerLayout from "../Layouts/SellerLayout";
 import { Route } from "../Type";
 const sellerRoutes: Route[] = [
