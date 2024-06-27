@@ -1,8 +1,7 @@
 /** @type {import('tailwindcss').Config} */
-import withMT from "@material-tailwind/html/utils/withMT";
+// import withMT from "@material-tailwind/html/utils/withMT";
 
-
-module.exports =  withMT({
+module.exports = ({
   content: [
     './index.html'
     , './src/**/*.{js,jsx,ts,tsx}',
@@ -11,8 +10,6 @@ module.exports =  withMT({
     "./node_modules/react-tailwindcss-select/dist/index.esm.js",
     './node_modules/tw-elements/dist/js/**/*.js']
   ,
-
-
   theme: {
     fontFamily: {
       primary: 'Poppins',
