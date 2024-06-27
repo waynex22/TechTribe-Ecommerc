@@ -4,7 +4,7 @@ const Footer: React.FC = () => {
   return (
     <> 
       <footer className="bg-gray-100 text-gray-800 text-center">
-        <div className="container mx-auto py-8  grid grid-cols-1 md:grid-cols-5 gap-8">
+        <div className="container mx-auto py-8  grid  md:grid-cols-5 gap-8">
           <div>
             <h3 className="font-semibold mb-2">Hỗ trợ khách hàng</h3>
             <ul className="space-y-2 text-sm">
@@ -80,11 +80,11 @@ const Footer: React.FC = () => {
                 <div className="hover:text-blue-500">Điều khoản sử dụng</div>
               </li>
               <li>
-                <div className="hover:text-blue-500">Giới thiệu Tiki Xu</div>
+                <div className="hover:text-blue-500">Giới thiệu 2T Xu</div>
               </li>
               <li>
                 <div className="hover:text-blue-500">
-                  Tiếp thị liên kết cùng Tiki
+                  Tiếp thị liên kết cùng 2T
                 </div>
               </li>
               <li>

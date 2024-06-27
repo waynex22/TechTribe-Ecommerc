@@ -6,7 +6,8 @@ interface LoginRequest {
 }
 
 interface LoginResponse {
-  token: string;
+  access_token: string;
+  refresh_token: string;
 }
 
 interface RegisterRequest {

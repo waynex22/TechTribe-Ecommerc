@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useLoginMutation , useRegisterMutation } from "../../services/authApi";
+import { useLoginMutation, useRegisterMutation } from "../../services/authApi";
+import { setLoginByToken, setToken } from "../../utils/localStorage/token";
 interface AuthModalProps {
   show: boolean;
   onClose: () => void;
@@ -59,11 +60,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
   }, [isRegister, resetForm]);
   useEffect(() => {
     if (loginSuccess) {
-     
-    } else if () {
-     
+      if(loginData) {
+        setLoginByToken(loginData)
+      }
+    } else if (isError) {
+      console.error('Login failed:', isError);
     }
-  }, [loginSuccess, loginError, loginData, loginError, registerSuccess, registerError, registerData, registerErrorObject]);
+  }, [loginSuccess, isError, loginData, isError, registerSuccess, registerError, registerData, registerErrorObject]);
   if (!show) {
     return null;
   }
