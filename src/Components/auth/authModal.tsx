@@ -13,7 +13,7 @@ interface FormData {
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
-  const [login , { data: loginData , isLoading: loginLoading, isSuccess: loginSuccess, isError: isError, error: loginError }] = useLoginMutation();
+  const [login , { data: loginData , isLoading: loginLoading, isSuccess: loginSuccess, isError: isError }] = useLoginMutation();
   const [register, { data: registerData, isLoading: registerLoading, isSuccess: registerSuccess, isError: registerError, error: registerErrorObject }] = useRegisterMutation();
   const [isRegister, setIsRegister] = useState<boolean>(true);
   const [formData, setFormData] = useState<FormData>({
@@ -58,12 +58,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
     resetForm();
   }, [isRegister, resetForm]);
   useEffect(() => {
-    if (loginSuccess || registerSuccess) {
-      console.log('Login successful:', loginData);
-      console.log('register successful:', registerData);
-    } else if (loginError || registerError) {
-      console.error('Login failed:', loginError);
-      console.error('register failed:', registerError);
+    if (loginSuccess) {
+     
+    } else if () {
+     
     }
   }, [loginSuccess, loginError, loginData, loginError, registerSuccess, registerError, registerData, registerErrorObject]);
   if (!show) {

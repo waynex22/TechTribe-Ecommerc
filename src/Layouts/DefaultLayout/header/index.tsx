@@ -19,7 +19,7 @@ const Header: React.FC = () => {
           </div>
           <Link to="/">
             <img
-              src="./logo-nontext.png"
+              src=""
               className="w-[60px] h-[60px]"
               alt=""
             />

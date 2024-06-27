@@ -57,7 +57,7 @@ const publicRoutes: Route[]  = [
     {
         path: '/product/:slug',
         component: ProductDetail,
-        layout: null,
+        layout: DefaultLayout,
     },
 
 ]
