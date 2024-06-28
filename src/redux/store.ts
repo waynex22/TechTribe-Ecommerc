@@ -4,12 +4,14 @@ import { authApi } from '../services/authApi';
 import { categorySlice } from './rtkQuery/category';
 import { categoryDetailSlice } from './rtkQuery/categoryDetail';
 import { specificationsSlice } from './rtkQuery/specifications';
+import authReducer from './slices/authSlice';
 export const store = configureStore({
   reducer: {
     [authApi.reducerPath]: authApi.reducer,
     [categorySlice.reducerPath]: categorySlice.reducer,
     [categoryDetailSlice.reducerPath]: categoryDetailSlice.reducer,
     [specificationsSlice.reducerPath]: specificationsSlice.reducer,
+    auth: authReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware()
