@@ -22,7 +22,7 @@ const ComponentUserCoin: React.FC = () => {
           <div className="flex flex-col items-start">
             <div className="text-yellow-400 text-lg">Xu đang có</div>
             <div className="text-base font-light">
-              1000 Shopee Xu sẽ hết hạn vào 31-07-2024
+              1000 Techtribe Xu sẽ hết hạn vào 31-07-2024
               <FontAwesomeIcon
                 className="text-sm font-light ms-1"
                 icon={faChevronRight}

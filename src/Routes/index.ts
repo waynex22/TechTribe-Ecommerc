@@ -9,6 +9,8 @@ import ComponentUserAccountNotify from "../Components/User_components/User_notif
 import ComponentUserPurchase from "../Components/User_components/User_purchase";
 import ComponentUserVoucher from "../Components/User_components/User_voucher";
 import ComponentUserCoin from "../Components/User_components/User_coin/User_coin";
+import ComponentUserAddress from "../Components/User_components/User_account/User_address";
+import ComponentUserChangePassword from "../Components/User_components/User_account/User_changepassword";
 const publicRoutes: Route[]  = [
     {
         path: '/',
@@ -28,6 +30,16 @@ const publicRoutes: Route[]  = [
             {
                 path: "account/profile",
                 component: ComponentUserAccountProfile,
+                layout: null,
+            },
+            {
+                path: "account/address",
+                component: ComponentUserAddress,
+                layout: null,
+            },
+            {
+                path: "account/password",
+                component: ComponentUserChangePassword,
                 layout: null,
             },
             {
