@@ -1,10 +1,10 @@
 export const validationConfig = {
     name: {
-      required: 'Tên Tài Khoản không được trống.',
+      required: 'Tên không được trống.',
     },
-    email: {
-      required: 'Email không được trống.',
-      invalid: 'Email không hợp lệ.',
+    phone: {
+      required: 'Số điện thoại không được trống.',
+      invalid: 'Số điện thoại không hợp lệ.',
     },
     password: {
       required: 'Mật khẩu không được trống.',
@@ -14,11 +14,17 @@ export const validationConfig = {
       match: 'Mật khẩu không khớp.',
     },
   };
+  export interface FormData {
+    name?: string;
+    phone: string;
+    password: string;
+    confirmPassword?: string;
+  }
   export interface ValidationConfig {
     name: {
       required: string;
     };
-    email: {
+    phone: {
       required: string;
       invalid: string;
     };
@@ -31,40 +37,33 @@ export const validationConfig = {
     };
   }
   
-  interface FormErrors {
+  export interface FormErrors {
     name?: string;
-    email?: string;
+    phone?: string;
     password?: string;
     confirmPassword?: string;
   }
-  
-  export const validateForm = (
-    name: string,
-    email: string,
-    password: string,
-    confirmPassword: string,
-    validationConfig: ValidationConfig
-  ): FormErrors => {
+  export const validateForm = (FormData: FormData): FormErrors => {
     let errors: FormErrors = {};
   
-    if (!name.trim()) {
+    if (!FormData.name?.trim()) {
       errors.name = validationConfig.name.required;
     }
   
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.trim()) {
-      errors.email = validationConfig.email.required;
-    } else if (!emailRegex.test(email)) {
-      errors.email = validationConfig.email.invalid;
+    const phoneRegex = /^(?:\+84|0[35789])\d{8,9}$/;
+    if (!FormData.phone.trim()) {
+      errors.phone = validationConfig.phone.required;
+    } else if (!phoneRegex.test(FormData.phone)) {
+      errors.phone = validationConfig.phone.invalid;
     }
   
-    if (!password.trim()) {
+    if (!FormData.password.trim()) {
       errors.password = validationConfig.password.required;
-    } else if (password.length < 6) {
+    } else if (FormData.password.length < 6) {
       errors.password = validationConfig.password.minLength;
     }
   
-    if (password !== confirmPassword) {
+    if (FormData.password !== FormData.confirmPassword) {
       errors.confirmPassword = validationConfig.confirmPassword.match;
     }
   

@@ -37,7 +37,7 @@ const ComponentUserAccountProfile: React.FC = () => {
   }
 
   return (
-    <div className=" p-6">
+    <div className="p-6">
       <div className="title text-left pb-4">
         <div className="text-lg font-normal pb-1">Hồ Sơ Của Tôi</div>
         <div className=" font-light text-sm">

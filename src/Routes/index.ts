@@ -1,5 +1,5 @@
 import ProductDetail from "../Components/Product/DetailProduct";
-import HomePageComponent from "../Page/Home";
+import HomePage from "../Page/Home";
 import LayoutUserComponent from "../Components/User_components/layout_user_component";
 import { Route } from "../Type";
 import ComponentUserAccount from "../Components/User_components/User_account/User_account_component";
@@ -9,24 +9,30 @@ import ComponentUserAccountNotify from "../Components/User_components/User_notif
 import ComponentUserPurchase from "../Components/User_components/User_purchase";
 import ComponentUserVoucher from "../Components/User_components/User_voucher";
 import ComponentUserCoin from "../Components/User_components/User_coin/User_coin";
+import CartPage from "../Page/Cart";
 const publicRoutes: Route[]  = [
     {
         path: '/',
-        component: HomePageComponent,
+        component: HomePage,
         layout: DefaultLayout,
     },
     {
-        path: "/user",
+        path: "/cart",
+        component: CartPage,
+        layout: DefaultLayout,
+    },
+    {
+        path: "/profile",
         component: LayoutUserComponent,
         layout: DefaultLayout,
         children:[
             {
-                path: "account",
+                path: "",
                 component: ComponentUserAccount,
                 layout: null,
             },
             {
-                path: "account/profile",
+                path: "account",
                 component: ComponentUserAccountProfile,
                 layout: null,
             },

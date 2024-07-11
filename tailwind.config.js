@@ -16,7 +16,7 @@ module.exports = ({
     },
     container: {
       padding: {
-        DEFAULT: '30px',
+        DEFAULT: '0',
         lg: '0',
       },
     },
@@ -28,15 +28,13 @@ module.exports = ({
     },
     extend: {
       colors: {
-        primary: '#577BEA',
+        primary: '#0A68FF',
         secondary: '#579CEA',
         mint : '#82B3C2',
         mints: '#9ABFC7',
         bg_gray:' #efefef',
-      },
-      backgroundImage: {
-        hero: "url('./img/herobg.png')",
-      },
+      }
+
     },
   },
   plugins: [

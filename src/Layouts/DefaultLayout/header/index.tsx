@@ -2,35 +2,36 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AuthModal from "../../../Components/auth/authModal";
 import { useDispatch } from "react-redux";
-import { useGetInfoUserMutation, useRefreshTokenMutation } from "../../../services/authApi";
+import {
+  useGetInfoUserMutation,
+  useRefreshTokenMutation,
+} from "../../../services/authApi";
 import { logout } from "../../../redux/slices/authSlice";
 import { useSelector } from "react-redux";
+import Search from "../../../Components/subComponent/search";
 const Header: React.FC = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
-  console.log(user);
-
   const [refreshToken] = useRefreshTokenMutation();
   const [getUser] = useGetInfoUserMutation();
   const [showModal, setShowModal] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const refreshTokenFromStorage = localStorage.getItem('refresh_token');
-    const token = localStorage.getItem('access_token');
-
+    const refreshTokenFromStorage = localStorage.getItem("refresh_token");
+    const token = localStorage.getItem("access_token");
     if (token && refreshTokenFromStorage && !user) {
       refreshToken(refreshTokenFromStorage)
         .then(() => {
           getUser();
         })
         .catch((error) => {
-          console.error('Error refreshing token:', error);
+          console.error("Error refreshing token:", error);
         });
     } else {
-      getUser();
+      logout();
     }
-  }, [getUser, refreshToken]); 
+  }, [getUser, refreshToken]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -49,46 +50,21 @@ const Header: React.FC = () => {
   };
   return (
     <>
-      <div className="h-[72px] bg-white text-center">
-        <div className="container mx-auto flex items-center justify-between">
+      <div className="bg-white text-center">
+        <div className="md:container md:mx-auto flex items-center justify-between py-2">
           <Link to="/">
             <img src="logo-nontext.png" className="w-[60px] h-[60px]" alt="" />
           </Link>
-          <div className="flex items-center border border-gray-300 rounded-lg w-[900px] min-w-[400px]">
-            <span className="pl-5 text-gray-400">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1}
-                stroke="currentColor"
-                className="h-5 w-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-5.197-5.197m0 0a7.5 7.5 0 1 0-10.607-10.607 7.5 7.5 0 0 0 10.607 10.607z"
-                />
-              </svg>
-            </span>
-            <input
-              type="text"
-              placeholder="100% bạn muốn mua gì ?"
-              className="rounded-lg ml-3 p-1 flex-grow text-[14px] font-light border-none outline-transparent"
-            />
-            <div className="w-[1px] h-[24px] bg-gray-300 mx-2"></div>
-            <button className="pr-2 text-blue-500 text-[14px] mr-3">
-              Tìm kiếm
-            </button>
-          </div>
+          <Search />
           <div className="flex items-center justify-center">
             <div>
+              <Link to='/'>
               <div className="flex mx-2 text-primary hover:bg-blue-200 p-2 rounded-lg ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                  className="size-5 mx-2"
+                  className="size-6"
                 >
                   <path
                     fillRule="evenodd"
@@ -96,31 +72,44 @@ const Header: React.FC = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <Link to="/" className="text-[14px]">
+                <span className="text-[14px]">
                   Trang chủ
-                </Link>
+                </span>
               </div>
+              </Link>
             </div>
             {user ? (
-              <div onClick={() => setMenuOpen(!isMenuOpen)} className="flex mx-2 text-primary hover:bg-blue-200 p-2 rounded-lg cursor-pointer">
-                <img
-                  src="https://static.vecteezy.com/system/resources/previews/027/312/306/non_2x/portrait-of-a-dj-with-headphone-isolated-essential-workers-avatar-icons-characters-for-social-media-and-networking-user-profile-website-and-app-3d-render-illustration-png.png"
-                  alt="User Avatar"
-                  className="w-[20px] h-[20px] rounded-full object-cover"
-                />
-                <div className="text-[14px] mx-2">Ngọc Khải</div>
+              <div
+                onClick={() => setMenuOpen(!isMenuOpen)}
+                className="flex mx-2 text-primary hover:bg-blue-200 p-2 rounded-lg cursor-pointer"
+              >
+                <div className="flex items-center justify-center cursor-pointer">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-[14px]">Tài khoản</span>
+                </div>
               </div>
             ) : (
               <div className="flex items-center justify-center cursor-pointer">
                 <div
                   onClick={() => handleOpenModal()}
-                  className="flex mx-2 text-primary hover:bg-blue-200 p-2 rounded-lg"
+                  className="flex mx-2 text-gray-400 hover:bg-blue-200 p-2 rounded-lg"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
                     fill="currentColor"
-                    className="size-5 mx-2"
+                    className="size-6"
                   >
                     <path
                       fillRule="evenodd"
@@ -132,7 +121,6 @@ const Header: React.FC = () => {
                 </div>
               </div>
             )}
-
             {isMenuOpen && (
               <div className="origin-top-right absolute right-[100px] mt-[200px] w-56 z-50 backdrop-blur-md bg-primary/40 rounded-2xl p-4">
                 <div className="rounded-2xl">
@@ -140,23 +128,8 @@ const Header: React.FC = () => {
                     className="cursor-pointer text-white"
                     onMouseLeave={handleMenuClose}
                   >
-                    <div className="flex flex-col pb-4 justify-center items-center">
-                    </div>
+                    <div className="flex flex-col pb-4 justify-center items-center"></div>
                     <div className="flex justify-center items-center hover:underline transition duration-150 ease-in-out">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-6 h-6"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z"
-                        />
-                      </svg>
                       <Link
                         to="/profile"
                         className="block px-4 py-2 w-full text-sm text-white"
@@ -165,43 +138,18 @@ const Header: React.FC = () => {
                       </Link>
                     </div>
                     <div className="flex justify-center items-center hover:underline transition duration-150 ease-in-out">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-6 h-6"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z"
-                        />
-                      </svg>
                       <Link
-                        to="/mytickets"
+                        to="/orders"
                         className="block px-4 py-2 w-full text-sm text-white"
                       >
                         Đơn hàng của tôi
                       </Link>
                     </div>
                     <div className="flex justify-center items-center hover:underline transition duration-150 ease-in-out">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-6 h-6"
+                      <div
+                        onClick={handleLogout}
+                        className="block px-4 py-2 w-full text-sm text-white"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
-                        />
-                      </svg>
-                      <div onClick={handleLogout} className="block px-4 py-2 w-full text-sm text-white">
                         Đăng xuất
                       </div>
                     </div>
@@ -216,7 +164,7 @@ const Header: React.FC = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                  className="size-5 relative"
+                  className="size-6 relative"
                 >
                   <path d="M4.214 3.227a.75.75 0 0 0-1.156-.955 8.97 8.97 0 0 0-1.856 3.825.75.75 0 0 0 1.466.316 7.47 7.47 0 0 1 1.546-3.186ZM16.942 2.272a.75.75 0 0 0-1.157.955 7.47 7.47 0 0 1 1.547 3.186.75.75 0 0 0 1.466-.316 8.971 8.971 0 0 0-1.856-3.825Z" />
                   <path
@@ -225,19 +173,20 @@ const Header: React.FC = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <div className="absolute w-[12px] h-[12px] top-[30px] ml-3 rounded-full bg-red-500 text-white text-[8px]">
-                  0
+                <div className="absolute w-[12px] h-[16px] top-[20px] ml-4 rounded-full bg-red-500 text-white text-[12px]">
+                  5
                 </div>
               </div>
             </div>
+            <div className="w-[1px] bg-gray-300 h-[22px] mx-2"></div>
+            <Link to='/cart'>
             <div className="flex items-center justify-center">
-              <div className="w-[1px] bg-gray-400 h-[24px] mx-2"></div>
-              <div className="flex items-center text-primary">
+              <div className="flex items-center text-primary ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                  className="size-5 relative"
+                  className="size-6 relative"
                 >
                   <path
                     fillRule="evenodd"
@@ -245,15 +194,64 @@ const Header: React.FC = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <div className="absolute w-[12px] h-[12px] top-[30px] ml-4 rounded-full bg-red-500 text-white text-[8px]">
+                <div className="absolute w-[12px] h-[16px] top-[20px] ml-4 rounded-full bg-red-500 text-white text-[12px]">
                   0
                 </div>
               </div>
             </div>
+            </Link>
           </div>
         </div>
-        <div className="w-full bg-secondary text-white h-[60%] flex items-center justify-center">
-          Hello
+        <div className="mt-4 w-full h-[1px] bg-gray-200"></div>
+        <div className="flex items-center justify-start container mx-auto py-2 gap-x-6">
+          <div className="flex items-center gap-x-2 cursor-pointer hover:opacity-80 text-primary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-4"
+            >
+              <path
+                fillRule="evenodd"
+                d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-sm font-light-normal">Hàng chính hãng</span>
+          </div>
+          <div className="w-[1px] h-4 bg-gray-200"></div>
+          <div className="flex items-center gap-x-2 cursor-pointer hover:opacity-80 text-primary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-4"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12 1.5c-1.921 0-3.816.111-5.68.327-1.497.174-2.57 1.46-2.57 2.93V21.75a.75.75 0 0 0 1.029.696l3.471-1.388 3.472 1.388a.75.75 0 0 0 .556 0l3.472-1.388 3.471 1.388a.75.75 0 0 0 1.029-.696V4.757c0-1.47-1.073-2.756-2.57-2.93A49.255 49.255 0 0 0 12 1.5Zm-.97 6.53a.75.75 0 1 0-1.06-1.06L7.72 9.22a.75.75 0 0 0 0 1.06l2.25 2.25a.75.75 0 1 0 1.06-1.06l-.97-.97h3.065a1.875 1.875 0 0 1 0 3.75H12a.75.75 0 0 0 0 1.5h1.125a3.375 3.375 0 1 0 0-6.75h-3.064l.97-.97Z"
+                clipRule="evenodd"
+              />
+            </svg>
+
+            <span className="text-sm font-light-normal">Đổi trả 30 ngày</span>
+          </div>
+          <div className="w-[1px] h-4 bg-gray-200"></div>
+          <div className="flex items-center gap-x-2 cursor-pointer hover:opacity-80 text-primary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-4"
+            >
+              <path
+                fillRule="evenodd"
+                d="M1.5 6.375c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v3.026a.75.75 0 0 1-.375.65 2.249 2.249 0 0 0 0 3.898.75.75 0 0 1 .375.65v3.026c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 17.625v-3.026a.75.75 0 0 1 .374-.65 2.249 2.249 0 0 0 0-3.898.75.75 0 0 1-.374-.65V6.375Zm15-1.125a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0V6a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 0 1.5 0v-.75Zm-.75 3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0v-.75a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0V18a.75.75 0 0 0 1.5 0v-.75ZM6 12a.75.75 0 0 1 .75-.75H12a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 12Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-sm font-light-normal">Voucher mỗi ngày</span>
+          </div>
         </div>
       </div>
     </>
