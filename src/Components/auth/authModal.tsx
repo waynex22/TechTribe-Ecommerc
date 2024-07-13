@@ -3,8 +3,7 @@ import {
   useGetInfoUserMutation,
   useLoginMutation,
   useRegisterMutation,
-} from "../../services/authApi";
-import { setLoginByToken } from "../../utils/localStorage/token";
+} from "../../redux/rtkQuery/auth";
 import { validateForm, FormErrors } from "../../utils/validatetor";
 import Toast from "../toast/Toast";
 import { ToastProps } from "../../Type";
@@ -48,7 +47,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
-
+  
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => {
@@ -74,62 +73,28 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
           validationErrors.confirmPassword)
       ) {
         if (isRegister) {
-          try {
-            const result = await register({
-              name: formData.name,
-              phone: formData.phone,
-              password: formData.password,
-            }).unwrap();
-            if (result?.status === 409) {
-              setToast({
-                show: true,
-                message: result.message,
-                type: "error",
-                onClose: () => {
-                  setToast({ ...toast, show: false });
-                },
-              });
-              return;
-            }
-          } catch (error) {
-            setToast({
-              show: true,
-              message: `${error}`,
-              type: "error",
-              onClose: () => {
-                setToast({ ...toast, show: false });
-              },
-            });
-          }
+          const registerResutl = await register({
+            name: formData.name,
+            phone: formData.phone,
+            password: formData.password,
+          })
+          if(registerResutl?.data?.message){
+            setToast({ ...toast, show: true, message: registerResutl.data.message, type: "error" });
+          }else{
+            onClose();
+          }          
         } else {
           const loginResutl = await login({
             phone: formData.phone,
             password: formData.password,
-          }).unwrap();
-          if (loginResutl.status === 401 || loginResutl.status === 404) {
-            setToast({
-              show: true,
-              message: loginResutl.message,
-              type: "error",
-              onClose: () => {
-                setToast({ ...toast, show: false });
-              },
-            });
-            return;
-          }else if(loginResutl.access_token) {
-            setToast({
-              show: true,
-              message: 'Đăng nhap thanh cong',
-              type: "success",
-              onClose: () => {
-                setToast({ ...toast, show: false });
-              },
-            });
-            setLoginByToken(loginResutl);
-            getUser();
+          })
+          if(loginResutl?.data?.status !== 200){
+            setToast({ ...toast, show: true, message: loginResutl.data.message, type: "error" });
+          }else{
+            setToast({ ...toast, show: true, message: loginResutl.data.message, type: "success" });
             onClose();
+          }
           }    
-        }
       }
     },
     [formData, isRegister]

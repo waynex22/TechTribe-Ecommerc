@@ -1,13 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query/react';
-import { authApi } from '../services/authApi';
 import { categorySlice } from './rtkQuery/category';
 import { categoryDetailSlice } from './rtkQuery/categoryDetail';
 import { specificationsSlice } from './rtkQuery/specifications';
+import { authSlice } from './rtkQuery/auth'
 import authReducer from './slices/authSlice';
+import { productSclice } from './rtkQuery/product';
 export const store = configureStore({
   reducer: {
-    [authApi.reducerPath]: authApi.reducer,
+    [authSlice.reducerPath]: authSlice.reducer,
+    [productSclice.reducerPath]: productSclice.reducer,
     [categorySlice.reducerPath]: categorySlice.reducer,
     [categoryDetailSlice.reducerPath]: categoryDetailSlice.reducer,
     [specificationsSlice.reducerPath]: specificationsSlice.reducer,
@@ -15,7 +17,8 @@ export const store = configureStore({
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware()
-      .concat(authApi.middleware)
+      .concat(authSlice.middleware)
+      .concat(productSclice.middleware)
       .concat(categorySlice.middleware)
       .concat(categoryDetailSlice.middleware)
       .concat(specificationsSlice.middleware)

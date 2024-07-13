@@ -25,7 +25,7 @@ const FlastSale = () => {
               <span className="">SALE</span>
             </div>
           </div>
-          <CountDown endTime="2024-7-25 23:00:00" />
+          <CountDown endTime="2024-8-1 12:00:00" />
         </div>
         <div className="flex">
           {Array.from({ length: 10 }).map((_, index) => (

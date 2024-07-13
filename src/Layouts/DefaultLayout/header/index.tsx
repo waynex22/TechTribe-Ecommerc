@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import {
   useGetInfoUserMutation,
   useRefreshTokenMutation,
-} from "../../../services/authApi";
+} from "../../../redux/rtkQuery/auth";
 import { logout } from "../../../redux/slices/authSlice";
 import { useSelector } from "react-redux";
 import Search from "../../../Components/subComponent/search";

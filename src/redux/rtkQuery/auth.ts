@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { setCredentials, logout } from '../redux/slices/authSlice';
-import { apiUrl } from '../config';
-import { setLoginByToken } from '../utils/localStorage/token';
+import { setCredentials, logout } from '../slices/authSlice';
+import { apiUrl } from '../../config';
+import { setLoginByToken } from '../../utils/localStorage/token';
+
 interface LoginRequest {
   phone: string;
   password: string;
@@ -13,8 +14,8 @@ interface RegisterRequest {
   password: string;
 }
 
-export const authApi = createApi({
-  reducerPath: 'authApi',
+export const authSlice = createApi({
+  reducerPath: 'authQuery',
   baseQuery: fetchBaseQuery({ baseUrl: `${apiUrl}` }),
   endpoints: (builder) => ({
     login: builder.mutation<any, LoginRequest>({
@@ -23,6 +24,17 @@ export const authApi = createApi({
         method: 'POST',
         body: credentials,
       }),
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data.access_token) {
+            setLoginByToken(data);
+            dispatch(authSlice.endpoints.getInfoUser.initiate());
+          }
+        } catch (error) {
+          console.log('error', error);
+        }
+      }
     }),
     register: builder.mutation<any, RegisterRequest>({
       query: (credentials: RegisterRequest) => ({
@@ -30,6 +42,17 @@ export const authApi = createApi({
         method: 'POST',
         body: credentials,
       }),
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if(data.status === 200)
+            setTimeout(() => {
+              dispatch(authSlice.endpoints.login.initiate({ phone: args.phone, password: args.password }));
+            }, 2000);
+        } catch (error) {
+          console.log('error', error);
+        }
+      }
     }),
     refreshToken: builder.mutation<any, string>({
       query: (refreshToken: string) => ({
@@ -55,13 +78,11 @@ export const authApi = createApi({
         }
       }),
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
-          const { data } = await queryFulfilled;
-          console.log('data', data);
-          
-          dispatch(setCredentials({ user: data }));
+        const { data } = await queryFulfilled;
+        dispatch(setCredentials({ user: data }));
       },
     })
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useRefreshTokenMutation, useGetInfoUserMutation } = authApi;
+export const { useLoginMutation, useRegisterMutation, useRefreshTokenMutation, useGetInfoUserMutation } = authSlice;

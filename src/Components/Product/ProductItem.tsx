@@ -1,9 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useGetProductQuery } from "../../redux/rtkQuery/product";
 
 const ProductItem = () => {
   const isMall = true;
   const isNew = true;
+  const { data: products, error, isLoading } = useGetProductQuery()
+  console.log(products);
+  
   return (
     <div className="col-span-1 rounded-lg border-solid border-[1px] border-gray-200 p-2">
       <div className="w-[181px] h-[231px]">
