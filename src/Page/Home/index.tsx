@@ -3,6 +3,7 @@ import CarouselSale from "../../Components/Carousel/CarouselSale";
 import Modal from "../../Components/modal/Modal";
 import FlastSale from "../../Components/Sales/FlastSale";
 import ProductItem from "../../Components/Product/ProductItem";
+import Catelog from "../../Components/Catelog/Catelog";
 const HomePage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   useEffect(() => {
@@ -89,11 +90,7 @@ const HomePage: React.FC = () => {
           />
           <h3>Gợi ý cho bạn hôm nay </h3>
         </div>
-        <div className="my-5 grid lg:grid-cols-6 grid-cols-3 sm:grid-cols-1 gap-3">
-          {Array.from({ length: 14 }).map((_, index) => (
-            <ProductItem key={index} />
-          ))}
-        </div>
+        <Catelog />
        <div className="flex items-start justify-center">
        <button
           className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 border border-primary text-primary hover:opacity-75 focus:ring focus:ring-gray-300 active:opacity-[0.85] rounded-full"

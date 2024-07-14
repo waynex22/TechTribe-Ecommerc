@@ -10,7 +10,7 @@ export type typeFormCreateProduct = {
 }
 export type product = {
     id_shop: string[],
-    images: string[],
+    thumnnails: string[],
     name:string,
     id_category:string,
     description:string,

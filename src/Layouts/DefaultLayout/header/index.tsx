@@ -9,6 +9,8 @@ import {
 import { logout } from "../../../redux/slices/authSlice";
 import { useSelector } from "react-redux";
 import Search from "../../../Components/subComponent/search";
+import { ToastProps } from "../../../Type";
+import Toast from "../../../Components/toast/Toast";
 const Header: React.FC = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
@@ -16,7 +18,13 @@ const Header: React.FC = () => {
   const [getUser] = useGetInfoUserMutation();
   const [showModal, setShowModal] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
-
+  const [toast, setToast] = useState<ToastProps>({
+    message: "",
+    type: "success",
+  });
+  const handleSetToast = (toast: ToastProps) => {
+    setToast({ ...toast, message: toast.message , type: toast.type });
+  }
   useEffect(() => {
     const refreshTokenFromStorage = localStorage.getItem("refresh_token");
     const token = localStorage.getItem("access_token");
@@ -51,6 +59,10 @@ const Header: React.FC = () => {
   return (
     <>
       <div className="bg-white text-center">
+      <Toast
+        message={toast.message}
+        type={toast.type}
+      />
         <div className="md:container md:mx-auto flex items-center justify-between py-2">
           <Link to="/">
             <img src="logo-nontext.png" className="w-[60px] h-[60px]" alt="" />
@@ -157,7 +169,7 @@ const Header: React.FC = () => {
                 </div>
               </div>
             )}
-            <AuthModal show={showModal} onClose={handleCloseModal}></AuthModal>
+            <AuthModal show={showModal} onClose={handleCloseModal} setToast={handleSetToast}></AuthModal>
             <div className="flex items-center justify-center">
               <div className="flex mx-2 text-primary">
                 <svg

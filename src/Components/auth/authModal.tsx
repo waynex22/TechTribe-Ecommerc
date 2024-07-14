@@ -5,11 +5,11 @@ import {
   useRegisterMutation,
 } from "../../redux/rtkQuery/auth";
 import { validateForm, FormErrors } from "../../utils/validatetor";
-import Toast from "../toast/Toast";
 import { ToastProps } from "../../Type";
 interface AuthModalProps {
   show: boolean;
   onClose: () => void;
+  setToast?: any;
 }
 interface FormData {
   name: string;
@@ -17,14 +17,7 @@ interface FormData {
   password: string;
   confirmPassword: string;
 }
-
-const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
-  const [toast, setToast] = useState<ToastProps>({
-    show: false,
-    message: "",
-    type: "success",
-    onClose: () => {},
-  });
+const AuthModal: React.FC<AuthModalProps> = ({ show, onClose , setToast}) => {
   const [getUser] = useGetInfoUserMutation();
   const [
     login,
@@ -79,7 +72,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
             password: formData.password,
           })
           if(registerResutl?.data?.message){
-            setToast({ ...toast, show: true, message: registerResutl.data.message, type: "error" });
+            setToast({  message: registerResutl.data.message, type: "error" });
           }else{
             onClose();
           }          
@@ -88,11 +81,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
             phone: formData.phone,
             password: formData.password,
           })
-          if(loginResutl?.data?.status !== 200){
-            setToast({ ...toast, show: true, message: loginResutl.data.message, type: "error" });
-          }else{
-            setToast({ ...toast, show: true, message: loginResutl.data.message, type: "success" });
+          if(loginResutl?.data?.access_token){
+            setToast({ message: 'Login successfully', type: "success" });
             onClose();
+          }else{
+            setToast({ message: loginResutl.data.message, type: "error" });
           }
           }    
       }
@@ -118,12 +111,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
   }
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-start justify-center z-50">
-      <Toast
-        message={toast.message}
-        type={toast.type}
-        show={toast.show}
-        onClose={() => setToast({ ...toast, show: false })}
-      />
       <div className="bg-white mt-[100px] rounded-2xl relative shadow-xl transform transition-all w-fit">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -162,9 +149,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
                           Họ và tên
                         </label>
                       </div>
-                      {errors.phone && (
-                        <p className="text-red-500 flex items-center justify-start text-[12px] my-1 flex items-center justify-start">
-                          {errors.phone}
+                      {errors.name && (
+                        <p className="text-red-500 text-[12px] my-1 flex items-center justify-start">
+                          {errors.name}
                         </p>
                       )}
                     </div>
@@ -268,10 +255,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose }) => {
               </div>
             </div>
           </div>
-          <div className="w-[50%] flex  items-center justify-center min-h-[500px] justify-center">
+          <div className="w-[100%] flex items-center justify-center min-h-[500px]">
             <img
               src="https://salt.tikicdn.com/ts/upload/eb/f3/a3/25b2ccba8f33a5157f161b6a50f64a60.png"
-              className="w-[300px] h-fit object-cover"
+              className="w-[300px] h-[270px]"
               alt="Auth Modal Illustration"
             />
           </div>

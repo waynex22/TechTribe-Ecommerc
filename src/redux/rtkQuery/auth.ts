@@ -78,8 +78,14 @@ export const authSlice = createApi({
         }
       }),
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
-        const { data } = await queryFulfilled;
-        dispatch(setCredentials({ user: data }));
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(setCredentials({ user: data }));
+        } catch (error) {
+          if (error) {
+            dispatch(logout());
+          }
+        }
       },
     })
   }),

@@ -7,6 +7,4 @@ export interface Route {
 export interface ToastProps {
   message: string;
   type: 'success' | 'error' | 'info';
-  show: boolean;
-  onClose: () => void;
 }

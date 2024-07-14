@@ -6,6 +6,7 @@ import { specificationsSlice } from './rtkQuery/specifications';
 import { authSlice } from './rtkQuery/auth'
 import authReducer from './slices/authSlice';
 import { productSclice } from './rtkQuery/product';
+import { cartSlice } from './rtkQuery/cart';
 export const store = configureStore({
   reducer: {
     [authSlice.reducerPath]: authSlice.reducer,
@@ -13,6 +14,7 @@ export const store = configureStore({
     [categorySlice.reducerPath]: categorySlice.reducer,
     [categoryDetailSlice.reducerPath]: categoryDetailSlice.reducer,
     [specificationsSlice.reducerPath]: specificationsSlice.reducer,
+    [cartSlice.reducerPath]: cartSlice.reducer,
     auth: authReducer,
   },
   middleware: getDefaultMiddleware =>
@@ -22,6 +24,7 @@ export const store = configureStore({
       .concat(categorySlice.middleware)
       .concat(categoryDetailSlice.middleware)
       .concat(specificationsSlice.middleware)
+      .concat(cartSlice.middleware),
 });
 
 setupListeners(store.dispatch);

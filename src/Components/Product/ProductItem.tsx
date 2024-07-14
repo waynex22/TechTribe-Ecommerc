@@ -1,18 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useGetProductQuery } from "../../redux/rtkQuery/product";
+import { product } from "../../utils/types/product";
 
-const ProductItem = () => {
+const ProductItem = ({product}: any) => {
   const isMall = true;
   const isNew = true;
-  const { data: products, error, isLoading } = useGetProductQuery()
-  console.log(products);
+  const { name, thumbnails  } = product;
+  console.log(product);
   
   return (
     <div className="col-span-1 rounded-lg border-solid border-[1px] border-gray-200 p-2">
-      <div className="w-[181px] h-[231px]">
+      <div className="w-full h-[231px]">
         <img
-          src="	https://salt.tikicdn.com/cache/280x280/ts/product/5e/8e/5a/fdfa5d8b5920a74b650a9d9400df83f4.png.webp"
+          src={thumbnails[0]}
           className="w-[181px] h-[181px] object-cover"
           alt=""
         />
@@ -55,7 +55,7 @@ const ProductItem = () => {
         </div>
       </div>
       <div className="my-2 h-[50px]">
-          <Link to={`/product/1`} className="text-sm font-light">iPhone 14 Pro ( 256 GB chính hãng giá sốc )</Link>
+          <Link to={`/product/1`} className="text-sm font-light">{name}</Link>
       </div>
       <div className="flex items-center">
         {Array.from({ length: 5 }).map((_, index) => (

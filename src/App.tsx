@@ -7,13 +7,14 @@ import "./App.css";
 import { sellerRoutes } from "./Routes/seller";
 import SellerLayout from "./Layouts/SellerLayout";
 import PrivateRoute from "./Routes/PrivateRoute";
+import ScrollToTop from "./Components/scroll/autoScrollTop";
 
 
 const App: React.FC = () => {
   return (
     <Router>
       <div className="App">
-
+      <ScrollToTop />
         <Routes>
           {publicRoutes.map((route, index) => {
             const Layout = route.layout || DefaultLayout;
