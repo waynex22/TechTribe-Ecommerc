@@ -15,7 +15,14 @@ export const userApi = createApi({
     }),
     updatePasswordUser: builder.mutation({
       query: (formData: FormData) => ({
-        url: "updatepassword",
+        url: "update/password",
+        method: "POST",
+        body: formData,
+      }),
+    }),
+    addAddress: builder.mutation({
+      query: (formData) => ({
+        url: "add/address",
         method: "POST",
         body: formData,
       }),
@@ -23,4 +30,4 @@ export const userApi = createApi({
   }),
 });
 
-export const { useUpdateUserMutation, useUpdatePasswordUserMutation } = userApi;
+export const { useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation } = userApi;

@@ -125,7 +125,7 @@ const ComponentUserAccountProfile: React.FC = () => {
                     value={userInfo.name}
                     onChange={handleNameChange}
                     fullWidth
-                    margin="dense"
+                    sx={{width: 300}}
                   />
                 </td>
               </tr>
@@ -152,41 +152,11 @@ const ComponentUserAccountProfile: React.FC = () => {
                   Giới tính
                 </td>
                 <div className="flex items-center ps-8 pb-5 text-left">
-                  {/* <input
-                    className="mr-1 leading-tight"
-                    type="radio"
-                    value="Nam"
-                  ></input>
-                  <span className="mr-4 text-sm font-normal">Nam</span>
-
-                  <input
-                    className="mr-1 leading-tight"
-                    type="radio"
-                    value="Nữ"
-                  ></input>
-                  <span className="mr-4 text-sm font-normal">Nữ</span>
-
-                  <input
-                    className="mr-1 leading-tight"
-                    type="radio"
-                    value="Khác"
-                  ></input>
-                  <span className="mr-4 text-sm font-normal">Khác</span> */}
-                  {/* <select
-                    name="gender"
-                    value={userInfo.gender}
-                    onChange={handleGenderChange}
-                  >
-                    <option value="male">
-                      Nam
-                    </option>
-                    <option value="female">Nữ</option>
-                    <option value="other">Khác</option>
-                  </select> */}
                   <Select
                     name="gender"
                     value={userInfo.gender}
                     onChange={handleGenderChange}
+                    sx={{width: 120}}
                   >
                     <MenuItem value="male">
                       Nam{" "}
@@ -227,7 +197,7 @@ const ComponentUserAccountProfile: React.FC = () => {
                       dateFormat="dd/MM/yyyy"
                       placeholderText="Chọn ngày sinh"
                       customInput={
-                        <TextField label="DD/MM/YYYY" fullWidth margin="none" />
+                        <TextField sx={{width: 300}} label="DD/MM/YYYY" fullWidth margin="none" />
                       }
                     />
                   </div>

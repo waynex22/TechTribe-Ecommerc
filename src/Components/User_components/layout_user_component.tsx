@@ -66,14 +66,14 @@ const LayoutUserComponent: React.FC = () => {
             </div>
             <div className="your-purchase mb-3">
               <Link className="focus:text-primary flex items-center text-gray-700 text-sm hover:text-primary" to="purchase/">
-                <div className="text-xl text-primary pe-2">
+                <div className="text-xl text-primary pe-3">
                   <FontAwesomeIcon icon={faClipboard} />
                 </div>
-                  Đơn Mua
+                 Đơn Mua
               </Link>
             </div>
             <div className="your-notification mb-3">
-              <Link className="focus:text-primary flex items-center pb-1 text-gray-700 text-sm hover:text-primary" to="notification/order">
+              <Link className="focus:text-primary flex items-center  text-gray-700 text-sm hover:text-primary" to="notification/order">
                 <div className="text-xl text-primary pe-2">
                   <FontAwesomeIcon icon={faBell} />
                 </div>

@@ -24,7 +24,7 @@ const ComponentUserChangePassword: React.FC = () => {
   });
 
   const validate = () => {
-    let tempErrors = { oldPassword: "", newPassword: "", confirmPassword: "", matchNewPassword: '' };
+    let tempErrors = { oldPassword: "", newPassword: "", confirmPassword: "" };
 
     if (!oldPassword)
       tempErrors.oldPassword = "Mật khẩu cũ không được để trống";
