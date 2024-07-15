@@ -1,15 +1,22 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { IoAddOutline } from "react-icons/io5";
 import { IoMdRemoveCircleOutline } from 'react-icons/io';
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { TypeVariation } from '../../../../../utils/types/product';
+import { FcAddImage } from 'react-icons/fc';
 
 const AddnameVariation = ({ variation, setVariation }: {
     variation: TypeVariation
     setVariation: React.Dispatch<React.SetStateAction<TypeVariation>>
 }) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [prevImages, setPrevImages] = useState([] as { preview: string }[])
+    const handleClick = () => {
+        if (inputRef.current) {
+            inputRef.current.click();
+        }
+    };
     const [showVariation, setShowVariation] = useState(false)
-
     const handleKeyVariation = (key: string) => {
         setShowVariation(!showVariation)
         setVariation(prevVariation => ({
@@ -31,14 +38,46 @@ const AddnameVariation = ({ variation, setVariation }: {
                     ...prevVariation[key].slice(index + 1), // Keep items after the updated index
                 ],
             }));
+        } else {
+            setVariation(prevVariation => {
+                const newItems = prevVariation[key].filter((_, idx) => idx !== index);
+                const newVariation = { ...prevVariation };
+                newVariation[key] = newItems;
+                return newVariation;
+            });
         }
     };
     const handleDeleteVariationItem = (key: string, index: number) => {
-        setVariation(prevVariation => ({
-            ...prevVariation,
-            [key]: prevVariation[key].filter((_, idx) => idx !== index),
-        }));
+        setVariation(prevVariation => {
+            const newItems = prevVariation[key].filter((_, idx) => idx !== index);
+
+            const newVariation = { ...prevVariation };
+            if (newItems.length === 0) {
+                delete newVariation[key];
+            } else {
+                newVariation[key] = newItems;
+            }
+            return newVariation;
+        });
     };
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+
+        if (files) {
+            const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+            const imageFilesArray: { preview: string }[] = imageFiles.map(file => ({
+                preview: URL.createObjectURL(file) // Tạo URL để xem trước ảnh
+            }))
+            console.log(imageFiles);
+            console.log(imageFilesArray);
+                        
+            //   onHandlePrevImages([...prevImages, ...imageFilesArray])
+            //   onHandleFile([...listFile, imageFiles[0]])
+        }
+    };
+    const handlePrevImages = (value: { preview: string }[]) => {
+        setPrevImages(value)
+    }
     return (
         <div className=' flex gap-4'>
             <div className=' w-32 text-right pt-1'>
@@ -55,6 +94,22 @@ const AddnameVariation = ({ variation, setVariation }: {
                             <div className=' grid grid-cols-2 gap-y-4 gap-x-8 py-4 px-6'>
                                 <div className=' flex gap-2 items-center'>
                                     <input
+                                        className="hidden"
+                                        id="uploadFile1"
+                                        type="file"
+                                        multiple
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        ref={inputRef}
+                                    />
+                                    {key === 'Màu sắc' && variation[key][0]?.name && <>
+                                        <div onClick={() => { handleClick() }} className=' cursor-pointer p-2 border  text-xs border-dashed rounded w-12 text-center'>
+                                            <p className=' text-4xl flex items-center justify-center'><FcAddImage /></p>
+                                        </div>
+
+                                    </>}
+                                    <input
+                                        maxLength={32}
                                         value={variation[key][0]?.name || ''}
                                         onChange={(e) => { handleValueKeyVariation(key, e.target.value, 0) }}
                                         type="text" className=' w-full rounded border border-gray-400 py-1' />
@@ -65,7 +120,13 @@ const AddnameVariation = ({ variation, setVariation }: {
                                 {variation[key].map((item, indexs) => {
                                     return (
                                         <div key={indexs} className=' flex gap-2 items-center'>
+                                            {key === 'Màu sắc' && variation[key][indexs + 1]?.name && <>
+                                                <div onClick={() => { handleClick() }} className=' cursor-pointer p-2 border  text-xs border-dashed rounded w-12 text-center'>
+                                                    <p className=' text-4xl flex items-center justify-center'><FcAddImage /></p>
+                                                </div>
+                                            </>}
                                             <input
+                                                maxLength={32}
                                                 value={variation[key][indexs + 1]?.name || ''}
                                                 onChange={(e) => { handleValueKeyVariation(key, e.target.value, indexs + 1) }} type="text" className=' w-full rounded border border-gray-400 py-1' />
                                             <p
@@ -79,7 +140,7 @@ const AddnameVariation = ({ variation, setVariation }: {
                         </div>
                     ))
                 }
-                <div className='flex'>
+                {variation && Object.keys(variation).length < 2 && <div className='flex'>
                     <div onClick={() => (setShowVariation(!showVariation))} className=' border-primary font-semibold text-primary items-center flex gap-2 cursor-pointer p-2 border  text-sm border-dashed rounded px-4 text-center'>
                         <p className=' text-lg'><IoAddOutline /></p>
                         <p>Thêm nhóm phân loại</p>
@@ -87,12 +148,12 @@ const AddnameVariation = ({ variation, setVariation }: {
                     {showVariation &&
                         <div className=' absolute top-full pt-2 z-20'>
                             <div className=' bg-white border flex flex-col gap-2 rounded p-2 w-64 shadow-md'>
-                                <p onClick={() => handleKeyVariation('Màu sắc')} className=' cursor-pointer'>Màu sắc</p>
-                                <p onClick={() => handleKeyVariation('Size')} className=' cursor-pointer'>Màu size</p>
+                                {!variation['Màu sắc'] && <p onClick={() => handleKeyVariation('Màu sắc')} className=' cursor-pointer'>Màu sắc</p>}
+                                {!variation['Size'] && <p onClick={() => handleKeyVariation('Size')} className=' cursor-pointer'>Màu size</p>}
                             </div>
                         </div>
                     }
-                </div>
+                </div>}
             </div>
         </div>
     )

@@ -34,8 +34,9 @@ export default function requestApi(
             console.log('access token expired');
             try {
                 const refresh_token = localStorage.getItem('refresh_token');
+                
                 if (!refresh_token) throw new Error('refresh token not found'); 
-                const result = await instance.post(`${apiUrl}auth/refresh-token`, { refresh_token });
+                const result = await instance.post(`${apiUrl}auth/refresh-token`, { refreshToken: refresh_token });
                 setLoginByToken(result.data)
                 originalRequest.headers['Authorization'] = `Bearer ${result.data.access_token}`;
                 console.log('refresh token success');

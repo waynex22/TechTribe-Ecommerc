@@ -18,6 +18,7 @@ const SelectImage = ({ onHandleFile, onHandlePrevImages, prevImages, listFile }:
   const deleteFile = (index: number) => {
     const newArrShow = prevImages.filter((item, i) => i !== index)
     const newArrFile = listFile.filter((item, i) => i !== index)
+    
     onHandlePrevImages(newArrShow)
     onHandleFile(newArrFile)
   }

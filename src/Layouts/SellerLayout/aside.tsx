@@ -20,7 +20,7 @@ const AsideLayout: React.FC = () => {
                     <div className=' '>
                         <p className=' font-semibold text-base'>Quản lý sản phẩm</p>
                         <div className=' font-normal text-sm text-gray-700 pt-2 pl-4 flex gap-1 flex-col'>
-                            <Link to={'product/new'}>Tất cả sản phẩm</Link>
+                            <Link to={'product/list'}>Tất cả sản phẩm</Link>
                             <Link to={'product/new'}>Thêm sản phẩm</Link>
                         </div>
                     </div>

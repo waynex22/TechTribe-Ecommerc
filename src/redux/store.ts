@@ -4,8 +4,14 @@ import { authApi } from '../services/authApi';
 import { categorySlice } from './rtkQuery/category';
 import { categoryDetailSlice } from './rtkQuery/categoryDetail';
 import { specificationsSlice } from './rtkQuery/specifications';
+
+import shopReducer  from './features/shop'
+import productReducer  from './features/product'
+
 export const store = configureStore({
   reducer: {
+    shop: shopReducer,
+    product: productReducer,
     [authApi.reducerPath]: authApi.reducer,
     [categorySlice.reducerPath]: categorySlice.reducer,
     [categoryDetailSlice.reducerPath]: categoryDetailSlice.reducer,

@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { apiUrl } from '../config';
+import requestApi from '../helper/api';
 
 interface LoginRequest {
   phone: string;
@@ -24,5 +25,8 @@ export const authApi = createApi({
     }),
   }),
 });
-
+export const GetInfoUser = async () => {
+  const res = await requestApi('auth/profile', 'GET', {})
+  return res.data
+}
 export const { useLoginMutation } = authApi;

@@ -16,7 +16,7 @@ const ShowCategory = ({ onHandlePopup, handleValueCategory, listCategory, listCa
     const [checkIdentify, setChekIdentify] = useState(false)
 
     const checkIDCategory = (idCategory: string) => {
-        const newData = listCategoryDetail.filter((item) => item.id_category[0] === idCategory)
+        const newData = listCategoryDetail.filter((item) => item.id_category[0] === idCategory || item.id_category === idCategory)
         if (newData) {
             const arr = [newData]
             setListShowCategory(arr)
@@ -25,7 +25,7 @@ const ShowCategory = ({ onHandlePopup, handleValueCategory, listCategory, listCa
         setChekIdentify(false)
     }
     const checkIDCategoryDetail = (idCategory: string) => {
-        const newData = listCategoryDetail.filter((item) => item.id_category[0] === idCategory)
+        const newData = listCategoryDetail.filter((item) => item.id_category[0] === idCategory || item.id_category === idCategory)
         if (newData.length !== 0) {
             const arr = [listShowCategory[0], newData]
             setListShowCategory(arr)
@@ -58,7 +58,7 @@ const ShowCategory = ({ onHandlePopup, handleValueCategory, listCategory, listCa
         onHandlePopup()
         handleValueCategory(valueCategory)
     }
-
+    
     return (
         <div>
             <div className=' bg-white p-6 rounded w-[800px]'>
@@ -131,12 +131,14 @@ const ItemCategory = ({ category, handleCategory, handleValueCategory }: {
     const [checkDetail, setCheckDetail] = useState(true)
     useEffect(() => {
         if (!isLoading && isSuccess && dataCateDetail) {
-            const check = dataCateDetail.find((item) => item.id_category[0] === category._id)
+            const check = dataCateDetail.find((item) => {
+                return item.id_category[0] === category._id || item.id_category === category._id }
+        )
             setCheckDetail(check ? false : true)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dataCateDetail, isLoading, isSuccess])
-
+    
     return (
         <>
             {!checkDetail ?
@@ -156,12 +158,14 @@ export const handleNameCategory = (categoryDetail: categoryDetail | category, li
 
     let name:string = '';
     let arrCategory: (category | categoryDetail)[] = []
-    let id = categoryDetail._id
+    let id: string| string[] = categoryDetail._id
+    
     if ('id_category' in categoryDetail) {
         name = categoryDetail.name
         arrCategory = [categoryDetail]
-        id = categoryDetail.id_category[0];
+        id = categoryDetail.id_category[0].length > 5 ?categoryDetail.id_category[0] : categoryDetail.id_category ;
         let found = true;
+        
         // Loop through dataCateDetail until no matching id is found
         while (found) {
             found = false;

@@ -1,6 +1,6 @@
 export type categoryDetail = {
     _id: string,
-    id_category:string[],
+    id_category:string[] | string,
     name: string,
     thumbnail: string,
     id_specification: string[],

@@ -1,31 +1,58 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FcAddImage } from "react-icons/fc";
 import { categoryDetail } from '../../../../../utils/types/categoryDetail';
 import { category } from '../../../../../utils/types/category';
 import SelectCategory from './selectCategory';
 import SelectImage from './selectImage';
-import { typeFormCreateProduct } from '../../../../../utils/types/product';
+import { typeProduct } from '../../../../../utils/types/product';
 
-const BasicInformation = ({formAddProduct,handleFormAddproduct}:{
-    formAddProduct: typeFormCreateProduct
-    handleFormAddproduct: (key:string, value:string) => void
+const BasicInformation = ({handleFormAddproduct, prevImages, setPrevImages, product}:{
+    handleFormAddproduct: (key:string, value:string | File[]) => void
+    prevImages: { preview: string;}[]
+    setPrevImages:React.Dispatch<React.SetStateAction<{preview: string;}[]>>
+    product?: typeProduct
 }) => {
     const [listFile, setListFile] = useState<File[]>([])
-    const [prevImages, setPrevImages] = useState([] as { preview: string }[])
     const [nameProduct, setNameProduct] = useState('')
     const [valueCategory, setValueCategory] = useState({} as categoryDetail | category)
     const [decription, setDecription] = useState('')
 
+    useEffect(() => {
+        if(product && product.thumbnails) {
+            setNameProduct(product.name)
+            setDecription(product.description)
+            handleFormAddproduct('name',product.name)
+            handleFormAddproduct('description',product.description)
+            if(product.thumbnails) {
+                const files:File[] = []
+                const thumbnails = product.thumbnails.map((item: string) => { 
+                    files.push(new File([], item));
+                    return { preview: item } 
+                })
+                setPrevImages(thumbnails)
+                setListFile(files)
+            }
+            if(product.id_categoryDetail) {
+                console.log(product);
+                
+                setValueCategory(product.id_categoryDetail[0])
+                handleFormAddproduct('id_categoryDetail',product.id_categoryDetail[0]._id)
+            }
+        }
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [product, setPrevImages])
     const handleFile = (files: File[]) => {
         setListFile(files)
+        handleFormAddproduct('files',files)
     }
     const handlePrevImages = (value: { preview: string }[]) => {
         setPrevImages(value)
     }
     const handleValueCategory = (value: categoryDetail | category) => {
         setValueCategory(value)
-        handleFormAddproduct('id_category',value._id)
+        handleFormAddproduct('id_categoryDetail',value._id)
     }
     const handleNameProduct = (value:string) =>{
         setNameProduct(value)
@@ -40,7 +67,11 @@ const BasicInformation = ({formAddProduct,handleFormAddproduct}:{
             <h3 className=' font-semibold text-lg px-5'>Thông tin cơ bản</h3>
             <div className=' flex flex-col gap-6 pt-4 px-12 text-sm font-normal'>
 
-                <SelectImage onHandleFile={handleFile} onHandlePrevImages={handlePrevImages} prevImages={prevImages} listFile={listFile} />
+                <SelectImage 
+                onHandleFile={handleFile} 
+                onHandlePrevImages={handlePrevImages} 
+                prevImages={prevImages} 
+                listFile={listFile} />
 
                 <div className=' flex gap-4'>
                     <div className=' w-60 text-right'>
