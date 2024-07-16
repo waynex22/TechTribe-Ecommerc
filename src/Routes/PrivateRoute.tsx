@@ -31,7 +31,7 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   }
   if(infoUser.sub) 
     dispatch(fetchShop())
-  return infoUser.role ? <>{children}</> : <Navigate to="/shop" />;
+  return infoUser.role ? <>{children}</> : <Navigate to="/" />;
 };
 
 export default PrivateRoute;
