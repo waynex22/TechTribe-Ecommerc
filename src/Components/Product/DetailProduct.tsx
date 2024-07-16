@@ -343,10 +343,10 @@ const ProductDetail: React.FC = (Product: any) => {
             </div>
             <div className="p-4 mt-4 bg-white rounded-xl">
               <h3>Sản phẩm tương tự</h3>
-              <div className="grid grid-cols-4 gap-4 items-center mt-2">
-                {Array.from({ length: 6 }).map((_, index: number) => (
-                  <ProductItem key={index} />
-                ))}
+              <div className="grid md:grid-cols-4 lg:grid-cols-3 gap-4 items-center mt-2">
+                {/* {Array.from({ length: 6 }).map((_, index: number) => (
+                  // <ProductItem product={} key={index} />
+                ))} */}
               </div>
             </div>
           </div>

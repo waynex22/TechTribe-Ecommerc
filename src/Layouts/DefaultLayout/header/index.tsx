@@ -1,8 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import AuthModal from "../../../Component/auth/authModal";
+import AuthModal from "../../../Components/auth/authModal";
+import { useDispatch } from "react-redux";
+import {
+  useGetInfoUserMutation,
+  useRefreshTokenMutation,
+} from "../../../redux/rtkQuery/auth";
+import { logout } from "../../../redux/slices/authSlice";
+import { useSelector } from "react-redux";
+import Search from "../../../Components/subComponent/search";
+import { ToastProps } from "../../../Type";
+import Toast from "../../../Components/toast/Toast";
 const Header: React.FC = () => {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state: any) => state.auth);
+  const [refreshToken] = useRefreshTokenMutation();
+  const [getUser] = useGetInfoUserMutation();
   const [showModal, setShowModal] = useState(false);
+  const [isMenuOpen, setMenuOpen] = useState(false);
+  const [toast, setToast] = useState<ToastProps>({
+    message: "",
+    type: "success",
+  });
+  const handleSetToast = (toast: ToastProps) => {
+    setToast({ ...toast, message: toast.message , type: toast.type });
+  }
+  useEffect(() => {
+    const refreshTokenFromStorage = localStorage.getItem("refresh_token");
+    const token = localStorage.getItem("access_token");
+    if (token && refreshTokenFromStorage && !user) {
+      refreshToken(refreshTokenFromStorage)
+        .then(() => {
+          getUser();
+        })
+        .catch((error) => {
+          console.error("Error refreshing token:", error);
+        });
+    } else {
+      logout();
+    }
+  }, [getUser, refreshToken]);
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   const handleOpenModal = () => {
     setShowModal(true);
   };
@@ -10,50 +52,31 @@ const Header: React.FC = () => {
   const handleCloseModal = () => {
     setShowModal(false);
   };
+
+  const handleMenuClose = () => {
+    setMenuOpen(false);
+  };
   return (
     <>
-      <div className="h-[72px] bg-white text-center">
-        <div className="container mx-auto flex items-center justify-between">
-          <div>
-            <img src="" className="w-[60px] h-[60px]" alt="" />
-          </div>
-          <div>
-            <div className="flex items-center border-solid border-b-2 border-gray-3 outline-noneborder-gray-300 rounded-lg w-[900px] min-w-[400px]">
-              <span className="pl-5 text-gray-400">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1}
-                  stroke="currentColor"
-                  className="size-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                  />
-                </svg>
-              </span>
-              <input
-                type="search"
-                placeholder="Bạn muốn tìm kiếm gì"
-                className="outline-none rounded-lg ml-3 p-2 flex-grow text-[14px] font-light border-none"
-              />
-              <div className="w-[1px] h-fit py-2 bg-gray-300 mx-2"></div>
-              <button className="pr-2 text-blue-500 text-[14px] mr-3">
-                Tìm kiếm
-              </button>
-            </div>
-          </div>
+      <div className="bg-white text-center">
+      <Toast
+        message={toast.message}
+        type={toast.type}
+      />
+        <div className="md:container md:mx-auto flex items-center justify-between py-2">
+          <Link to="/">
+            <img src="logo-nontext.png" className="w-[60px] h-[60px]" alt="" />
+          </Link>
+          <Search />
           <div className="flex items-center justify-center">
             <div>
+              <Link to='/'>
               <div className="flex mx-2 text-primary hover:bg-blue-200 p-2 rounded-lg ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                  className="size-5 mx-2"
+                  className="size-6"
                 >
                   <path
                     fillRule="evenodd"
@@ -61,39 +84,99 @@ const Header: React.FC = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <Link to="/" className="text-[14px]">
+                <span className="text-[14px]">
                   Trang chủ
-                </Link>
+                </span>
               </div>
+              </Link>
             </div>
-            <div className="flex items-center justify-center cursor-pointer">
+            {user ? (
               <div
-                onClick={() => handleOpenModal()}
-                className="flex mx-2 text-primary  hover:bg-blue-200 p-2 rounded-lg"
+                onClick={() => setMenuOpen(!isMenuOpen)}
+                className="flex mx-2 text-primary hover:bg-blue-200 p-2 rounded-lg cursor-pointer"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="size-5 mx-2"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.536-4.464a.75.75 0 1 0-1.061-1.061 3.5 3.5 0 0 1-4.95 0 .75.75 0 0 0-1.06 1.06 5 5 0 0 0 7.07 0ZM9 8.5c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S7.448 7 8 7s1 .672 1 1.5Zm3 1.5c.552 0 1-.672 1-1.5S12.552 7 12 7s-1 .672-1 1.5.448 1.5 1 1.5Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span className="text-[14px]">Tài khoản</span>
+                <div className="flex items-center justify-center cursor-pointer">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-[14px]">Tài khoản</span>
+                </div>
               </div>
-            </div>
-            <AuthModal show={showModal} onClose={handleCloseModal}></AuthModal>
+            ) : (
+              <div className="flex items-center justify-center cursor-pointer">
+                <div
+                  onClick={() => handleOpenModal()}
+                  className="flex mx-2 text-gray-400 hover:bg-blue-200 p-2 rounded-lg"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.536-4.464a.75.75 0 1 0-1.061-1.061 3.5 3.5 0 0 1-4.95 0 .75.75 0 0 0-1.06 1.06 5 5 0 0 0 7.07 0ZM9 8.5c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S7.448 7 8 7s1 .672 1 1.5Zm3 1.5c.552 0 1-.672 1-1.5S12.552 7 12 7s-1 .672-1 1.5.448 1.5 1 1.5Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-[14px]">Tài khoản</span>
+                </div>
+              </div>
+            )}
+            {isMenuOpen && (
+              <div className="origin-top-right absolute right-[100px] mt-[200px] w-56 z-50 backdrop-blur-md bg-primary/40 rounded-2xl p-4">
+                <div className="rounded-2xl">
+                  <div
+                    className="cursor-pointer text-white"
+                    onMouseLeave={handleMenuClose}
+                  >
+                    <div className="flex flex-col pb-4 justify-center items-center"></div>
+                    <div className="flex justify-center items-center hover:underline transition duration-150 ease-in-out">
+                      <Link
+                        to="/profile"
+                        className="block px-4 py-2 w-full text-sm text-white"
+                      >
+                        Thông tin tài khoản
+                      </Link>
+                    </div>
+                    <div className="flex justify-center items-center hover:underline transition duration-150 ease-in-out">
+                      <Link
+                        to="/orders"
+                        className="block px-4 py-2 w-full text-sm text-white"
+                      >
+                        Đơn hàng của tôi
+                      </Link>
+                    </div>
+                    <div className="flex justify-center items-center hover:underline transition duration-150 ease-in-out">
+                      <div
+                        onClick={handleLogout}
+                        className="block px-4 py-2 w-full text-sm text-white"
+                      >
+                        Đăng xuất
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <AuthModal show={showModal} onClose={handleCloseModal} setToast={handleSetToast}></AuthModal>
             <div className="flex items-center justify-center">
               <div className="flex mx-2 text-primary">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                  className="size-5 relative"
+                  className="size-6 relative"
                 >
                   <path d="M4.214 3.227a.75.75 0 0 0-1.156-.955 8.97 8.97 0 0 0-1.856 3.825.75.75 0 0 0 1.466.316 7.47 7.47 0 0 1 1.546-3.186ZM16.942 2.272a.75.75 0 0 0-1.157.955 7.47 7.47 0 0 1 1.547 3.186.75.75 0 0 0 1.466-.316 8.971 8.971 0 0 0-1.856-3.825Z" />
                   <path
@@ -102,19 +185,20 @@ const Header: React.FC = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <div className="absolute w-[12px] h-[12px] top-[30px] ml-3 rounded-full bg-red-500 text-white text-[8px]">
-                  0
+                <div className="absolute w-[12px] h-[16px] top-[20px] ml-4 rounded-full bg-red-500 text-white text-[12px]">
+                  5
                 </div>
               </div>
             </div>
+            <div className="w-[1px] bg-gray-300 h-[22px] mx-2"></div>
+            <Link to='/cart'>
             <div className="flex items-center justify-center">
-              <div className="w-[1px] bg-gray-400 h-[24px] mx-2"></div>
-              <div className="flex items-center text-primary">
+              <div className="flex items-center text-primary ">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                  className="size-5 relative"
+                  className="size-6 relative"
                 >
                   <path
                     fillRule="evenodd"
@@ -122,15 +206,64 @@ const Header: React.FC = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <div className="absolute w-[12px] h-[12px] top-[30px] ml-4 rounded-full bg-red-500 text-white text-[8px]">
+                <div className="absolute w-[12px] h-[16px] top-[20px] ml-4 rounded-full bg-red-500 text-white text-[12px]">
                   0
                 </div>
               </div>
             </div>
+            </Link>
           </div>
         </div>
-        <div className="w-full bg-secondary text-white h-[60%] flex items-center justify-center">
-          Hello
+        <div className="mt-4 w-full h-[1px] bg-gray-200"></div>
+        <div className="flex items-center justify-start container mx-auto py-2 gap-x-6">
+          <div className="flex items-center gap-x-2 cursor-pointer hover:opacity-80 text-primary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-4"
+            >
+              <path
+                fillRule="evenodd"
+                d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-sm font-light-normal">Hàng chính hãng</span>
+          </div>
+          <div className="w-[1px] h-4 bg-gray-200"></div>
+          <div className="flex items-center gap-x-2 cursor-pointer hover:opacity-80 text-primary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-4"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12 1.5c-1.921 0-3.816.111-5.68.327-1.497.174-2.57 1.46-2.57 2.93V21.75a.75.75 0 0 0 1.029.696l3.471-1.388 3.472 1.388a.75.75 0 0 0 .556 0l3.472-1.388 3.471 1.388a.75.75 0 0 0 1.029-.696V4.757c0-1.47-1.073-2.756-2.57-2.93A49.255 49.255 0 0 0 12 1.5Zm-.97 6.53a.75.75 0 1 0-1.06-1.06L7.72 9.22a.75.75 0 0 0 0 1.06l2.25 2.25a.75.75 0 1 0 1.06-1.06l-.97-.97h3.065a1.875 1.875 0 0 1 0 3.75H12a.75.75 0 0 0 0 1.5h1.125a3.375 3.375 0 1 0 0-6.75h-3.064l.97-.97Z"
+                clipRule="evenodd"
+              />
+            </svg>
+
+            <span className="text-sm font-light-normal">Đổi trả 30 ngày</span>
+          </div>
+          <div className="w-[1px] h-4 bg-gray-200"></div>
+          <div className="flex items-center gap-x-2 cursor-pointer hover:opacity-80 text-primary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="size-4"
+            >
+              <path
+                fillRule="evenodd"
+                d="M1.5 6.375c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v3.026a.75.75 0 0 1-.375.65 2.249 2.249 0 0 0 0 3.898.75.75 0 0 1 .375.65v3.026c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 17.625v-3.026a.75.75 0 0 1 .374-.65 2.249 2.249 0 0 0 0-3.898.75.75 0 0 1-.374-.65V6.375Zm15-1.125a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0V6a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 0 1.5 0v-.75Zm-.75 3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0v-.75a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0V18a.75.75 0 0 0 1.5 0v-.75ZM6 12a.75.75 0 0 1 .75-.75H12a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 12Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-sm font-light-normal">Voucher mỗi ngày</span>
+          </div>
         </div>
       </div>
     </>

@@ -1,8 +1,8 @@
-import SellerComponent from "../Component/Seller/inedex";
-import AddProduct from "../Component/Seller/product/add";
-import GetIdEditProduct from "../Component/Seller/product/edit";
-import ListProduct from "../Component/Seller/product/listProduct";
-import AddVoucher from "../Component/Seller/voucher/add";
+import SellerComponent from "../Components/Seller/inedex";
+import AddProduct from "../Components/Seller/product/add";
+import GetIdEditProduct from "../Components/Seller/product/edit";
+import ListProduct from "../Components/Seller/product/listProduct";
+import AddVoucher from "../Components/Seller/voucher/add";
 import SellerLayout from "../Layouts/SellerLayout";
 import { Route } from "../Type";
 const sellerRoutes: Route[] = [
