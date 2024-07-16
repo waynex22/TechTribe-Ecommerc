@@ -6,10 +6,11 @@ module.exports =  withMT({
   content: [
     './index.html'
     , './src/**/*.{js,jsx,ts,tsx}',
-    'node_modules/flowbite-react/lib/esm/**/*.js',
-    'node_modules/flowbite-react/lib/esm/**/*.js',
-    "./node_modules/react-tailwindcss-select/dist/index.esm.js",
-    './node_modules/tw-elements/dist/js/**/*.js']
+    // 'node_modules/flowbite-react/lib/esm/**/*.js',
+    // 'node_modules/flowbite-react/lib/esm/**/*.js',
+    // "./node_modules/react-tailwindcss-select/dist/index.esm.js",
+    // './node_modules/tw-elements/dist/js/**/*.js'
+  ]
   ,
 
 
@@ -40,10 +41,23 @@ module.exports =  withMT({
       backgroundImage: {
         hero: "url('./img/herobg.png')",
       },
+      transitionDelay: {
+        '500': '500ms',
+      },
+    },
+    variants: {
+      extend: {
+        transitionDelay: ['hover', 'focus', 'group-hover'],
+      },
     },
   },
-  plugins: [
-    require('flowbite/plugin')
-  ]
+  variants: {
+    extend: {
+      transitionDelay: ['hover', 'focus', 'group-hover'],
+    },
+  },
+  // plugins: [
+  //   require('flowbite/plugin')
+  // ]
   // plugins: [require('flowbite/plugin'), require("tw-elements/dist/plugin.cjs")],
 });
