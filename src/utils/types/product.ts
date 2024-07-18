@@ -1,5 +1,5 @@
 export type typeFormCreateProduct = {
-    id_shop: string[],
+    id_shop: string[] | any,
     images: string[],
     name:string,
     id_category:string,
@@ -9,14 +9,17 @@ export type typeFormCreateProduct = {
     variation:TypeVariation[]
 }
 export type product = {
-    id_shop: string[],
-    thumnnails: string[],
+    id_shop: string[] | any,
+    thumbnails: string[],
     name:string,
     id_category:string,
     description:string,
     view:number,
     specifications?: typeSpecifications[],
-    variation?:TypeVariation[]
+    variation?:TypeVariation[],
+    product_price?:any,
+    variation_color?:any,
+    variation_size?:any
 }
 export type typeSpecifications = {
     [key: string]: string;

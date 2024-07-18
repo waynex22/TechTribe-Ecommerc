@@ -1,12 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { product } from "../../utils/types/product";
+import { formatNumberVnd } from "../../utils/fortmartNumberVnd";
 
 const ProductItem = ({product}: any) => {
   const isMall = true;
   const isNew = true;
   const { name, thumbnails  } = product;
-  console.log(product);
+  // console.log(product);
   
   return (
     <div className="col-span-1 rounded-lg border-solid border-[1px] border-gray-200 p-2">
@@ -55,7 +56,7 @@ const ProductItem = ({product}: any) => {
         </div>
       </div>
       <div className="my-2 h-[50px]">
-          <Link to={`/product/1`} className="text-sm font-light">{name}</Link>
+          <Link to={`/product/${product?._id}`} className="text-sm font-light">{name}</Link>
       </div>
       <div className="flex items-center">
         {Array.from({ length: 5 }).map((_, index) => (
@@ -74,7 +75,7 @@ const ProductItem = ({product}: any) => {
         ))}
       </div>
       <div className="flex items-center text-red-500 justify-start relative w-fit">
-        <span className=" text-md w-fit font-bold">21.670.000</span>
+        <span className=" text-md w-fit font-bold">{formatNumberVnd(product?.product_price[0]?.price)}</span>
         <div className="text-sm font-light-bold absolute right-[-12px] top-[-6px]">
           đ
         </div>

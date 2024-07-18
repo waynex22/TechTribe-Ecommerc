@@ -1,9 +1,76 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-const CartItem: React.FC = () => {
+import { formatNumberVnd } from "../../utils/fortmartNumberVnd";
+import { UpdateCartPayload, useGetCartMeQuery, useUpdateCartMutation } from "../../redux/rtkQuery/cart";
+import { useSelector } from "react-redux";
+import Toast from "../toast/Toast";
+import { ToastProps } from "../../Type";
+import ModalAccept from "../modal/ModalAccept";
+interface CartItemProps {
+  itemCart: any;
+}
+const CartItem: React.FC<CartItemProps> = ({itemCart}) => {
+  const { user } = useSelector((state: any) => state.auth);
+  const { productPriceId , quantity} = itemCart;
+  const { refetch } = useGetCartMeQuery(user?.sub);
+  const [updateCart] = useUpdateCartMutation();
+  const [toast, setToast] = useState<ToastProps | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalAction, setModalAction] = useState<(() => void) | null>(null);
+  const handleSetToast = (toast: any) => {
+    setToast({ ...toast, message: toast.message, type: toast.type, onClose: () => setToast(null) });
+  }
+  const handleUpdateCart = async (customerId: string, quantity: number) => {
+    const payload: UpdateCartPayload = {
+      customerId: customerId,
+      productPriceId: productPriceId?._id,
+      quantity: quantity,
+    };
+
+    const updateCartAction = async () => {
+      if (payload) {
+        try {
+          const res: any = await updateCart(payload).unwrap();
+          if (res?.statusCode === 299) {
+            handleSetToast({ message: res.message, type: "success" });
+          } else {
+            refetch();
+          }
+        } catch (error) {
+          console.error('Error adding product to cart:', error);
+        }
+      }
+    };
+
+    if (itemCart.quantity === 1 && quantity === -1) {
+      setIsModalOpen(true);
+      setModalAction(() => updateCartAction);
+    } else {
+      await updateCartAction();
+    }
+  };
+
+  const handleConfirm = async () => {
+    if (modalAction) {
+      await modalAction();
+    }
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <>
       <div className="w-full flex items-center justify-start ">
+      <ModalAccept
+        isOpen={isModalOpen}
+        message="Bạn muốn xoá sản phẩm này khỏi giỏ hàng ?"
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
         <div className="w-full">
           <div className="h-[40px] w-full flex items-center justify-start p-2 gap-x-2 ">
             <input
@@ -24,8 +91,8 @@ const CartItem: React.FC = () => {
                 d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"
               />
             </svg>
-            <Link to={`shop/cellphones`} className="text-sm font-light-medium">
-              CellPhone S
+            <Link to={`shop/${productPriceId?.id_product[0]?.id_shop[0]?._id}`} className="text-sm font-light-medium">
+              {productPriceId?.id_product[0]?.id_shop[0]?.name}
             </Link>
           </div>
           <div className="h-[120px] w-full flex items-center justify-start">
@@ -36,23 +103,23 @@ const CartItem: React.FC = () => {
               />
               <div className="flex items-center justify-start p-2 gap-x-2">
                 <img
-                  src="https://salt.tikicdn.com/cache/w160/ts/product/95/c1/a3/349bf4ef06f8075e184fa7328370a734.png.webp"
+                  src={`http://localhost:8080/uploads/${productPriceId?.id_product[0]?.thumbnails[0]}`}
                   className="object-cover w-[80px] h-[80px]"
                   alt=""
                 />
                 <div className="flex flex-col ">
-                  <Link to={`/product/123`} className="text-sm font-light-nomal">
-                    iPhone 15 Pro 128GB Titan Tự Nhiên
+                  <Link to={`/product/${productPriceId?.id_product[0]?._id}`} className="text-sm font-light-nomal">
+                    {productPriceId?.id_product[0]?.name}
                   </Link>
                   <span className="text-[12px] font-light text-gray-400">
-                    Titan Tự Nhiên, 128GB
+                    {productPriceId?.id_color[0]?.value} {productPriceId?.id_size[0]?.value ? `, ${productPriceId?.id_size[0]?.value}` : ''}
                   </span>
                 </div>
               </div>
             </div>
             <div className="w-[20%] flex items-center justify-start p-2 gap-x-2">
               <div className="flex items-center justify-start relative w-fit">
-                <span className=" text-sm w-fit font-bold">21.670.000</span>
+                <span className=" text-sm w-fit font-bold">{formatNumberVnd(productPriceId?.price)}</span>
                 <div className="text-[10px] underline font-light-bold absolute right-[-12px] top-[-6px]">
                   đ
                 </div>
@@ -60,19 +127,19 @@ const CartItem: React.FC = () => {
             </div>
             <div className="w-[20%] flex items-center justify-start p-2 gap-x-2">
             <div className="flex items-center my-2 space-x-1 mb-4">
-                  <button
-                    className="px-[10px] py-[3px] text-center border border-gray-300 "
+                  <button onClick={() => handleUpdateCart(user?.sub, -1)}
+                    className="px-[10px] py-[3px] text-center border border-gray-400 "
                   >
                     −
                   </button>
                   <input
                     type="text"
-                    value="1"
+                    value={quantity}
                     readOnly
-                    className="w-10 py-[3px] text-center border border-gray-300 outline-none"
+                    className="w-10 px-1 py-[3px] text-center border border-gray-400 outline-none"
                   />
-                  <button
-                    className="px-[10px] py-[3px] border border-gray-300 "
+                  <button onClick={() => handleUpdateCart(user?.sub, 1)}
+                    className="px-[10px] py-[3px] border border-gray-400 "
                   >
                     +
                   </button>
@@ -80,7 +147,7 @@ const CartItem: React.FC = () => {
             </div>
             <div className="w-[20%] flex items-center justify-start p-2 gap-x-2">
             <div className="flex items-center justify-start text-red-600 relative w-fit">
-                <span className=" text-md w-fit font-bold">21.670.000</span>
+                <span className=" text-md w-fit font-bold">{formatNumberVnd(productPriceId?.price * quantity)}</span>
                 <div className="text-[12px] underline font-light-bold absolute right-[-12px] top-[-6px]">
                   đ
                 </div>

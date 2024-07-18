@@ -1,11 +1,26 @@
+import { useSelector } from "react-redux";
+import { useGetCartMeQuery } from "../../redux/rtkQuery/cart";
 import CartItem from "./CartItem";
+import { useEffect, useState } from "react";
+import { formatNumberVnd } from "../../utils/fortmartNumberVnd";
 
 const Cart: React.FC = () => {
-  const cart = true;
+  const { user } = useSelector((state: any) => state.auth);
+  const {data: cart ,isLoading} = useGetCartMeQuery(user?.sub);
+  const [total, setTotal] = useState(0);
+  useEffect(() => { 
+    const totalCart = cart?.cartItems.reduce(
+      (acc: any, item: any) => acc + item.quantity * item.productPriceId?.price,0)
+    setTotal(totalCart);
+  },[cart?.cartItems]);
+  console.log(cart);
+  
+  // console.log(total);
+  if(isLoading) return <div>Loading</div>
   return (
     <>
       <div className="my-5">
-        {!cart ? (
+        {cart?.cartItems.length === 0 ? (
           <>
             <div className="flex flex-col items-center justify-center py-10 rounded-lg bg-white">
               <img
@@ -63,8 +78,8 @@ const Cart: React.FC = () => {
               </div>
             </div>
             <div className="bg-white mt-5 rounded-md flex flex-col items-start justify-start col-span-6 h-fit overflow-hidden">
-              {Array.from({ length: 1 }).map((_, index) => (
-                <CartItem key={index} />
+              {cart?.cartItems.map((item: any, index: number) => (
+                <CartItem itemCart={item} key={index} />
               ))}
             </div>
           </div>
@@ -97,7 +112,7 @@ const Cart: React.FC = () => {
                   Tạm tính
                 </span>
                 <div className="flex items-center justify-start relative w-fit text-gray-700">
-                  <span className=" text-sm w-fit font-bold">21.670.000</span>
+                  <span className=" text-sm w-fit font-bold">{formatNumberVnd(total)}</span>
                   <div className="text-[10px] underline font-light-bold absolute right-[-8px] top-[-6px]">
                     đ
                   </div>
@@ -110,7 +125,7 @@ const Cart: React.FC = () => {
                 </span>
                 <div className="flex flex-col items-end justify-end">
                 <div className="text-red-600 relative w-fit">
-                  <span className=" text-md w-fit font-bold">21.670.000</span>
+                  <span className=" text-md w-fit font-bold">{formatNumberVnd(total)}</span>
                   <div className="text-[12px] underline font-light-bold absolute right-[-8px] top-[-6px]">
                     đ
                   </div>

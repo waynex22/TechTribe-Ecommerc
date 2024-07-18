@@ -8,8 +8,23 @@ export const productSclice = createApi({
   endpoints: builder => ({
     getProduct: builder.query<product[], void>({
       query: () => `product`
+    }),
+    getProductById: builder.query<product, string>({
+      query: (id) => `product/${id}`
+    }),
+    getProductByCategory: builder.query<product[], string>({
+      query: (id) => `product/category/${id}`
+    }),
+    getProductByShop: builder.query<product[], string>({
+      query: (id) => `product/shop/${id}`
+    }),
+    getProductBySearch: builder.query<product[], string>({
+      query: (name) => `product/search/${name}`
+    }),
+    getProductByPrice: builder.query<product[], string>({
+      query: (price) => `product/price/${price}`
+    }),
     })
   })
-})
 
-export const { useGetProductQuery } = productSclice;
+export const { useGetProductQuery , useGetProductByIdQuery} = productSclice;
