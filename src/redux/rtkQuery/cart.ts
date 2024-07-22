@@ -2,13 +2,17 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import requestApi from '../../helper/api';
 import { Cart } from '../../utils/types/cart';
 import { setCart } from '../slices/cartSlice';
+import { get } from 'http';
 
 export interface UpdateCartPayload {
     customerId: string;
     productPriceId: string;
     quantity: number;
 }
-
+export interface UpdateCartSelect {
+    customerId: string;
+    productPriceId: string;
+}
 interface DeleteCartPayload {
     customerId: string;
     productId: string;
@@ -35,7 +39,7 @@ export const cartApi = createApi({
             async onQueryStarted(id, { dispatch, queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled;
-                    console.log('fetch');
+                    // console.log('fetch');
                     dispatch(setCart({ cart: data }));
                 } catch (error) {
                     console.log('error', error);
@@ -64,7 +68,43 @@ export const cartApi = createApi({
                 body: payload
             }),
         }),
+        getCartSelect: builder.query<any, string>({
+            query: (id) => ({
+                url: `cart-select/${id}`,
+                method: 'GET'
+            }),
+        }),
+        updateCartSelect: builder.mutation<Cart, UpdateCartSelect>({
+            query: (payload) => ({
+                url: `cart-select/${payload.customerId}`,
+                method: 'PATCH',
+                body: payload
+            }),
+            async onQueryStarted(payload, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(cartApi.endpoints.getCartMe.initiate(payload.customerId));
+                } catch (error) {
+                    console.log('error', error);
+                }
+            }
+        }),
+        removeChildItem: builder.mutation<Cart, UpdateCartSelect>({
+            query: (payload) => ({
+                url: `cart-select/remove-child-item/${payload.customerId}`,
+                method: 'PATCH',
+                body: payload
+            }),
+            async onQueryStarted(payload, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                    dispatch(cartApi.endpoints.getCartMe.initiate(payload.customerId));
+                } catch (error) {
+                    console.log('error', error);
+                }
+            }
+        })
     }),
 });
 
-export const { useGetCartMeQuery, useUpdateCartMutation, useDeleteCartMutation } = cartApi;
+export const { useGetCartMeQuery, useUpdateCartMutation, useDeleteCartMutation , useUpdateCartSelectMutation, useGetCartSelectQuery, useRemoveChildItemMutation } = cartApi;

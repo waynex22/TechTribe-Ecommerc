@@ -192,7 +192,7 @@ const Header: React.FC = () => {
               </div>
             </div>
             <div className="w-[1px] bg-gray-300 h-[22px] mx-2"></div>
-            <Link to='/cart' onClick={handleCartClick}>
+            <Link to='/checkout/cart' onClick={handleCartClick}>
               <div className="flex items-center justify-center">
                 <div className="flex items-center text-primary ">
                   <svg

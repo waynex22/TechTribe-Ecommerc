@@ -1,22 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatNumberVnd } from "../../utils/fortmartNumberVnd";
-import { UpdateCartPayload, useGetCartMeQuery, useUpdateCartMutation } from "../../redux/rtkQuery/cart";
+import { UpdateCartPayload, useGetCartMeQuery, useGetCartSelectQuery, useRemoveChildItemMutation, useUpdateCartMutation, useUpdateCartSelectMutation } from "../../redux/rtkQuery/cart";
 import { useSelector } from "react-redux";
 import Toast from "../toast/Toast";
 import { ToastProps } from "../../Type";
 import ModalAccept from "../modal/ModalAccept";
+import Spinner from "../spinner/Spinner";
 interface CartItemProps {
   itemCart: any;
 }
-const CartItem: React.FC<CartItemProps> = ({itemCart}) => {
+const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
   const { user } = useSelector((state: any) => state.auth);
-  const { productPriceId , quantity} = itemCart;
+  const { productPriceId, quantity } = itemCart;
   const { refetch } = useGetCartMeQuery(user?.sub);
   const [updateCart] = useUpdateCartMutation();
+  const { data: cartSelect, refetch: refetchCartSelect } = useGetCartSelectQuery(user?.sub);
+  const [updateCartSelect] = useUpdateCartSelectMutation();
+  const [removeChildItem] = useRemoveChildItemMutation();
   const [toast, setToast] = useState<ToastProps | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<(() => void) | null>(null);
+  const [loading , setLoading] = useState(false);
+  useEffect(() => {
+    if (user) {
+      refetchCartSelect();
+    }
+  }, [user, refetchCartSelect]);
   const handleSetToast = (toast: any) => {
     setToast({ ...toast, message: toast.message, type: toast.type, onClose: () => setToast(null) });
   }
@@ -29,6 +39,7 @@ const CartItem: React.FC<CartItemProps> = ({itemCart}) => {
 
     const updateCartAction = async () => {
       if (payload) {
+        setLoading(true);
         try {
           const res: any = await updateCart(payload).unwrap();
           if (res?.statusCode === 299) {
@@ -38,10 +49,14 @@ const CartItem: React.FC<CartItemProps> = ({itemCart}) => {
           }
         } catch (error) {
           console.error('Error adding product to cart:', error);
+        } finally {
+          setLoading(false);
         }
       }
     };
-
+    const handleRemoveChildItem = async () => {
+      await removeChildItem(payload);
+    }
     if (itemCart.quantity === 1 && quantity === -1) {
       setIsModalOpen(true);
       setModalAction(() => updateCartAction);
@@ -60,17 +75,36 @@ const CartItem: React.FC<CartItemProps> = ({itemCart}) => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  const handleSelectdProduct = async (productPriceId: string) => {
+    const payload: any = {
+      customerId: user?.sub,
+      productPriceId: productPriceId,
+    }
+    if (payload) {
+      setLoading(true);
+      try {
+        await updateCartSelect(payload).unwrap();
+        refetchCartSelect();
+      } catch (error) {
+        console.error('Error adding product to cart:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  }
+  // console.log(cartSelect);
 
   return (
     <>
+    <Spinner loading={loading} />
       <div className="w-full flex items-center justify-start ">
-      <ModalAccept
-        isOpen={isModalOpen}
-        message="Bạn muốn xoá sản phẩm này khỏi giỏ hàng ?"
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-      />
-      {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
+        <ModalAccept
+          isOpen={isModalOpen}
+          message="Bạn muốn xoá sản phẩm này khỏi giỏ hàng ?"
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+        {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
         <div className="w-full">
           <div className="h-[40px] w-full flex items-center justify-start p-2 gap-x-2 ">
             <input
@@ -98,7 +132,10 @@ const CartItem: React.FC<CartItemProps> = ({itemCart}) => {
           <div className="h-[120px] w-full flex items-center justify-start">
             <div className=" w-[50%] flex items-center justify-start p-2 gap-x-2">
               <input
+                onClick={() => handleSelectdProduct(productPriceId?._id)}
+                checked={cartSelect?.listProductSelect?.some((item: any) => (item._id == productPriceId?._id)) ? true : false}
                 type="checkbox"
+
                 className="w-5 h-5 focus:ring-0 rounded-md border-solid border-[1px] border-gray-300 checked:bg-secondary transition-all duration-300"
               />
               <div className="flex items-center justify-start p-2 gap-x-2">
@@ -125,28 +162,31 @@ const CartItem: React.FC<CartItemProps> = ({itemCart}) => {
                 </div>
               </div>
             </div>
-            <div className="w-[20%] flex items-center justify-start p-2 gap-x-2">
-            <div className="flex items-center my-2 space-x-1 mb-4">
-                  <button onClick={() => handleUpdateCart(user?.sub, -1)}
-                    className="px-[10px] py-[3px] text-center border border-gray-400 "
-                  >
-                    −
-                  </button>
-                  <input
-                    type="text"
-                    value={quantity}
-                    readOnly
-                    className="w-10 px-1 py-[3px] text-center border border-gray-400 outline-none"
-                  />
-                  <button onClick={() => handleUpdateCart(user?.sub, 1)}
-                    className="px-[10px] py-[3px] border border-gray-400 "
-                  >
-                    +
-                  </button>
-                </div>
+            <div className="w-[20%]  p-2 gap-x-2 relative">
+              <div className="flex items-center my-2 space-x-1 mb-4">
+                <button onClick={() => handleUpdateCart(user?.sub, -1)}
+                  className="px-[10px] py-[3px] text-center border border-gray-400 "
+                >
+                  −
+                </button>
+                <input
+                  type="text"
+                  value={quantity}
+                  readOnly
+                  className="w-10 px-1 py-[3px] text-center border border-gray-400 outline-none"
+                />
+                <button onClick={() => handleUpdateCart(user?.sub, 1)}
+                  className="px-[10px] py-[3px] border border-gray-400 "
+                >
+                  +
+                </button>
+              </div>
+              <div className="absolute left-2 bottom-0">
+                <p className="text-red-400 font-light text-[12px]">Còn lại : {productPriceId?.stock}</p>
+              </div>
             </div>
             <div className="w-[20%] flex items-center justify-start p-2 gap-x-2">
-            <div className="flex items-center justify-start text-red-600 relative w-fit">
+              <div className="flex items-center justify-start text-red-600 relative w-fit">
                 <span className=" text-md w-fit font-bold">{formatNumberVnd(productPriceId?.price * quantity)}</span>
                 <div className="text-[12px] underline font-light-bold absolute right-[-12px] top-[-6px]">
                   đ
@@ -174,7 +214,7 @@ const CartItem: React.FC<CartItemProps> = ({itemCart}) => {
       </div>
       <div className="w-full h-[1px] bg-gray-200">
 
-        </div>
+      </div>
     </>
   );
 };

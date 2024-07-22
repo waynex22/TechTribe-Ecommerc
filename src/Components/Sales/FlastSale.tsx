@@ -25,10 +25,10 @@ const FlastSale = () => {
               <span className="">SALE</span>
             </div>
           </div>
-          <CountDown endTime="2024-8-1 12:00:00" />
+          <CountDown endTime="2024-18-7 24:00:00" />
         </div>
         <div className="flex">
-          {Array.from({ length: 10 }).map((_, index) => (
+          {Array.from({ length: 8 }).map((_, index) => (
             <div key={index} className="mx-auto relative">
               <div className="absolute top-4 left-0 bg-red-200 rounded-md">
                   <span className="text-[12px] text-red-400">-28%</span>

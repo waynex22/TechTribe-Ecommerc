@@ -20,7 +20,7 @@ const Toast: React.FC<ToastProps> = ({ message, type , onClose }) => {
     return () => clearTimeout(timer);
 }, [onClose]);
   return (
-    <div className={`fixed top-[80%] left-1/2 -translate-x-1/2 py-2 px-3 w-[800px] rounded-md text-white text-center text-sm font-light bg-gray-800/20 backdrop-blur-lg  z-[9999]`}>
+    <div className={`fixed top-[80%] left-1/2 -translate-x-1/2 py-2 px-3 w-[800px] rounded-md text-white text-center text-sm font-light bg-gray-800/40 backdrop-blur-lg  z-[9999]`}>
       <span>{message}</span>
     </div>
   );

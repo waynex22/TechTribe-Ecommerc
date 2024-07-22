@@ -56,6 +56,7 @@ const ProductDetail: React.FC = () => {
   
   const subtotal = quantity * ProductPriceSelected?.price;
   const handleAddProductToCart = async (customerId: string, quantity: number) => {
+    if(!user) return;
     const payload: UpdateCartPayload = {
       customerId: customerId,
       productPriceId: ProductPriceSelected?._id,
