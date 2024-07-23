@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { publicRoutes } from "./Routes";
 import DefaultLayout from "./Layouts/DefaultLayout";
 import "./App.css";
-
 import { sellerRoutes } from "./Routes/seller";
 import SellerLayout from "./Layouts/SellerLayout";
 import PrivateRoute from "./Routes/PrivateRoute";
@@ -12,13 +11,10 @@ import CheckSubOrder from "./Components/payment/checkSubOrder";
 
 
 const App: React.FC = () => {
-  // const location = useLocation();
-  // const isPaymentPage = location.pathname.includes('/checkout/payment');
   return (
     <Router>
       <div className="App">
       <ScrollToTop />
-      {/* {!isPaymentPage && <CheckSubOrder />} */}
       <CheckSubOrder />
         <Routes>
           {publicRoutes.map((route, index) => {

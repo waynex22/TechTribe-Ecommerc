@@ -14,7 +14,7 @@ const CheckSubOrder: React.FC = () => {
 
   useEffect(() => {
     const idSubOrderNotComplete = getIdOrderNotComplete();
-    if (idSubOrderNotComplete && !location.pathname.includes('/checkout/payment')) {
+    if (idSubOrderNotComplete && location.pathname.includes('/checkout/cart')) {
       setOrderId(idSubOrderNotComplete);
       setShowModal(true);
     }

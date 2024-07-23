@@ -45,7 +45,7 @@ const PaymentMethod: React.FC<Props> = ({ subOrder , refecth }) => {
                                 name="paymentMethod"
                                 value={method.id}
                                 checked={method.name === subOrder?.methodPayment}
-                                onClick={() => handleSelectPayment(method.name)}
+                                onChange={() => handleSelectPayment(method.name)}
                                 className="form-radio h-4 w-4 text-blue-600 transition duration-150 ease-in-out cursor-pointer"
                             />
                             <label htmlFor={method.id} className="ml-3 block text-sm font-medium text-gray-700">

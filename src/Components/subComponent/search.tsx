@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import useDebounc from "../../hooks/useDebounc";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useGetHistoryQuery, useSearchQueryMutation, useUpdateHistoryMutation } from "../../redux/rtkQuery/search";
 import { useSelector } from "react-redux";
 
@@ -22,7 +22,8 @@ const Search: React.FC = () => {
     setIsSearchFocused(false);
   };
   const handleChooseQuery = async (query: string) => {
-    if(!user ){
+    const checkIsHave = historySearch.find((item: any) => item.query == query);
+    if(!user || checkIsHave ){
       history(`/query?q=${query}`);
       return;
     }
@@ -63,8 +64,7 @@ const Search: React.FC = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-  // console.log(history);
-
+  
   return (
     <div className="flex flex-col relative flex-start items-center">
       <form>
@@ -127,7 +127,7 @@ const Search: React.FC = () => {
               </div>
             </div>
           ))}
-          {historySearch && searchQuery === "" && historySearch?.query.map((item: any, index: number) => (
+          {historySearch && searchQuery === "" && historySearch.map((item: any, index: number) => (
             <div key={index} onClick={() => handleChooseQuery(item)} className="w-full">
             <div className="h-9 p-4 w-full hover:bg-gray-100 cursor-pointer flex items-center justify-start gap-2">
               <img

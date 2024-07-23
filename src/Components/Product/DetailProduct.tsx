@@ -8,6 +8,7 @@ import { UpdateCartPayload, useGetCartMeQuery, useUpdateCartMutation } from "../
 import { useSelector } from "react-redux";
 import Toast from "../toast/Toast";
 import { ToastProps } from "../../Type";
+import { getMinMaxPriceInArr } from "../../utils/getMinMax/getMinMaxPrice";
 const ProductDetail: React.FC = () => {
   const { slug } = useParams();
   const [updateCart] = useUpdateCartMutation();
@@ -30,33 +31,19 @@ const ProductDetail: React.FC = () => {
   const decrement = () => {
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   };
-  useEffect(() => {
-    if(product?.variation_color?.length > 0 && product?.variation_size?.length > 0){
-      setSelectedColor(product?.variation_color[0]._id);
-      setSelectedSize(product?.variation_size[0]._id);
-    }else if(product?.variation_size?.length > 0 && product?.variation_color?.length === 0){
-      setSelectedSize(product?.variation_size[0]._id);
-    }else {
-      setSelectedColor(product?.variation_color[0]._id);
-    }
-  },[product]);
   const ProductPriceSelected = product?.product_price?.find((item: any) => {
-    if(selectedColor && selectedSize){
+    if (selectedColor && selectedSize) {
       return item.id_color[0]?._id === selectedColor && item.id_size[0]._id === selectedSize;
-    }else if(selectedColor){
+    }else if( item.id_color.length === 0 && item.id_size.length !=0 && selectedSize){
+      return item.id_size[0]._id === selectedSize;
+    }else if( item.id_color.length !=0 && item.id_size.length === 0 && selectedColor){
       return item.id_color[0]?._id === selectedColor;
-    }else if(selectedSize){
-      return item.id_size[0]?._id === selectedSize;
     }
   })
-  // console.log(selectedColor);
-  // console.log(selectedSize);
-  
   // console.log(ProductPriceSelected);
-  
-  const subtotal = quantity * ProductPriceSelected?.price;
+
   const handleAddProductToCart = async (customerId: string, quantity: number) => {
-    if(!user) return;
+    if (!user || !ProductPriceSelected) return;
     const payload: UpdateCartPayload = {
       customerId: customerId,
       productPriceId: ProductPriceSelected?._id,
@@ -72,9 +59,10 @@ const ProductDetail: React.FC = () => {
       }
     }
   }
-  console.log(product);
-  
+  // console.log(ProductPriceSelected);
+
   if (isLoading) return <ProductDetailLoading />;
+  const minMaxPrice = getMinMaxPriceInArr(product?.product_price);
   return (
     <>
       <div className="container mx-auto">
@@ -214,9 +202,25 @@ const ProductDetail: React.FC = () => {
               </div>
               <div className="my-4 text-red-500 gap-2">
                 <div className="flex items-center justify-start relative w-fit">
-                  <span className=" text-[24px] w-fit font-bold">
-                    {ProductPriceSelected ? formatNumberVnd(ProductPriceSelected?.price) : formatNumberVnd(product?.product_price[0].price)}
-                  </span>
+                  {ProductPriceSelected ? (
+                    <span className=" text-[24px] w-fit font-bold">
+                      {formatNumberVnd(ProductPriceSelected?.price)}
+                    </span>
+                  ) :
+                    (
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center justify-start relative w-fit">
+                          <span className=" text-[24px] w-fit font-bold">{formatNumberVnd(minMaxPrice.min)}</span>
+                          <div className="text-lg absolute right-[-16px] top-[-6px]">
+                            đ
+                          </div>
+                        </div>
+                        <div className="ml-4">
+                          -
+                        </div>
+                        <span className=" text-[24px] w-fit font-bold">{formatNumberVnd(minMaxPrice.max)}</span>
+                      </div>
+                    )}
                   <div className="text-lg absolute right-[-16px] top-[-6px]">
                     đ
                   </div>
@@ -457,7 +461,7 @@ const ProductDetail: React.FC = () => {
                 />
                 <span className="text-md font-light-bold">{product?.name}</span>
                 <div className="flex items-start justify-normal gap-2">
-                  
+
                 </div>
               </div>
               <div className="my-2">
@@ -485,14 +489,16 @@ const ProductDetail: React.FC = () => {
                 </div>
                 <div className="text-gray-600">Tạm tính</div>
                 <div className="my-2 text-black gap-2">
-                  <div className="flex items-center justify-start relative w-fit">
-                    <span className=" text-[24px] w-fit font-bold">
-                      {formatNumberVnd(subtotal)}
-                    </span>
-                    <div className="text-lg absolute right-[-16px] top-[-6px]">
-                      đ
+                  {ProductPriceSelected && (
+                    <div className="flex items-center justify-start relative w-fit">
+                      <span className=" text-[24px] w-fit font-bold">
+                        {formatNumberVnd(quantity * ProductPriceSelected?.price)}
+                      </span>
+                      <div className="text-lg absolute right-[-16px] top-[-6px]">
+                        đ
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
                 <div onClick={() => handleAddProductToCart(user?.sub, quantity)} className="bg-red-500 rounded-md mt-5 p-4 text-center cursor-pointer">
                   <span className="text-white text-md font-light-bold">Thêm vào giỏ </span>

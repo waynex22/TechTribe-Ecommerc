@@ -7,8 +7,6 @@ const ProductItem = ({product}: any) => {
   const isMall = true;
   const isNew = true;
   const { name, thumbnails  } = product;
-  // console.log(product);
-  
   return (
     <div className="col-span-1 rounded-lg border-solid border-[1px] border-gray-200 p-2">
       <div className="w-full h-[231px]">
@@ -73,6 +71,9 @@ const ProductItem = ({product}: any) => {
             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
           </svg>
         ))}
+      </div>
+      <div className="flex items-center gap-4">
+
       </div>
       <div className="flex items-center text-red-500 justify-start relative w-fit">
         <span className=" text-md w-fit font-bold">{formatNumberVnd(product?.product_price[0]?.price)}</span>

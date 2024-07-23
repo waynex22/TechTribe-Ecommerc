@@ -106,7 +106,7 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
         />
         {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
         <div className="w-full">
-          <div className="h-[40px] w-full flex items-center justify-start p-2 gap-x-2 ">
+          {/* <div className="h-[40px] w-full flex items-center justify-start p-2 gap-x-2 ">
             <input
               type="checkbox"
               className="w-5 h-5 outline-none rounded-md border-solid border-[1px] border-gray-300 focus:ring-0 checked:bg-secondary transition-all duration-300"
@@ -128,11 +128,11 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
             <Link to={`shop/${productPriceId?.id_product[0]?.id_shop[0]?._id}`} className="text-sm font-light-medium">
               {productPriceId?.id_product[0]?.id_shop[0]?.name}
             </Link>
-          </div>
+          </div> */}
           <div className="h-[120px] w-full flex items-center justify-start">
-            <div className=" w-[50%] flex items-center justify-start p-2 gap-x-2">
+            <div className="w-[50%] flex items-center justify-start p-2 gap-x-2">
               <input
-                onClick={() => handleSelectdProduct(productPriceId?._id)}
+                onChange={() => handleSelectdProduct(productPriceId?._id)}
                 checked={cartSelect?.listProductSelect?.some((item: any) => (item._id == productPriceId?._id)) ? true : false}
                 type="checkbox"
 

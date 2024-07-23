@@ -1,18 +1,29 @@
 import { useSelector } from "react-redux";
 import { useGetCartMeQuery, useGetCartSelectQuery } from "../../redux/rtkQuery/cart";
 import CartItem from "./CartItem";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { formatNumberVnd } from "../../utils/fortmartNumberVnd";
 import { useNavigate } from "react-router-dom";
 import { useCreateSubOrderMutation } from "../../redux/rtkQuery/order";
 import Spinner from "../spinner/Spinner";
+
+const groupByShop = (cartItems: any[]) => {
+  return cartItems.reduce((groups: any, item: any) => {
+    const shopId = item.productPriceId.id_product[0].id_shop[0]._id;
+    if (!groups[shopId]) {
+      groups[shopId] = [];
+    }
+    groups[shopId].push(item);
+    return groups;
+  }, {});
+};
 const Cart: React.FC = () => {
   const { user } = useSelector((state: any) => state.auth);
   const [loading, setLoading] = useState(false);
   const { data: cart, isLoading } = useGetCartMeQuery(user?.sub, {
     skip: !user,
   });
-  const { data : cartSelect } = useGetCartSelectQuery(user?.sub, {
+  const { data: cartSelect } = useGetCartSelectQuery(user?.sub, {
     skip: !user,
   })
   const navigate = useNavigate();
@@ -35,6 +46,7 @@ const Cart: React.FC = () => {
     }
   }, [cartSelect?.listProductSelect, cart?.cartItems]);
   const handlePayment = async (customerId: string) => {
+    if(listProductSelect.length === 0) return
     const payload = {
       customerId: customerId,
       items: listProductSelect,
@@ -42,24 +54,25 @@ const Cart: React.FC = () => {
     setLoading(true);
     if (payload) {
       try {
-          const response = await createSubOrder(payload).unwrap();
-          console.log(response);
-          if (response.status === 200) {
-            navigate('/checkout/payment')
-          } else {
-              console.error('Unexpected response status:', response.status);
-          }
+        const response = await createSubOrder(payload).unwrap();
+        console.log(response);
+        if (response.status === 200) {
+          navigate('/checkout/payment')
+        } else {
+          console.error('Unexpected response status:', response.status);
+        }
       } catch (err) {
-          console.error('Error creating sub-order:', err);
+        console.error('Error creating sub-order:', err);
       } finally {
-       setLoading(false);  
+        setLoading(false);
       }
+    }
   }
-  }
+  const groupedItems = useMemo(() => groupByShop(cart?.cartItems || []), [cart]);
   if (isLoading) return <div>Loading</div>;
   return (
     <>
-    <Spinner loading={loading} />
+      <Spinner loading={loading} />
       <div className="my-5">
         {cart?.cartItems.length === 0 ? (
           <>
@@ -118,10 +131,43 @@ const Cart: React.FC = () => {
                   </svg>
                 </div>
               </div>
-              <div className="bg-white mt-5 rounded-md flex flex-col items-start justify-start col-span-6 h-fit overflow-hidden">
-                {cart?.cartItems.map((item: any, index: number) => (
-                  <CartItem itemCart={item}  key={index} />
-                ))}
+              <div className="bg-white mt-5 rounded-md flex flex-col items-start justify-start h-fit overflow-hidden">
+                {Object.keys(groupedItems).map((shopId: string) => {
+                  const items = groupedItems[shopId];
+                  const shopName = items[0].productPriceId.id_product[0].id_shop[0].name;
+                  return (
+                    <>
+                      <div className="bg-white rounded-md flex items-center justify-start p-2 gap-x-2">
+                        <input
+                          type="checkbox"
+                          className="w-5 h-5 outline-none rounded-md border-solid border-[1px] border-gray-300 focus:ring-0 checked:bg-secondary transition-all duration-300"
+                        />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="size-5 text-gray-500"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"
+                          />
+                        </svg>
+                        <div className="text-sm font-light-medium">
+                          {shopName}
+                        </div>
+                      </div>
+                      <div className="w-full">
+                        {items.map((item: any, index: number) => (
+                          <CartItem itemCart={item} key={index} />
+                        ))}
+                      </div>
+                    </>
+                  );
+                })}
               </div>
             </div>
             <div className="col-span-2">
