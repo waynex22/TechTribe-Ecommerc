@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const AsideLayout: React.FC = () => {
     return (
-        <aside className="  w-72 max-h-screen overflow-y-hidden hover:overflow-y-auto pt-[50px]" aria-label="Sidebar">
+        <aside className=" z-10  w-72 max-h-screen overflow-y-hidden hover:overflow-y-auto pt-[50px]" aria-label="Sidebar">
             <div className=' fixed w-[244px] bg-white '>
                 <div className=' flex flex-col gap-4 text-gray-500 py-4 text-left px-4 '>
                     <div className=' '>
@@ -25,33 +25,17 @@ const AsideLayout: React.FC = () => {
                         </div>
                     </div>
                     <div className=' '>
-                        <p className=' font-semibold text-base'>Quản lý đơn hàng</p>
+                        <p className=' font-semibold text-base'>Kênh Marketing</p>
                         <div className=' font-normal text-sm text-gray-700 pt-2 pl-4 flex gap-1 flex-col'>
-                            <p>Tất cả</p>
-                            <p>Giao hàng </p>
-                            <p>Đơn hủy</p>
-                            <p>Đơn Trả hàng/hoàn tiền</p>
-                            <p>Cài đặt vận chuyển</p>
+                            <Link to={'marketing/discount'}>Khuyễn mãi của Shop</Link>
+                            <Link to={'marketing/flash-sale'}>Flash Sale của Shop</Link>
+                            <Link to={'marketing/vouchers'}>Mã giảm giá của Shop</Link>
                         </div>
                     </div>
                     <div className=' '>
-                        <p className=' font-semibold text-base'>Quản lý đơn hàng</p>
+                        <p className=' font-semibold text-base'>Quản lý shop</p>
                         <div className=' font-normal text-sm text-gray-700 pt-2 pl-4 flex gap-1 flex-col'>
-                            <p>Tất cả</p>
-                            <p>Giao hàng </p>
-                            <p>Đơn hủy</p>
-                            <p>Đơn Trả hàng/hoàn tiền</p>
-                            <p>Cài đặt vận chuyển</p>
-                        </div>
-                    </div>
-                    <div className=' '>
-                        <p className=' font-semibold text-base'>Quản lý đơn hàng</p>
-                        <div className=' font-normal text-sm text-gray-700 pt-2 pl-4 flex gap-1 flex-col'>
-                            <p>Tất cả</p>
-                            <p>Giao hàng </p>
-                            <p>Đơn hủy</p>
-                            <p>Đơn Trả hàng/hoàn tiền</p>
-                            <p>Cài đặt vận chuyển</p>
+                            <Link to={'settings/profile'}>Hồ sơ shop</Link>
                         </div>
                     </div>
                 </div>

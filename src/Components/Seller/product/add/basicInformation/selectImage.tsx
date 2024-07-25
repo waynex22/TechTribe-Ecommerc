@@ -2,12 +2,14 @@
 import React, { useRef} from 'react'
 import { FcAddImage } from 'react-icons/fc'
 import {  IoMdRemoveCircle } from 'react-icons/io'
+import { FormErrorsProduct } from '../../../../../utils/validatetor/createproduct'
 
-const SelectImage = ({ onHandleFile, onHandlePrevImages, prevImages, listFile }: {
+const SelectImage = ({ onHandleFile, onHandlePrevImages, prevImages, listFile,errForm }: {
   onHandleFile: (files: File[]) => void
   onHandlePrevImages: (value: { preview: string }[]) => void
   prevImages: { preview: string }[]
   listFile: File[]
+  errForm: FormErrorsProduct
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const handleClick = () => {
@@ -42,8 +44,10 @@ const SelectImage = ({ onHandleFile, onHandlePrevImages, prevImages, listFile }:
       <div className=' flex gap-4'>
         <div className=' w-60 text-right'>
           <p> <span className=' text-red-600'>*</span> Hình ảnh sản phẩm</p>
+          { errForm.thumbnails && <p className=' text-red-600'> {errForm.thumbnails} </p> }
         </div>
 
+        <div>
         <div className=' flex gap-2 flex-wrap'>
           {prevImages.map((image, index) => (
             <div key={index} className=" relative">
@@ -70,6 +74,7 @@ const SelectImage = ({ onHandleFile, onHandlePrevImages, prevImages, listFile }:
               />
             </>
           }
+        </div>
         </div>
 
       </div>

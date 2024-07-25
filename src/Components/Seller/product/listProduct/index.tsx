@@ -20,7 +20,7 @@ const ListProduct: React.FC = () => {
   const [valueFindName, setValueFindName] = useState('')
   const [sort, setSort] = useState('')
 
-  const [countPages, setCountPages] = useState(12); 
+  const [countPages, setCountPages] = useState(10); 
   const [currentPage, setCurrentPage] = useState(1); 
   const [totalPages, setTotalPages] = useState(1); 
 
@@ -45,7 +45,8 @@ const ListProduct: React.FC = () => {
   const startIndex = (currentPage - 1) * countPages;
   const endIndex = startIndex + countPages;
   const currentItems = listShow.slice(startIndex, endIndex);
-
+  console.log(currentItems.length);
+  
   const setProductByActiveFilter = () => {
     switch (activeFilter) {
       case 'all':
@@ -105,6 +106,8 @@ const ListProduct: React.FC = () => {
     setSort(newSortType);
   };
 
+  console.log(products);
+  
   return (
     <>
       <div className=' flex justify-between'>
@@ -158,7 +161,7 @@ const ListProduct: React.FC = () => {
           </div>
 
           <div className=' py-4'>
-            <div className=' gap-2 grid grid-cols-6'>
+            <div className=' gap-2 grid grid-cols-4 md:grid-cols-5'>
               {currentItems.length > 0 && currentItems[0]._id && currentItems.map((item) => (
                 <ItemProductListCols fetchProduct={fetchProduct} key={item._id} product={item} />
               ))}
@@ -169,17 +172,17 @@ const ListProduct: React.FC = () => {
               <p className=' cursor-pointer'>{countPages}sp/trang</p>
               <div className='hidden group-hover:block absolute bottom-full py-1 left-0'>
                 <div className=' flex flex-col gap-1 bg-white py-1 shadow-lg border w-[80px]'>
-                  <p onClick={() => setCountPages(12)} className=' px-4 py-1 hover:bg-gray-100  flex gap-2 items-center cursor-pointer'>
-                    12 {countPages === 12 && <span className=' text-green-400'><FaCheck /></span>}
+                  <p onClick={() => setCountPages(10)} className=' px-4 py-1 hover:bg-gray-100  flex gap-2 items-center cursor-pointer'>
+                  10 {countPages === 10 && <span className=' text-green-400'><FaCheck /></span>}
                   </p>
-                  <p onClick={() => setCountPages(24)} className=' px-4 py-1 hover:bg-gray-100 flex gap-2 items-center cursor-pointer'>
-                    24 {countPages === 24 && <span className=' text-green-400'><FaCheck /></span>}
+                  <p onClick={() => setCountPages(15)} className=' px-4 py-1 hover:bg-gray-100 flex gap-2 items-center cursor-pointer'>
+                  15 {countPages === 15 && <span className=' text-green-400'><FaCheck /></span>}
                   </p>
-                  <p onClick={() => setCountPages(36)} className=' px-4 py-1 hover:bg-gray-100 flex gap-2 items-center cursor-pointer'>
-                    36 {countPages === 36 && <span className=' text-green-400'><FaCheck /></span>}
+                  <p onClick={() => setCountPages(20)} className=' px-4 py-1 hover:bg-gray-100 flex gap-2 items-center cursor-pointer'>
+                  20 {countPages === 20 && <span className=' text-green-400'><FaCheck /></span>}
                   </p>
-                  <p onClick={() => setCountPages(48)} className=' px-4 py-1 hover:bg-gray-100 flex gap-2 items-center cursor-pointer'>
-                    48 {countPages === 48 && <span className=' text-green-400'><FaCheck /></span>}
+                  <p onClick={() => setCountPages(25)} className=' px-4 py-1 hover:bg-gray-100 flex gap-2 items-center cursor-pointer'>
+                  25 {countPages === 25 && <span className=' text-green-400'><FaCheck /></span>}
                   </p>
                 </div>
               </div>

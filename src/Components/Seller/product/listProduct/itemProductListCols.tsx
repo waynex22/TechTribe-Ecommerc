@@ -84,7 +84,7 @@ const ItemProductListCols = ({ product, fetchProduct }: { product: typeProduct, 
     </div>
   )
 }
-const formatPriceProduct = (product: typeProduct) => {
+export const formatPriceProduct = (product: typeProduct) => {
   if (!product.product_price || product.product_price.length === 0) {
     return '';
   }
@@ -104,7 +104,7 @@ const formatPriceProduct = (product: typeProduct) => {
     ? `${minPrice.toLocaleString('vi-VN')} - ${maxPrice.toLocaleString('vi-VN')} VND`
     : `${minPrice.toLocaleString('vi-VN')} VND`;
 };
-const formatStockProduct = (product: typeProduct) => {
+export const formatStockProduct = (product: typeProduct) => {
   if (!product.product_price || product.product_price.length === 0) {
     return '';
   }

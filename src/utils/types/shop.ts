@@ -8,3 +8,11 @@ export type TypeShop = {
     description?: string,
     address?: string,
 }
+
+export type TypeIdentification = {
+    id_shop?: string,
+    type_card: string,
+    full_name: string,
+    CCCD_number: string,
+    CCCD_photo: string,
+}

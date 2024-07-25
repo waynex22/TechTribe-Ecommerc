@@ -12,7 +12,7 @@ export default function requestApi(
     endpoint: string, 
     method: string, 
     body: object, 
-    contenType?: string,
+    contenType?: "multipart/form-data" | "application/json",
     responseType: AxiosRequestConfig['responseType'] = 'json'
 ) {
     if(contenType){

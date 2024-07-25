@@ -27,7 +27,7 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   }, [token]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Show a loading spinner or placeholder content
+    return <div className=' fixed top-0 left-0 w-screen h-screen cursor-pointer bg-black bg-opacity-40'></div>; // Show a loading spinner or placeholder content
   }
   if(infoUser.sub) 
     dispatch(fetchShop())

@@ -164,6 +164,7 @@ export const handleNameCategory = (categoryDetail: categoryDetail | category, li
         name = categoryDetail.name
         arrCategory = [categoryDetail]
         id = categoryDetail.id_category[0].length > 5 ?categoryDetail.id_category[0] : categoryDetail.id_category ;
+        
         let found = true;
         
         // Loop through dataCateDetail until no matching id is found
@@ -173,7 +174,7 @@ export const handleNameCategory = (categoryDetail: categoryDetail | category, li
             listCategoryDetail.some((item) => {
                 if (id === item._id) {
                     name = item.name + ' > ' + name;
-                    id = item.id_category[0];
+                    id = item.id_category;
                     arrCategory.push(item)
                     found = true; // Continue looping
                     return true; // Break out of .some()
@@ -181,6 +182,7 @@ export const handleNameCategory = (categoryDetail: categoryDetail | category, li
                 return false;
             });
         }
+
     }
 
     // Check in dataCategory
@@ -192,6 +194,7 @@ export const handleNameCategory = (categoryDetail: categoryDetail | category, li
         }
         return false;
     });
+    
     return {name,arrCategory};
 };
 

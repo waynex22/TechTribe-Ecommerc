@@ -9,12 +9,16 @@ import authReducer from './slices/authSlice';
 import { productSclice } from './rtkQuery/product';
 import { cartSlice } from './rtkQuery/cart';
 import shopReducer  from './features/shop'
+import discountReducer  from './features/discount'
 import productReducer  from './features/product'
+import voucherReducer  from './features/voucher'
 
 export const store = configureStore({
   reducer: {
     shop: shopReducer,
+    discount: discountReducer,
     product: productReducer,
+    voucher: voucherReducer,
     [authSlice.reducerPath]: authSlice.reducer,
     [productSclice.reducerPath]: productSclice.reducer,
     [authApi.reducerPath]: authApi.reducer,

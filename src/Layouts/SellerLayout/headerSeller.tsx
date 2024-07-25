@@ -9,9 +9,10 @@ import { AiOutlineLogout } from "react-icons/ai";
 const HeaderSeller: React.FC  = () => {
     return (
         <div className="">
-            <div className=" fixed flex justify-between w-screen bg-white shadow-sm border-b z-20">
-                <div className=" ">
+            <div className=" fixed flex justify-between w-screen bg-white shadow-sm border-b z-20 items-center">
+                <div className="">
                     <img className="w-10 " src="public/logo-nontext.png" alt="" />
+                    <p></p>
                 </div>
                 <div className=" flex gap-2 items-center">
                     <div className=" px-2 flex gap-1 items-center text-xl border-r">

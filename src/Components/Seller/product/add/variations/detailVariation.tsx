@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { typeProduct, typeProductPrice, TypeVariation } from '../../../../../utils/types/product'
+import { FormErrorsProduct } from '../../../../../utils/validatetor/createproduct'
 
-const DetailVariation = ({ variation, productPrice, setProductPrice, product }: {
+const DetailVariation = ({ variation, productPrice, setProductPrice, product, errForm }: {
     variation: TypeVariation
     productPrice: typeProductPrice[]
     setProductPrice: React.Dispatch<React.SetStateAction<typeProductPrice[]>>
     product?: typeProduct
+    errForm: FormErrorsProduct
 }) => {
     useEffect(() => {
         if (product && product.product_price) {
@@ -96,7 +98,6 @@ const DetailVariation = ({ variation, productPrice, setProductPrice, product }: 
         const product = createProductPrice(value1, value2, 'price', valueAllPrice);
         product.stock = valueAllStock
         productPrices.push(product);
-
         setProductPrice(productPrices);
     }
 
@@ -112,9 +113,11 @@ const DetailVariation = ({ variation, productPrice, setProductPrice, product }: 
             <div className=' flex gap-4'>
                 <div className=' w-32 text-right pt-1'>
                     <p> Danh sách phân loại hàng</p>
+
                 </div>
 
                 <div className="relative overflow-x-auto flex-auto">
+                { errForm.price && <p className=' text-red-600'> {errForm.price} </p> }
                     <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-collapse">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>

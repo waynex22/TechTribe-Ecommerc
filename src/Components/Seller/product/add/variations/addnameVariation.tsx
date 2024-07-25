@@ -4,10 +4,12 @@ import { IoMdRemoveCircleOutline } from 'react-icons/io';
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { TypeVariation } from '../../../../../utils/types/product';
 import { FcAddImage } from 'react-icons/fc';
+import { FormErrorsProduct } from '../../../../../utils/validatetor/createproduct';
 
-const AddnameVariation = ({ variation, setVariation }: {
+const AddnameVariation = ({ variation, setVariation, errForm }: {
     variation: TypeVariation
     setVariation: React.Dispatch<React.SetStateAction<TypeVariation>>
+    errForm: FormErrorsProduct
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [prevImages, setPrevImages] = useState([] as { preview: string }[])
@@ -68,8 +70,6 @@ const AddnameVariation = ({ variation, setVariation }: {
             const imageFilesArray: { preview: string }[] = imageFiles.map(file => ({
                 preview: URL.createObjectURL(file) // Tạo URL để xem trước ảnh
             }))
-            console.log(imageFiles);
-            console.log(imageFilesArray);
                         
             //   onHandlePrevImages([...prevImages, ...imageFilesArray])
             //   onHandleFile([...listFile, imageFiles[0]])
@@ -81,7 +81,8 @@ const AddnameVariation = ({ variation, setVariation }: {
     return (
         <div className=' flex gap-4'>
             <div className=' w-32 text-right pt-1'>
-                <p> Phân loại hàng</p>
+                <p> <span className=' text-red-600'>*</span> Phân loại hàng</p>
+                { errForm.variation && <p className=' text-red-600'> {errForm.variation} </p> }
             </div>
             <div className=' flex-auto relative flex flex-col gap-2'>
                 {variation &&

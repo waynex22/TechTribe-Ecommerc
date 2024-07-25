@@ -9,7 +9,7 @@ const Catelog: React.FC = () => {
         <>
         <div className="my-5 grid lg:grid-cols-6 grid-cols-3 sm:grid-cols-1 gap-3">
           {products && products.map((item: product, index: number) => (
-            <ProductItem  />
+            <ProductItem product={item}  />
           ))}
         </div>
         </>

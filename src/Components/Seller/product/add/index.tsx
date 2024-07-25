@@ -6,7 +6,8 @@ import DefaultInfoAddProduct from './defaultInfo'
 import VariationsProduct from './variations'
 import requestApi from '../../../../helper/api'
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { FormErrorsProduct, validateFormProduct } from '../../../../utils/validatetor/createproduct'
 
 const defaultSpecifications: typeSpecifications[] = [];
 const defaultVariation: TypeVariation = {}
@@ -14,8 +15,8 @@ const AddProduct: React.FC = () => {
   const navigate = useNavigate()
   const [formAddProduct, setFormAddProduct] = useState({} as typeFormCreateProduct)
   const [prevImages, setPrevImages] = useState([] as { preview: string }[])
-  // const [isSubmit, setIsSubmit] = useState(false)
-  // const [errForm, setErrForm] = useState('')
+  const [isSubmit, setIsSubmit] = useState(false)
+  const [errForm, setErrForm] = useState({} as FormErrorsProduct)
   const handleFormAddproduct = (
     key: string,
     value: string | typeSpecifications[] | TypeVariation | typeProductPrice[] | File[]
@@ -32,25 +33,35 @@ const AddProduct: React.FC = () => {
     }
   }, [formAddProduct.id_categoryDetail]);
 
+  useEffect(() => {
+    if (isSubmit === true)
+      setErrForm(validateFormProduct(formAddProduct))
+  }, [formAddProduct, isSubmit])
+
   const createProduct = (e: React.FormEvent) => {
     console.log(formAddProduct);
     e.preventDefault()
+    setIsSubmit(true)
+    const errors = validateFormProduct(formAddProduct)
+    if (Object.keys(errors).length > 0) {
+      setErrForm(errForm)
+    } else {
+      requestApi('product', 'POST', formAddProduct, 'application/json')
+        .then(data => {
+          const idProductr = data.data._id
+          const newData = { ...formAddProduct, id_product: idProductr }
+          createProductPrice(newData)
 
-    requestApi('product', 'POST', formAddProduct, 'application/json')
-      .then(data => {
-        const idProductr = data.data._id
-        const newData = { ...formAddProduct, id_product: idProductr }
-        createProductPrice(newData)
+          uploadFiles(idProductr)
 
-        uploadFiles(idProductr)
-
-        toast.success('thêm thành công')
-        navigate('/seller/product/list')
-      })
-      .catch(err => {
-        toast.error('Có lỗi khi tạo')
-        console.log(err);
-      })
+          toast.success('thêm thành công')
+          navigate('/seller/product/list')
+        })
+        .catch(err => {
+          toast.error('Có lỗi khi tạo')
+          console.log(err);
+        })
+    }
   }
 
   const createProductPrice = (newData: typeFormCreateProduct) => {
@@ -78,7 +89,7 @@ const AddProduct: React.FC = () => {
   };
 
   const updateThumbnailProduct = (idProduct: string, thumbnails: string[]) => {
-    requestApi(`product/updateThumbnails/${idProduct}`, 'PATCH', {thumbnails}, 'application/json')
+    requestApi(`product/updateThumbnails/${idProduct}`, 'PATCH', { thumbnails }, 'application/json')
       .catch(err => {
         toast.error('Có lỗi khi thêm ảnh vào product')
         console.log(err);
@@ -86,17 +97,20 @@ const AddProduct: React.FC = () => {
   }
   return (
     <div className=' flex gap-4 flex-col'>
-      <BasicInformation 
-          prevImages={prevImages} 
-          setPrevImages={setPrevImages} 
-          handleFormAddproduct={handleFormAddproduct} />
+      <BasicInformation
+        errForm={errForm}
+        prevImages={prevImages}
+        setPrevImages={setPrevImages}
+        handleFormAddproduct={handleFormAddproduct} />
       {formAddProduct.id_categoryDetail ?
         <>
-          <DetailInformation 
-
-            formAddProduct={formAddProduct} 
+          <DetailInformation
+            formAddProduct={formAddProduct}
             handleFormAddproduct={handleFormAddproduct} />
-          <VariationsProduct formAddProduct={formAddProduct} handleFormAddproduct={handleFormAddproduct} />
+          <VariationsProduct
+            errForm={errForm}
+            formAddProduct={formAddProduct}
+            handleFormAddproduct={handleFormAddproduct} />
         </>
         :
         <>
@@ -105,8 +119,16 @@ const AddProduct: React.FC = () => {
         </>
       }
       <div className=' flex flex-row-reverse py-4 gap-5'>
-        <button onClick={(e) => createProduct(e)}>Xác nhận</button>
-        <div>Hủy</div>
+        <button
+          className=' px-4 py-2 rounded shadow-md text-white font-semibold border bg-primary hover:border-primary hover:bg-white hover:text-primary'
+          onClick={(e) => createProduct(e)}>
+          Xác nhận
+        </button>
+        <Link 
+        className=' px-4 py-2 rounded shadow-md hover:bg-gray-200 hover:border'
+        to={'/seller/product/list'}>
+          Hủy
+        </Link>
       </div>
     </div>
   )

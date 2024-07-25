@@ -1,0 +1,34 @@
+input {
+    padding: 5px 10px !important;
+}
+
+input:focus {
+    border-color: #ccc !important;
+    /* Đặt lại border để không thay đổi khi focus */
+    box-shadow: none;
+    /* Đảm bảo không có shadow khi focus */
+    outline: none !important;
+}
+input.countDiscout {
+    padding: 5px 4px !important;
+}
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: #2196F3;
+}
+
+.toggle-checkbox:checked+.toggle-label {
+    background-color: #2196F3;
+}
+
+.toggle-checkbox:checked+.toggle-label:before {
+    transform: translateX(5px);
+}
+
+/* Hide the default checkbox */
+.custom-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #10B981; /* Tailwind green-300 */
+}

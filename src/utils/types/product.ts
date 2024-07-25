@@ -48,6 +48,7 @@ export type typeProductPrice = {
 
 export type typeProduct = {
     _id:string,
+    code:string,
     name: string,
     id_shop: string[],
     id_categoryDetail: categoryDetail[],
