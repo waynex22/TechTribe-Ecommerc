@@ -1,28 +1,15 @@
-import ProductDetail from "../Components/Product/DetailProduct";
-import HomePage from "../Page/Home";
 import LayoutUserComponent from "../Components/User_components/layout_user_component";
-import { Route } from "../Type";
-import ComponentUserAccount from "../Components/User_components/User_account/User_account_component";
 import ComponentUserAccountProfile from "../Components/User_components/User_account/User_account_profile_component";
-import { DefaultLayout } from "../Layouts";
+import ComponentUserAddress from "../Components/User_components/User_account/User_address";
+import ComponentUserChangePassword from "../Components/User_components/User_account/User_changepassword";
+import ComponentUserCoin from "../Components/User_components/User_coin/User_coin";
 import ComponentUserAccountNotify from "../Components/User_components/User_notification/user_account_notify_component";
 import ComponentUserPurchase from "../Components/User_components/User_purchase";
 import ComponentUserVoucher from "../Components/User_components/User_voucher";
-import ComponentUserCoin from "../Components/User_components/User_coin/User_coin";
-import ComponentUserAddress from "../Components/User_components/User_account/User_address";
-import ComponentUserChangePassword from "../Components/User_components/User_account/User_changepassword";
-import CartPage from "../Page/Cart";
-const publicRoutes: Route[]  = [
-    {
-        path: '/',
-        component: HomePage,
-        layout: DefaultLayout,
-    },
-    {
-        path: "/cart",
-        component: CartPage,
-        layout: DefaultLayout,
-    },
+import { DefaultLayout } from "../Layouts";
+import { Route } from "../Type";
+
+const userProfileRouter : Route[]= [
     {
         path: "/profile",
         component: LayoutUserComponent,
@@ -30,7 +17,7 @@ const publicRoutes: Route[]  = [
         children:[
             {
                 path: "",
-                component: ComponentUserAccount,
+                component: ComponentUserAccountProfile,
                 layout: null,
             },
             {
@@ -71,12 +58,6 @@ const publicRoutes: Route[]  = [
 
         ]    
     }
-    ,
-    {
-        path: '/product/:slug',
-        component: ProductDetail,
-        layout: DefaultLayout,
-    },
-
 ]
-export { publicRoutes };
+
+export {userProfileRouter}

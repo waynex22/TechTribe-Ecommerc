@@ -1,73 +1,105 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useRoutes, RouteObject } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { publicRoutes } from "./Routes";
-// import DefaultLayout from "./Layouts/DefaultLayout"; // Ensure correct import path
+import DefaultLayout from "./Layouts/DefaultLayout";
 import "./App.css";
-// import { Route } from "./Type";
-export interface AppRoute {
-  path: string;
-  component: React.FC<any>;
-  layout?: React.FC<any> | null;
-  children?: AppRoute[];
-}
-const AppRoutes: React.FC = () => {
-  const generateRoutes = (routes: AppRoute[]): RouteObject[] => {
-    return routes.map((route) => {
-      const Component = route.component;
-      const element = route.layout ? (
-        <route.layout>
-          <Component />
-        </route.layout>
-      ) : (
-        <Component />
-      );
 
-      return {
-        path: route.path,
-        element: element,
-        children: route.children ? generateRoutes(route.children) : [],
-      };
-    });
-  };
-
-  return useRoutes(generateRoutes(publicRoutes));
-};
+import { sellerRoutes } from "./Routes/seller";
+import SellerLayout from "./Layouts/SellerLayout";
+import PrivateRoute from "./Routes/PrivateRoute";
+import ScrollToTop from "./Components/scroll/autoScrollTop";
+import { userProfileRouter } from "./Routes/UserProfileRoute";
 
 const App: React.FC = () => {
   return (
     <Router>
       <div className="App">
-        <AppRoutes />
+        <ScrollToTop />
+        <Routes>
+          {publicRoutes.map((route, index) => {
+            const Layout = route.layout || DefaultLayout;
+            const Page = route.component;
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <Layout>
+                    <Page />
+                  </Layout>
+                }
+              />
+            );
+          })}
+
+          {userProfileRouter.map((route, index) => {
+            const Layout = route.layout || DefaultLayout;
+            const Page = route.component;
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      <Page />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              >
+                {route.children &&
+                  route.children.map((childRoute, childIndex) => {
+                    const ChildLayout = childRoute.layout || React.Fragment;
+                    const ChildPage = childRoute.component;
+                    return (
+                      <Route
+                        key={childIndex}
+                        path={childRoute.path}
+                        element={
+                          <ChildLayout>
+                            <ChildPage />
+                          </ChildLayout>
+                        }
+                      />
+                    );
+                  })}
+              </Route>
+            );
+          })}
+
+          {sellerRoutes.map((route, index) => {
+            const Layout = route.layout || SellerLayout;
+            const Page = route.component;
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      <Page />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              >
+                {route.children &&
+                  route.children.map((child, childIndex) => {
+                    const ChildPage = child.component;
+                    return (
+                      <Route
+                        key={childIndex}
+                        path={child.path}
+                        element={<ChildPage />}
+                      />
+                    );
+                  })}
+              </Route>
+            );
+          })}
+        </Routes>
       </div>
     </Router>
   );
 };
 
 export default App;
-// const App: React.FC = () => {
-//   return (
-//     <Router>
-//       <div className="App">
-//         <Routes>
-//           {publicRoutes.map((route, index) => {
-//             const Layout = route.layout || DefaultLayout;
-//             const Page = route.component;
-//             return (
-//               <Route
-//                 key={index}
-//                 path={route.path}
-//                 element={
-//                   <Layout>
-//                     <Page />
-//                   </Layout>
-//                 }
-//               />
-//             );
-//           })}
-//         </Routes>
-//       </div>
-//     </Router>
-//   );
-// };
-
-

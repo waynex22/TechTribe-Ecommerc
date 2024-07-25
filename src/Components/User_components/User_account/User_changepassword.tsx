@@ -6,34 +6,48 @@ import {
   InputAdornment,
   TextField,
 } from "@mui/material";
-import React, { ChangeEvent, useState } from "react";
-import { useUpdatePasswordUserMutation } from "../../../services/userApi";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { useUpdatePasswordUserMutation } from "../../../redux/rtkQuery/user_customers";
 
 const ComponentUserChangePassword: React.FC = () => {
+ 
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [updatePasswordUser] = useUpdatePasswordUserMutation();
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [ old_password, setOldPassword] = useState("");
+  const [ new_password, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({
-    oldPassword: "",
-    newPassword: "",
+    old_password: "",
+    new_password: "",
     confirmPassword: "",
   });
 
-  const validate = () => {
-    let tempErrors = { oldPassword: "", newPassword: "", confirmPassword: "" };
+  const passwordData = {
+    old_password: old_password,
+    new_password: new_password
+  }
 
-    if (!oldPassword)
-      tempErrors.oldPassword = "Mật khẩu cũ không được để trống";
-    if (!newPassword)
-      tempErrors.newPassword = "Mật khẩu mới không được để trống";
+  useEffect(() => {
+    const getAccessToken = localStorage.getItem('access_token');
+    setAccessToken(getAccessToken);
+  },[])
+
+  const validate = () => {
+    let tempErrors = { old_password: "", new_password: "", confirmPassword: "" };
+
+    if (!old_password)
+      tempErrors.old_password = "Mật khẩu cũ không được để trống";
+    if (!new_password)
+      tempErrors.new_password = "Mật khẩu mới không được để trống";
+    if (new_password.length < 6  )
+      tempErrors.new_password = "Mật khẩu mới phải có ít nhất 6 ký tự!";
     if (!confirmPassword)
       tempErrors.confirmPassword = "Xác nhận mật khẩu không được để trống";
-    if (newPassword !== confirmPassword) {
-        tempErrors.newPassword = "Mật khẩu mới và xác nhận mật khẩu không trùng";
+    if (new_password !== confirmPassword) {
+        tempErrors.new_password = "Mật khẩu mới và xác nhận mật khẩu không trùng";
         tempErrors.confirmPassword = "Mật khẩu mới và xác nhận mật khẩu không trùng";
     }
     setErrors(tempErrors);
@@ -63,18 +77,14 @@ const ComponentUserChangePassword: React.FC = () => {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formDate = new FormData();
-    formDate.append("oldPassword", oldPassword);
-    formDate.append("newPassword", newPassword);
-    formDate.append("confirmPassword", confirmPassword);
-
-    console.log("Mật khẩu cũ:", oldPassword);
-    console.log("Mật khẩu mới:", newPassword);
-    console.log("Xác nhận mật khẩu:", confirmPassword);
-
+    // const formData = new FormData();
+    // formData.append("oldPassword", old_password);
+    // formData.append("newPassword", new_password);
+    // formDate.append("confirmPassword", confirmPassword);
+    // console.log(formData);
     try {
-      if (validate()) {
-        const response = await updatePasswordUser(formDate).unwrap();
+      if (validate() && accessToken !== null) {
+        const response = await updatePasswordUser({passworData: passwordData, token: accessToken}).unwrap();
         console.log(response);
       } else {
         console.log("Validation failed");
@@ -108,8 +118,8 @@ const ComponentUserChangePassword: React.FC = () => {
             type={showOldPassword ? "text" : "password"}
             label="Mật khẩu cũ"
             variant="outlined"
-            error= {!!errors.oldPassword}
-            helperText= {errors.oldPassword}
+            error= {!!errors.old_password}
+            helperText= {errors.old_password}
             //   fullWidth
             onChange={handleChangeOldPassword}
             sx={{ my: 2 }}
@@ -129,8 +139,8 @@ const ComponentUserChangePassword: React.FC = () => {
             label="Mật khẩu mới"
             variant="outlined"
             onChange={handleChangeNewPassword}
-            error= {!!errors.newPassword}
-            helperText= {errors.newPassword}
+            error= {!!errors.new_password}
+            helperText= {errors.new_password}
             //   fullWidth
             sx={{ my: 2 }}
             InputProps={{

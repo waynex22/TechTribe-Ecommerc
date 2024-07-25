@@ -8,6 +8,16 @@ export type typeFormCreateProduct = {
     specifications: typeSpecifications[],
     variation:TypeVariation[]
 }
+export type product = {
+    id_shop: string[],
+    thumnnails: string[],
+    name:string,
+    id_category:string,
+    description:string,
+    view:number,
+    specifications?: typeSpecifications[],
+    variation?:TypeVariation[]
+}
 export type typeSpecifications = {
     [key: string]: string;
 };

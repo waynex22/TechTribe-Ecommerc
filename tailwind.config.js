@@ -1,18 +1,22 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+// import withMT from "@material-tailwind/html/utils/withMT";
+
+module.exports = ({
   content: [
     './index.html'
-    ,'./src/**/*.{js,jsx,ts,tsx}',
-  'node_modules/flowbite-react/lib/esm/**/*.js',
-  './node_modules/tw-elements/dist/js/**/*.js'],
-  
+    , './src/**/*.{js,jsx,ts,tsx}',
+    'node_modules/flowbite-react/lib/esm/**/*.js',
+    'node_modules/flowbite-react/lib/esm/**/*.js',
+    "./node_modules/react-tailwindcss-select/dist/index.esm.js",
+    './node_modules/tw-elements/dist/js/**/*.js']
+  ,
   theme: {
     fontFamily: {
       primary: 'Poppins',
     },
     container: {
       padding: {
-        DEFAULT: '30px',
+        DEFAULT: '0',
         lg: '0',
       },
     },
@@ -24,16 +28,17 @@ module.exports = {
     },
     extend: {
       colors: {
-        primary: '#577BEA',
+        primary: '#0A68FF',
         secondary: '#579CEA',
         mint : '#82B3C2',
         mints: '#9ABFC7',
         bg_gray:' #efefef',
-      },
-      backgroundImage: {
-        hero: "url('./img/herobg.png')",
-      },
+      }
+
     },
   },
+  plugins: [
+    require('flowbite/plugin')
+  ]
   // plugins: [require('flowbite/plugin'), require("tw-elements/dist/plugin.cjs")],
-};
+});

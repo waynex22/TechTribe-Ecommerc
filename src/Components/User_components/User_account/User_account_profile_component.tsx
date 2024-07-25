@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
@@ -9,7 +9,9 @@ import {
   faTransgender,
   faVenus,
 } from "@fortawesome/free-solid-svg-icons";
-import { useUpdateUserMutation } from "../../../services/userApi";
+import { useUpdateUserMutation } from "../../../redux/rtkQuery/user_customers";
+import { jwtDecode } from "jwt-decode";
+
 
 interface UserInfo {
   name: string;
@@ -19,6 +21,30 @@ interface UserInfo {
 }
 
 const ComponentUserAccountProfile: React.FC = () => {
+  
+  const [accessToken, setAccessToken] = useState<string>('');
+  const [infoUserFormToken, setInfoUserFormToken] = useState<{ [key: string]: any } | null>(null);
+
+  useEffect(() => {
+    const getAccessToken = localStorage.getItem('access_token');
+  
+    console.log(getAccessToken);
+  
+    if (getAccessToken !== null) {
+      setAccessToken(getAccessToken);
+    }
+  }, []);
+  
+  useEffect(() => {
+    if (accessToken !== '') {
+      const decodeToken = jwtDecode(accessToken) as { [key: string]: any };
+      setInfoUserFormToken(decodeToken)
+      console.log(decodeToken);
+    }
+  }, [accessToken]);
+  
+
+
   const [userInfo, setUserInfo] = useState<UserInfo>({
     name: "",
     birthDate: null,
@@ -74,12 +100,6 @@ const ComponentUserAccountProfile: React.FC = () => {
     setUserInfo({ ...userInfo, birthDate: date });
   };
 
-  // const handleGenderChange = (
-  //   e: React.ChangeEvent<{ name?: string | undefined; value: unknown | string }>
-  // ) => {
-  //   const { value } = e.target;
-  //   setUserInfo({ ...userInfo, gender: value as string });
-  // };
 
   const handleGenderChange = (e: SelectChangeEvent<string>) => {
     const { value } = e.target;
@@ -88,7 +108,7 @@ const ComponentUserAccountProfile: React.FC = () => {
   console.log(userInfo);
 
   return (
-    <div className=" p-6">
+    <div className="p-6">
       <div className="title text-left pb-4">
         <div className="text-lg font-normal pb-1">Hồ Sơ Của Tôi</div>
         <div className=" font-light text-sm">
@@ -104,8 +124,8 @@ const ComponentUserAccountProfile: React.FC = () => {
                 <td className=" text-base font-normal text-gray-600 pb-5 text-right">
                   Tên đăng nhập
                 </td>
-                <td className=" text-sm font-normal ps-8 pb-5 text-left">
-                  Tên user
+                <td className=" text-sm ps-8 pb-5 text-left font-normal">
+                  {infoUserFormToken !== null ? infoUserFormToken.username : ""}
                 </td>
               </tr>
               <tr>
@@ -113,12 +133,6 @@ const ComponentUserAccountProfile: React.FC = () => {
                   Tên
                 </td>
                 <td className="text-sm font-normal ps-8 pb-5 text-left">
-                  {/* <input
-                    onChange={handleNameChange}
-                    name="UserName"
-                    className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    type="text"
-                  /> */}
                   <TextField
                     label="Nhập tên của bạn"
                     name="name"
@@ -143,8 +157,7 @@ const ComponentUserAccountProfile: React.FC = () => {
                   Số điện thoại
                 </td>
                 <td className=" text-sm font-normal ps-8 pb-5 text-left">
-                  {/* {data.user.phone} */}
-                  Tên user
+                {infoUserFormToken !== null ? infoUserFormToken.phone : ""}
                 </td>
               </tr>
               <tr>
@@ -234,7 +247,24 @@ const ComponentUserAccountProfile: React.FC = () => {
 
         <div className=" col-span-4">
           <div className="flex flex-col items-center mt-10">
-            {!imageUrl && (
+            {infoUserFormToken !== null ? (
+              <div className=" border rounded-full w-24 h-24 overflow-hidden">
+                {imageUrl ? (
+                  
+                  <img
+                  className="w-full h-full object-cover"
+                  src={imageUrl}
+                  alt="Preview"
+                />
+                ) : (
+                  <img
+                  className="w-full h-full object-cover"
+                  src={infoUserFormToken.avata}
+                  />
+                )}
+              </div>
+            ) : ""}
+            {/* {!imageUrl && (
               <div className=" border rounded-full w-24 h-24 overflow-hidden"></div>
             )}
             {imageUrl && (
@@ -245,7 +275,7 @@ const ComponentUserAccountProfile: React.FC = () => {
                   alt="Preview"
                 />
               </div>
-            )}
+            )} */}
             <input
               type="file"
               accept=".jpg,.jpeg,.png"

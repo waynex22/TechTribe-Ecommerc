@@ -1,6 +1,10 @@
 export interface Route {
-    path: string;
-    component: React.FC<any>;
-    layout: React.FC<any> | null;
-    children?: Route [];
+  path: string;
+  component: React.ComponentType;
+  layout?: React.ComponentType<{ children: React.ReactNode }> | null;
+  children?: Route[];
   }
+export interface ToastProps {
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
