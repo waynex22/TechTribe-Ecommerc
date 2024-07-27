@@ -5,7 +5,6 @@ import {
   useRegisterMutation,
 } from "../../redux/rtkQuery/auth";
 import { validateForm, FormErrors } from "../../utils/validatetor";
-import { ToastProps } from "../../Type";
 interface AuthModalProps {
   show: boolean;
   onClose: () => void;
@@ -72,7 +71,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose , setToast}) => {
             password: formData.password,
           })
           if(registerResutl?.data?.message){
-            setToast({  message: registerResutl.data.message, type: "error" });
+            setToast({  message: registerResutl.data.message, type: "success" });
+            onClose();
           }else{
             onClose();
           }          
@@ -82,7 +82,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose , setToast}) => {
             password: formData.password,
           })
           if(loginResutl?.data?.access_token){
-            setToast({ message: 'Login successfully', type: "success" });
+            setToast({ message: 'Đăng nhập thành công', type: "success" });
             onClose();
           }else{
             setToast({ message: loginResutl.data.message, type: "error" });

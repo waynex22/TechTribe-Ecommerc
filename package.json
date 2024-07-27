@@ -36,6 +36,7 @@
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
+    "react-spinners": "^0.14.1",
     "react-tailwindcss-select": "^1.8.5",
     "react-toastify": "^10.0.5",
     "stream": "^0.0.3",

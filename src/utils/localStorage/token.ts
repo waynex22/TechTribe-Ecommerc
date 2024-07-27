@@ -17,5 +17,13 @@ const setLogout = () => {
     removeToken('access_token')
     removeToken('refresh_token')
 }
-
-export { setToken, getToken, removeToken , setLoginByToken , setLogout };
+const setIdOrderNotComplete = (id: string) => {
+    setToken('idOrderNotComplete', id);
+}
+const getIdOrderNotComplete = () => {
+    return getToken('idOrderNotComplete');
+}
+const removeIdOrderNotComplete = () => {
+    removeToken('idOrderNotComplete');
+}
+export { setToken, getToken, removeToken , setLoginByToken , setLogout, setIdOrderNotComplete, removeIdOrderNotComplete , getIdOrderNotComplete};

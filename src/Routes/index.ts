@@ -12,6 +12,7 @@ import ComponentUserCoin from "../Components/User_components/User_coin/User_coin
 import ComponentUserAddress from "../Components/User_components/User_account/User_address";
 import ComponentUserChangePassword from "../Components/User_components/User_account/User_changepassword";
 import CartPage from "../Page/Cart";
+import PaymentPage from "../Page/Payment";
 const publicRoutes: Route[]  = [
     {
         path: '/',
@@ -19,9 +20,14 @@ const publicRoutes: Route[]  = [
         layout: DefaultLayout,
     },
     {
-        path: "/cart",
+        path: "/checkout/cart",
         component: CartPage,
         layout: DefaultLayout,
+    },
+    {
+        path: "/checkout/payment",
+        component: PaymentPage,
+        layout: null,
     },
     {
         path: "/profile",

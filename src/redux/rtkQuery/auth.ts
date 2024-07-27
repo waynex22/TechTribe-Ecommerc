@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { setCredentials, logout } from '../slices/authSlice';
 import { apiUrl } from '../../config';
 import { setLoginByToken } from '../../utils/localStorage/token';
+import { cartApi } from './cart';
 
 interface LoginRequest {
   phone: string;
@@ -48,7 +49,7 @@ export const authSlice = createApi({
           if(data.status === 200)
             setTimeout(() => {
               dispatch(authSlice.endpoints.login.initiate({ phone: args.phone, password: args.password }));
-            }, 2000);
+            }, 1000);
         } catch (error) {
           console.log('error', error);
         }
@@ -81,6 +82,7 @@ export const authSlice = createApi({
         try {
           const { data } = await queryFulfilled;
           dispatch(setCredentials({ user: data }));
+          dispatch(cartApi.endpoints.getCartMe.initiate(data.sub));
         } catch (error) {
           if (error) {
             dispatch(logout());

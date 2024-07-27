@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { useUpdatePasswordUserMutation } from "../../../redux/rtkQuery/user_customers";
+import { toast } from "react-toastify";
 
 const ComponentUserChangePassword: React.FC = () => {
  
@@ -50,6 +51,10 @@ const ComponentUserChangePassword: React.FC = () => {
         tempErrors.new_password = "Mật khẩu mới và xác nhận mật khẩu không trùng";
         tempErrors.confirmPassword = "Mật khẩu mới và xác nhận mật khẩu không trùng";
     }
+    if (new_password == old_password) {
+      tempErrors.new_password = "Mật khẩu cũ và mật khẩu mới không được giống nhau";
+      tempErrors.old_password = "Mật khẩu cũ và mật khẩu mới không được giống nhau";
+  }
     setErrors(tempErrors);
     return Object.values(tempErrors).every((x) => x === "");
   };
@@ -85,7 +90,11 @@ const ComponentUserChangePassword: React.FC = () => {
     try {
       if (validate() && accessToken !== null) {
         const response = await updatePasswordUser({passworData: passwordData, token: accessToken}).unwrap();
-        console.log(response);
+        if(response.status === 400) {
+          toast.error(response.message)
+        }else {
+          toast.success(response.message)
+        }
       } else {
         console.log("Validation failed");
       }

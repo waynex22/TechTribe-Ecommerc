@@ -33,9 +33,9 @@ const LayoutUserComponent: React.FC = () => {
     }
   }, [accessToken]);
   return (
-    <div className="bg-gray-100 ">
+    <div className="bg-white ">
       <div className="grid  grid-cols-12 gap-4 max-w-[1200px] m-auto pt-5 pb-8">
-        <div className="col-span-2">
+        <div className="col-span-2 bg-slate-50 p-2">
           <div className="flex pb-3 items-center">
             <div className="text-2xl border border-gray-300 rounded-full w-14 h-14 relative">
               <div className="text-2xl absolute overflow-hidden h-full w-full block">
@@ -134,7 +134,7 @@ const LayoutUserComponent: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="col-span-10 shadow-md bg-white rounded">
+        <div className="col-span-10  bg-white rounded">
           <Outlet />
         </div>
       </div>

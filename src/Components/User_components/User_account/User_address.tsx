@@ -23,6 +23,7 @@ import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AddressModal from "./User_address_update_modal";
+import AddressSelector from "./address_form_select";
 
 const style = {
   position: "absolute",
@@ -40,14 +41,18 @@ interface FormData {
   fullName: string;
   phoneNumber: string;
   address: string;
-  addressType: "Nhà riêng" | "Văn phòng" | string;
+  addressType: boolean;
+  
 }
 
 interface AddressDataInModal {
   fullName: string;
   phoneNumber: string;
   address: string;
-  addressType: string;
+  addressType: boolean;
+  province: string;
+  district: string;
+  ward: string;
 }
 
 interface addressData {
@@ -56,11 +61,23 @@ interface addressData {
   fullName: string;
   phoneNumber: string;
   address: string;
-  addressType: string;
+  province: string;
+  district: string;
+  ward: string;
+  addressType: boolean;
   isDefault: boolean;
   __v: number;
 }
 const ComponentUserAddress: React.FC = () => {
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedWard, setSelectedWard] = useState('');
+
+  const handleAddressChange = (province: string, district: string, ward: string) => {
+    setSelectedProvince(province);
+    setSelectedDistrict(district);
+    setSelectedWard(ward);
+  };
   const [idAddressToDel, setIdAddressToDel] = useState<string>("");
   const [idAddressToSetDefault, setIdAddressToDefault] = useState<string>("");
   const [idCustomer, setIdCustomer] = useState<string>("");
@@ -76,7 +93,10 @@ const ComponentUserAddress: React.FC = () => {
         fullName: dataAddressById.fullName || '',
         phoneNumber: dataAddressById.phoneNumber || '',
         address: dataAddressById.address || '',
-        addressType: dataAddressById.addressType || 'Nhà riêng',
+        addressType: dataAddressById.addressType || false,
+        province: dataAddressById.province|| "",
+        district: dataAddressById.district|| "",
+        ward: dataAddressById.ward|| "",
       });
     }
   }, [dataAddressById]);
@@ -102,7 +122,7 @@ const ComponentUserAddress: React.FC = () => {
     fullName: "",
     phoneNumber: "",
     address: "",
-    addressType: "Nhà riêng",
+    addressType: false,
   });
 
   const handleGetAddressById = async (addressId: string) => {
@@ -128,6 +148,9 @@ const ComponentUserAddress: React.FC = () => {
     phoneNumber: formData.phoneNumber,
     address: formData.address,
     addressType: formData.addressType,
+    province: selectedProvince,
+    district: selectedDistrict,
+    ward: selectedWard,
     customerId: idCustomer,
   };
 
@@ -164,11 +187,10 @@ const ComponentUserAddress: React.FC = () => {
 
   // Debugging output
   useEffect(() => {
-    console.log("idCustomer:", idCustomer);
-    console.log("dataAddress:", dataAddress);
-    console.log("dataAddressById: ", dataAddressById);
-    
-  }, [idCustomer, dataAddress, dataAddressById]);
+    console.log('Tỉnh:', selectedProvince);
+    console.log('Quận/Huyện:', selectedDistrict);
+    console.log('Phường/Xã:', selectedWard); 
+  }, [selectedProvince, selectedDistrict, selectedWard]);
 
   const validate = () => {
     let tempErrors = { fullName: "", phoneNumber: "", address: "" };
@@ -185,20 +207,6 @@ const ComponentUserAddress: React.FC = () => {
     return Object.values(tempErrors).every((x) => x === "");
   };
 
-  const validateFormUpdate = () => {
-    let tempErrors = { fullName: "", phoneNumber: "", address: "" };
-    const phoneNumberPattern = /^[0-9]{10}$/;
-
-    if (!dataAddressByIdInModal?.fullName)
-      tempErrors.fullName = "Họ và tên không được để trống";
-    if (!dataAddressByIdInModal?.phoneNumber)
-      tempErrors.phoneNumber = "Số điện thoại không được để trống";
-    else if (!phoneNumberPattern.test(dataAddressByIdInModal?.phoneNumber))
-      tempErrors.phoneNumber = "Số điện thoại không hợp lệ";
-    if (!dataAddressByIdInModal?.address) tempErrors.address = "Địa chỉ không được để trống";
-    setErrors(tempErrors);
-    return Object.values(tempErrors).every((x) => x === "");
-  };
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -226,7 +234,7 @@ const ComponentUserAddress: React.FC = () => {
 
   const handleAddressTypeChange = (
     event: React.MouseEvent<HTMLElement>,
-    newAddressType: "Nhà riêng" | "Văn phòng" | null
+    newAddressType: false | true | null
   ) => {
     if (newAddressType !== null) {
       setFormData((prevData) => ({
@@ -264,14 +272,15 @@ const ComponentUserAddress: React.FC = () => {
   const [addressIdToUpdate, setAddressIdToUpdate] = useState<string>("")
   const handleSubmitUpdate = async (dataAddress: AddressDataInModal) => {
     try {
-      if (validateFormUpdate()) {
+      // if (validateFormUpdate()) {
         handleCloseBoxUpdateAddress();
         const response = await updateAddress({addressId: addressIdToUpdate, addressData: dataAddress})
-        toast.success(response.data.message)
+        console.log("response update data: ",response);
+        toast.success(response.data.address.message)
         getDataAddress();
-      } else {
-        console.log("Validation failed");
-      }
+      // } else {
+      //   console.log("Validation failed");
+      // }
     } catch (error) {
       console.error("Error updating user info:", error);
     }
@@ -340,6 +349,10 @@ const ComponentUserAddress: React.FC = () => {
               </div>
               <div className="font-light text-gray-500 text-sm py-1">
                 {item.address}
+              </div>
+
+              <div className="font-light text-gray-500 text-sm pb-1">
+                {item.ward}, {item.district}, {item.province}
               </div>
 
               {item.isDefault == true ? (
@@ -442,7 +455,7 @@ const ComponentUserAddress: React.FC = () => {
                   helperText={errors.phoneNumber}
                 />
               </div>
-              {/* <AddressForm/> */}
+              <AddressSelector onAddressChange={handleAddressChange}/>
               <TextField
                 margin="normal"
                 fullWidth
@@ -453,6 +466,7 @@ const ComponentUserAddress: React.FC = () => {
                 error={!!errors.address}
                 helperText={errors.address}
               />
+
               <Typography sx={{ mt: 2, mb: 1 }}>Loại địa chỉ</Typography>
               <ToggleButtonGroup
                 value={formData.addressType}
@@ -461,10 +475,10 @@ const ComponentUserAddress: React.FC = () => {
                 aria-label="Loại địa chỉ"
                 fullWidth
               >
-                <ToggleButton value="Nhà riêng" aria-label="Nhà riêng">
+                <ToggleButton value= {false} aria-label="Nhà riêng">
                   Nhà riêng
                 </ToggleButton>
-                <ToggleButton value="Văn phòng" aria-label="Văn phòng">
+                <ToggleButton value= {true} aria-label="Văn phòng">
                   Văn phòng
                 </ToggleButton>
               </ToggleButtonGroup>
@@ -480,87 +494,15 @@ const ComponentUserAddress: React.FC = () => {
           </Fade>
         </Modal>
 
+      {/* Update modal */}
         <AddressModal 
           openBoxUpdateAddress= {openBoxUpdateAddress}
           handleClose={handleCloseBoxUpdateAddress}
           dataAddressById = {dataAddressByIdInModal}
           handleSubmit={handleSubmitUpdate}
           errors={errors}
+          onAddressChange={handleAddressChange}
         />
-
-        {/* <Modal
-          open={openBoxUpdateAddress}
-          onClose={handleCloseBoxUpdateAddress}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-          closeAfterTransition
-        >
-          <Fade in={openBoxUpdateAddress}>
-            <Box component="form" onSubmit={handleSubmit} sx={style}>
-              <Typography id="modal-modal-title" variant="h6" component="h2">
-                Thông tin địa chỉ
-              </Typography>
-              <div className="flex justify-between items-center">
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  label="Họ và tên"
-                  name="fullName"
-                  value={dataAddressByIdInModal?.fullName}
-                  onChange={handleChange}
-                  sx={{ mr: 1 }}
-                  error={!!errors.fullName}
-                  helperText={errors.fullName}
-                />
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  label="Số điện thoại"
-                  name="phoneNumber"
-                  value={dataAddressByIdInModal?.phoneNumber}
-                  onChange={handleChange}
-                  sx={{ ml: 1 }}
-                  error={!!errors.phoneNumber}
-                  helperText={errors.phoneNumber}
-                />
-              </div>
-              <TextField
-                margin="normal"
-                fullWidth
-                label="Địa chỉ cụ thể"
-                name="address"
-                value={dataAddressByIdInModal?.address}
-                onChange={handleChange}
-                error={!!errors.address}
-                helperText={errors.address}
-              />
-              <Typography sx={{ mt: 2, mb: 1 }}>Loại địa chỉ</Typography>
-              <ToggleButtonGroup
-                value={dataAddressByIdInModal?.addressType}
-                exclusive
-                onChange={handleAddressTypeChange}
-                aria-label="Loại địa chỉ"
-                fullWidth
-              >
-                <ToggleButton value="Nhà riêng" aria-label="Nhà riêng">
-                  Nhà riêng
-                </ToggleButton>
-                <ToggleButton value="Văn phòng" aria-label="Văn phòng">
-                  Văn phòng
-                </ToggleButton>
-              </ToggleButtonGroup>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                sx={{ mt: 2 }}
-              >
-                Thêm địa chỉ
-              </Button>
-            </Box>
-          </Fade>
-        </Modal> 
-        */}
 
         {/* Box confirm delete address */}
         <Modal

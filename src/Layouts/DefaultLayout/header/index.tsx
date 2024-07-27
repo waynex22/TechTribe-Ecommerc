@@ -14,16 +14,20 @@ import Toast from "../../../Components/toast/Toast";
 const Header: React.FC = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
+  const { cart } = useSelector((state: any) => state.cart);
   const [refreshToken] = useRefreshTokenMutation();
   const [getUser] = useGetInfoUserMutation();
   const [showModal, setShowModal] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const [toast, setToast] = useState<ToastProps>({
-    message: "",
-    type: "success",
-  });
+  const handleCartClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (!user) {
+      event.preventDefault();
+      setShowModal(true);
+    }
+  }
+  const [toast, setToast] = useState<ToastProps | null>(null);
   const handleSetToast = (toast: ToastProps) => {
-    setToast({ ...toast, message: toast.message , type: toast.type });
+    setToast({ ...toast, message: toast.message, type: toast.type , onClose: () => setToast(null) });
   }
   useEffect(() => {
     const refreshTokenFromStorage = localStorage.getItem("refresh_token");
@@ -59,10 +63,7 @@ const Header: React.FC = () => {
   return (
     <>
       <div className="bg-white text-center">
-      <Toast
-        message={toast.message}
-        type={toast.type}
-      />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
         <div className="md:container md:mx-auto flex items-center justify-between py-2">
           <Link to="/">
             <img src="logo-nontext.png" className="w-[60px] h-[60px]" alt="" />
@@ -71,23 +72,23 @@ const Header: React.FC = () => {
           <div className="flex items-center justify-center">
             <div>
               <Link to='/'>
-              <div className="flex mx-2 text-primary hover:bg-blue-200 p-2 rounded-lg ">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M9.293 2.293a1 1 0 0 1 1.414 0l7 7A1 1 0 0 1 17 11h-1v6a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6H3a1 1 0 0 1-.707-1.707l7-7Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span className="text-[14px]">
-                  Trang chủ
-                </span>
-              </div>
+                <div className="flex mx-2 text-primary hover:bg-blue-200 p-2 rounded-lg ">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M9.293 2.293a1 1 0 0 1 1.414 0l7 7A1 1 0 0 1 17 11h-1v6a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6H3a1 1 0 0 1-.707-1.707l7-7Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-[14px]">
+                    Trang chủ
+                  </span>
+                </div>
               </Link>
             </div>
             {user ? (
@@ -191,26 +192,28 @@ const Header: React.FC = () => {
               </div>
             </div>
             <div className="w-[1px] bg-gray-300 h-[22px] mx-2"></div>
-            <Link to='/cart'>
-            <div className="flex items-center justify-center">
-              <div className="flex items-center text-primary ">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="size-6 relative"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M6 5v1H4.667a1.75 1.75 0 0 0-1.743 1.598l-.826 9.5A1.75 1.75 0 0 0 3.84 19H16.16a1.75 1.75 0 0 0 1.743-1.902l-.826-9.5A1.75 1.75 0 0 0 15.333 6H14V5a4 4 0 0 0-8 0Zm4-2.5A2.5 2.5 0 0 0 7.5 5v1h5V5A2.5 2.5 0 0 0 10 2.5ZM7.5 10a2.5 2.5 0 0 0 5 0V8.75a.75.75 0 0 1 1.5 0V10a4 4 0 0 1-8 0V8.75a.75.75 0 0 1 1.5 0V10Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <div className="absolute w-[12px] h-[16px] top-[20px] ml-4 rounded-full bg-red-500 text-white text-[12px]">
-                  0
+            <Link to='/checkout/cart' onClick={handleCartClick}>
+              <div className="flex items-center justify-center">
+                <div className="flex items-center text-primary ">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="size-6 relative"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M6 5v1H4.667a1.75 1.75 0 0 0-1.743 1.598l-.826 9.5A1.75 1.75 0 0 0 3.84 19H16.16a1.75 1.75 0 0 0 1.743-1.902l-.826-9.5A1.75 1.75 0 0 0 15.333 6H14V5a4 4 0 0 0-8 0Zm4-2.5A2.5 2.5 0 0 0 7.5 5v1h5V5A2.5 2.5 0 0 0 10 2.5ZM7.5 10a2.5 2.5 0 0 0 5 0V8.75a.75.75 0 0 1 1.5 0V10a4 4 0 0 1-8 0V8.75a.75.75 0 0 1 1.5 0V10Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                    {cart?.cart?.cartItems && 
+                    <div className="absolute w-[12px] h-[16px] top-[20px] ml-4 rounded-full bg-red-500 text-white text-[12px]">
+                    {cart?.cart?.cartItems?.length}
+                  </div>
+                    }
                 </div>
               </div>
-            </div>
             </Link>
           </div>
         </div>

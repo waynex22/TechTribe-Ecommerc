@@ -76,7 +76,7 @@ const HomePage: React.FC = () => {
       </div>
       <Modal show={showModal} onClose={handleClose}>
         <img
-          src="https://cf.shopee.vn/file/vn-11134258-7r98o-lwzlow5hjtuh86"
+          src="https://salt.tikicdn.com/ts/tikimsp/b6/d7/77/4d83534f275b4072ebfddce25a328026.png"
           alt="" className="w-[70%] h-[70%] mx-auto"
         />
       </Modal>

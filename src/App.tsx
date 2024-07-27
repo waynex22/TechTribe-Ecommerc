@@ -1,20 +1,22 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { publicRoutes } from "./Routes";
 import DefaultLayout from "./Layouts/DefaultLayout";
 import "./App.css";
-
 import { sellerRoutes } from "./Routes/seller";
 import SellerLayout from "./Layouts/SellerLayout";
 import PrivateRoute from "./Routes/PrivateRoute";
 import ScrollToTop from "./Components/scroll/autoScrollTop";
 import { userProfileRouter } from "./Routes/UserProfileRoute";
+import CheckSubOrder from "./Components/payment/checkSubOrder";
+
 
 const App: React.FC = () => {
   return (
     <Router>
       <div className="App">
-        <ScrollToTop />
+      <ScrollToTop />
+      <CheckSubOrder />
         <Routes>
           {publicRoutes.map((route, index) => {
             const Layout = route.layout || DefaultLayout;

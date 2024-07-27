@@ -5,9 +5,13 @@ import { categoryDetailSlice } from './rtkQuery/categoryDetail';
 import { specificationsSlice } from './rtkQuery/specifications';
 import { authSlice } from './rtkQuery/auth'
 import authReducer from './slices/authSlice';
+import cartReducer from './slices/cartSlice';
 import { productSclice } from './rtkQuery/product';
-import { cartSlice } from './rtkQuery/cart';
+// import { cartSlice } from './rtkQuery/cart';
 import { userApi } from './rtkQuery/user_customers';
+import { cartApi } from './rtkQuery/cart';
+import { orderApi } from './rtkQuery/order';
+import { searchApi } from './rtkQuery/search';
 export const store = configureStore({
   reducer: {
     [authSlice.reducerPath]: authSlice.reducer,
@@ -16,8 +20,11 @@ export const store = configureStore({
     [categorySlice.reducerPath]: categorySlice.reducer,
     [categoryDetailSlice.reducerPath]: categoryDetailSlice.reducer,
     [specificationsSlice.reducerPath]: specificationsSlice.reducer,
-    [cartSlice.reducerPath]: cartSlice.reducer,
+    [cartApi.reducerPath]: cartApi.reducer,
+    [orderApi.reducerPath]: orderApi.reducer,
+    [searchApi.reducerPath]: searchApi.reducer,
     auth: authReducer,
+    cart: cartReducer
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware()
@@ -26,8 +33,11 @@ export const store = configureStore({
       .concat(categorySlice.middleware)
       .concat(categoryDetailSlice.middleware)
       .concat(specificationsSlice.middleware)
-      .concat(cartSlice.middleware)
+      // .concat(cartSlice.middleware)
       .concat(userApi.middleware)
+      .concat(cartApi.middleware)
+      .concat(searchApi.middleware)
+      .concat(orderApi.middleware),
 });
 
 setupListeners(store.dispatch);

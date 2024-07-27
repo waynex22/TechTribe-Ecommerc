@@ -3,17 +3,10 @@ import React, { useEffect, useState, useCallback } from 'react';
 interface ToastProps {
   message: string;
   type: 'success' | 'error' | 'info';
+  onClose : () => void;
 }
 
-const Toast: React.FC<ToastProps> = ({ message, type }) => {
-  const [show, setShow] = useState(false);
-  const [currentMessage, setCurrentMessage] = useState<string | null>(message);
-
-  const onClose = useCallback(() => {
-    setShow(false);
-    setCurrentMessage(null);
-  }, []);
-
+const Toast: React.FC<ToastProps> = ({ message, type , onClose }) => {
   const toastClasses = {
     success: 'bg-green-500',
     error: 'bg-red-500',
@@ -21,21 +14,14 @@ const Toast: React.FC<ToastProps> = ({ message, type }) => {
   };
 
   useEffect(() => {
-    if (message) {
-      setCurrentMessage(message);
-      setShow(true);
-      const timer = setTimeout(() => {
-        onClose();
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [message, onClose]);
-
-  if (!show || !currentMessage) return null;
-
+    const timer = setTimeout(() => {
+        onClose(); 
+    }, 2000);
+    return () => clearTimeout(timer);
+}, [onClose]);
   return (
-    <div className={`fixed top-4 right-4 p-4 rounded-md text-white ${toastClasses[type]} shadow-lg z-[9999]`}>
-      {currentMessage}
+    <div className={`fixed top-[80%] left-1/2 -translate-x-1/2 py-2 px-3 w-[800px] rounded-md text-white text-center text-sm font-light bg-gray-800/40 backdrop-blur-lg  z-[9999]`}>
+      <span>{message}</span>
     </div>
   );
 };

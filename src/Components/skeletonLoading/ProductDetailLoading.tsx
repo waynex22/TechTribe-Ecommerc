@@ -1,92 +1,28 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { formatNumberVnd } from "../../utils/fortmartNumberVnd/index";
-import { useGetProductByIdQuery } from "../../redux/rtkQuery/product";
-import ProductDetailLoading from "../skeletonLoading/ProductDetailLoading";
-import { UpdateCartPayload, useGetCartMeQuery, useUpdateCartMutation } from "../../redux/rtkQuery/cart";
-import { useSelector } from "react-redux";
-import Toast from "../toast/Toast";
-import { ToastProps } from "../../Type";
-import { getMinMaxPriceInArr } from "../../utils/getMinMax/getMinMaxPrice";
-const ProductDetail: React.FC = () => {
-  const { slug } = useParams();
-  const [updateCart] = useUpdateCartMutation();
-  const { user } = useSelector((state: any) => state.auth);
-  const { refetch } = useGetCartMeQuery(user?.sub);
-  const { data: product, isLoading } = useGetProductByIdQuery(`${slug}`);
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [indexThumbnail, setIndexThumbnail] = useState(0);
-  const [quantity, setQuantity] = useState<number>(1);
-  const [toast, setToast] = useState<ToastProps | null>(null);
-  const handleSetToast = (toast: any) => {
-    setToast({ ...toast, message: toast.message, type: toast.type, onClose: () => setToast(null) });
-  }
-  const increment = () => {
-    if (quantity + 1 > ProductPriceSelected?.stock) return
-    setQuantity((prev) => prev + 1);
-  };
+import { Link } from "react-router-dom";
 
-  const decrement = () => {
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-  };
-  const ProductPriceSelected = product?.product_price?.find((item: any) => {
-    if (selectedColor && selectedSize) {
-      return item.id_color[0]?._id === selectedColor && item.id_size[0]._id === selectedSize;
-    }else if( item.id_color.length === 0 && item.id_size.length !=0 && selectedSize){
-      return item.id_size[0]._id === selectedSize;
-    }else if( item.id_color.length !=0 && item.id_size.length === 0 && selectedColor){
-      return item.id_color[0]?._id === selectedColor;
-    }
-  })
-  // console.log(ProductPriceSelected);
-
-  const handleAddProductToCart = async (customerId: string, quantity: number) => {
-    if (!user || !ProductPriceSelected) return;
-    const payload: UpdateCartPayload = {
-      customerId: customerId,
-      productPriceId: ProductPriceSelected?._id,
-      quantity: quantity,
-    }
-    if (payload) {
-      try {
-        await updateCart(payload).unwrap();
-        refetch();
-        handleSetToast({ message: 'Đã thêm vào giỏ hàng', type: "success" });
-      } catch (error) {
-        console.error('Error adding product to cart:', error);
-      }
-    }
-  }
-  // console.log(ProductPriceSelected);
-
-  if (isLoading) return <ProductDetailLoading />;
-  const minMaxPrice = getMinMaxPriceInArr(product?.product_price);
-  return (
-    <>
-      <div className="container mx-auto">
-        {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
+const ProductDetailLoading: React.FC = () => {
+    return (
+        <>
+        <div className="container mx-auto">
         <div className="grid lg:grid-cols-7 md:grid-col-2 gap-6">
           <div className="col-span-2 ">
             <div className=" bg-white h-fit rounded-xl">
-              <div className="p-4 ">
+              <div className="p-4 animate-pulse">
                 <img
-                  src={product?.thumbnails[indexThumbnail]}
+                  src=""
                   alt=""
                   className="border-solid border-[1px] border-gray-200 rounded-xl w-[368px] h-[368px] object-cover"
                 />
                 <div className="flex space-x-2 mt-2">
-                  {product?.thumbnails.map((item: string, index: number) => (
-                    <div key={index} className="border-solid border-[1px] cursor-pointer border-gray-200 rounded-sm p-1">
-                      <img
-                        onClick={() => setIndexThumbnail(index)}
-                        src={item}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="w-12 h-12 object-cover "
-                      />
-                    </div>
-                  ))}
+                  {Array.from({ length: 5 }).map((_, index : number) => (
+                      <div key={index} className="border-solid border-[1px] cursor-pointer border-gray-200 rounded-sm p-1">
+                        <img
+                          src=""
+                          alt={`Thumbnail ${index + 1}`}
+                          className="w-12 h-12 object-cover "
+                        />
+                      </div>
+                    ))}
                 </div>
                 <div className="mt-4">
                   <h3 className="font-semibold text-lg">Đặc điểm nổi bật</h3>
@@ -97,7 +33,19 @@ const ProductDetail: React.FC = () => {
                       alt=""
                     />
                     <span className="ml-3 font-light text-sm">
-                      {product?.description}
+                      
+                    </span>
+                  </div>
+                  <div className="my-2 flex">
+                    <img
+                      src="https://salt.tikicdn.com/ts/upload/81/61/d4/92e63f173e7983b86492be159fe0cff4.png"
+                      className="w-6 h-6 object-cover"
+                      alt=""
+                    />
+                    <span className="ml-3 font-light text-sm">
+                      Hệ thống camera kép tiên tiến với camera Wide và Ultra
+                      Wide 12MP, hỗ trợ nhiều chế độ chụp ảnh và quay video chất
+                      lượng cao.
                     </span>
                   </div>
                 </div>
@@ -126,7 +74,7 @@ const ProductDetail: React.FC = () => {
               </div>
               <div className="my-4">
                 <h3 className="font-light-bold text-lg">
-                  {product?.name}
+                  
                 </h3>
               </div>
               <div className="my-4 flex items-center justify-start gap-2">
@@ -202,25 +150,8 @@ const ProductDetail: React.FC = () => {
               </div>
               <div className="my-4 text-red-500 gap-2">
                 <div className="flex items-center justify-start relative w-fit">
-                  {ProductPriceSelected ? (
-                    <span className=" text-[24px] w-fit font-bold">
-                      {formatNumberVnd(ProductPriceSelected?.price)}
-                    </span>
-                  ) :
-                    (
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center justify-start relative w-fit">
-                          <span className=" text-[24px] w-fit font-bold">{formatNumberVnd(minMaxPrice.min)}</span>
-                          <div className="text-lg absolute right-[-16px] top-[-6px]">
-                            đ
-                          </div>
-                        </div>
-                        <div className="ml-4">
-                          -
-                        </div>
-                        <span className=" text-[24px] w-fit font-bold">{formatNumberVnd(minMaxPrice.max)}</span>
-                      </div>
-                    )}
+                  <span className=" text-[24px] w-fit font-bold">
+                  </span>
                   <div className="text-lg absolute right-[-16px] top-[-6px]">
                     đ
                   </div>
@@ -229,20 +160,17 @@ const ProductDetail: React.FC = () => {
                   </div>
                 </div>
               </div>
-              {product?.variation_color ? (
+              
                 <div className="mb-4">
                   <p className="font-semibold text-sm text-gray-700">Màu sắc</p>
                   <div className="flex gap-2 mt-2 ">
-                    {product?.variation_color.map((color: any, index: number) => (
+                    {Array.from({ length: 5 }).map((_, index: number) => (
                       <div
                         key={index}
-                        onClick={() => setSelectedColor(color._id)}
-                        className={`p-1 border rounded-lg cursor-pointer relative w-[100px] flex items-center justify-around ${selectedColor === color._id
-                          ? "border-blue-600 border-2"
-                          : "border-gray-200"
-                          }`}
+                        className="p-1 border rounded-lg cursor-pointer relative w-[100px] flex items-center justify-around ${
+                            border-gray-200"
+                        
                       >
-                        {selectedColor === color._id && (
                           <div className="absolute top-[-1px] right-0">
                             <img
                               src="https://salt.tikicdn.com/ts/upload/6d/62/b9/ac9f3bebb724a308d710c0a605fe057d.png"
@@ -250,32 +178,26 @@ const ProductDetail: React.FC = () => {
                               className="w-[13px] h-[13px]"
                             />
                           </div>
-                        )}
                         <img
-                          src={color.image}
+                          src=""
                           alt=""
                           className="w-8 h-8 mb-1"
                         />
-                        <p className="text-sm">{color.value}</p>
+                        <p className="text-sm"></p>
                       </div>
                     ))}
                   </div>
                 </div>
-              ) : null}
-              {product?.variation_size?.length !== 0 ? (
                 <div>
                   <p className="font-semibold text-sm text-gray-800">Kích cỡ</p>
                   <div className="mt-2 flex items-center gap-4">
-                    {product?.variation_size?.map((size: any, index: number) => (
+                    {Array.from({ length: 5 }).map((_, index: number) => (
                       <div
                         key={index}
-                        onClick={() => setSelectedSize(size._id)}
-                        className={` border rounded-lg cursor-pointer relative py-2 px-3  ${selectedSize === size._id
-                          ? "border-blue-600 border-2"
-                          : "border-gray-200"
-                          }`}
+                       
+                        className="border rounded-lg cursor-pointer relative py-2 px-3  "
                       >
-                        {selectedSize === size._id && (
+                       
                           <div className="absolute top-[-1px] right-0">
                             <img
                               src="https://salt.tikicdn.com/ts/upload/6d/62/b9/ac9f3bebb724a308d710c0a605fe057d.png"
@@ -283,14 +205,12 @@ const ProductDetail: React.FC = () => {
                               className="w-[13px] h-[13px]"
                             />
                           </div>
-                        )}
-                        <p className="text-sm">{size.value}</p>
+                       
+                        <p className="text-sm"></p>
                       </div>
                     ))}
                   </div>
                 </div>
-              ) : null}
-              <span className="text-[12px] text-black">Còn lại : {ProductPriceSelected?.stock}</span>
             </div>
             <div className="p-4 mt-4 bg-white rounded-xl">
               <h3>Vận chuyển</h3>
@@ -374,7 +294,7 @@ const ProductDetail: React.FC = () => {
                   className="rounded-full w-12 h-12 object-cover"
                 />
                 <div className="flex flex-col ">
-                  <span className="font-light-bold">{product?.id_shop[0]?.name}</span>
+                  <h4 className="font-light-bold">CellPhone S</h4>
                   <div className="flex gap-2 items-center">
                     <img
                       src="https://salt.tikicdn.com/cache/w100/ts/upload/6b/25/fb/c288b5bcee51f35f2df0a5f5f03de2e1.png.webp"
@@ -383,7 +303,7 @@ const ProductDetail: React.FC = () => {
                     />
                     <div className="w-[1px] py-2 bg-gray-200"></div>
 
-                    <span className="text-sm">{product?.id_shop[0]?.star}</span>
+                    <span className="text-sm">4.8</span>
                     <span>
                       <svg
                         stroke="currentColor"
@@ -398,9 +318,9 @@ const ProductDetail: React.FC = () => {
                       </svg>
                     </span>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-light">Người theo dõi : </span>
+                      <span className="text-sm font-light">Sản phẩm : </span>
                       <span className="text-sm font-light-bold text-primary">
-                        {product?.id_shop[0]?.count_follower}
+                        58
                       </span>
                     </div>
                   </div>
@@ -456,32 +376,29 @@ const ProductDetail: React.FC = () => {
               <div className="flex items-center gap-4">
                 <img
                   className="w-14 h-14 object-cover"
-                  src={product?.thumbnails[0]}
+                  src="https://salt.tikicdn.com/cache/750x750/ts/product/9c/23/ef/b0c544a466ae947a8d8ca79acddcef74.jpg.webp"
                   alt=""
                 />
-                <span className="text-md font-light-bold">{product?.name}</span>
-                <div className="flex items-start justify-normal gap-2">
-
-                </div>
+                <span className="text-md font-light-bold">iPhone 14 Plus</span>
               </div>
               <div className="my-2">
                 <p className="font-semibold text-sm text-gray-900">Số lượng</p>
                 <div className="flex items-center space-x-2 my-2 mb-4">
                   <button
-                    onClick={decrement}
-                    className={`px-3 py-1 text-center border rounded ${quantity <= 1 ? "border-gray-200 text-gray-300" : "border-gray-500 text-gray-500"
-                      }`}
+                    
+                    className="px-3 py-1 text-center border rounded 
+                      quantity <= 1 ? border-gray-200 text-gray-300"
                   >
                     −
                   </button>
                   <input
                     type="text"
-                    value={quantity}
+                    
                     readOnly
-                    className="w-12 py-1 text-center border border-gray-500 rounded"
+                    className="w-10 py-1 text-center border border-gray-500 rounded"
                   />
                   <button
-                    onClick={increment}
+                    
                     className="px-3 py-1 border  border-gray-500 rounded"
                   >
                     +
@@ -489,26 +406,21 @@ const ProductDetail: React.FC = () => {
                 </div>
                 <div className="text-gray-600">Tạm tính</div>
                 <div className="my-2 text-black gap-2">
-                  {ProductPriceSelected && (
-                    <div className="flex items-center justify-start relative w-fit">
-                      <span className=" text-[24px] w-fit font-bold">
-                        {formatNumberVnd(quantity * ProductPriceSelected?.price)}
-                      </span>
-                      <div className="text-lg absolute right-[-16px] top-[-6px]">
-                        đ
-                      </div>
+                  <div className="flex items-center justify-start relative w-fit">
+                    <span className=" text-[24px] w-fit font-bold">
+                     
+                    </span>
+                    <div className="text-lg absolute right-[-16px] top-[-6px]">
+                      đ
                     </div>
-                  )}
-                </div>
-                <div onClick={() => handleAddProductToCart(user?.sub, quantity)} className="bg-red-500 rounded-md mt-5 p-4 text-center cursor-pointer">
-                  <span className="text-white text-md font-light-bold">Thêm vào giỏ </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </>
-  );
-};
-export default ProductDetail;
+        </>
+    )
+}
+export default ProductDetailLoading;

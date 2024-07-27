@@ -25,7 +25,7 @@ export const userApi = createApi({
       }),
     }),
     addAddress: builder.mutation({
-      query: ({addressData, token}: {addressData: {fullName: string, phoneNumber:string, address: string, addressType: string, customerId: string}, token: string}) => ({
+      query: ({addressData, token}: {addressData: {fullName: string, phoneNumber:string, address: string, addressType: boolean, province: string, district: string, ward: string, customerId: string}, token: string}) => ({
         url: "/address",
         method: "POST",
         body: addressData,
@@ -65,7 +65,7 @@ export const userApi = createApi({
     }),
 
     updateAddress: builder.mutation({
-      query: ({addressData,addressId}: {addressData: {fullName: string, phoneNumber:string, address: string, addressType: string}, addressId: string}) => ({
+      query: ({addressData,addressId}: {addressData: {fullName: string, phoneNumber:string, address: string, addressType: boolean, province: string, district: string, ward: string,}, addressId: string}) => ({
         url: `/address/${addressId}`,
         method: "PUT",
         body: addressData
