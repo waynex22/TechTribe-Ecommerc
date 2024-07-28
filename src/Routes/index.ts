@@ -4,13 +4,14 @@ import LayoutUserComponent from "../Components/User_components/layout_user_compo
 import { Route } from "../Type";
 import ComponentUserAccount from "../Components/User_components/User_account/User_account_component";
 import ComponentUserAccountProfile from "../Components/User_components/User_account/User_account_profile_component";
-import { DefaultLayout } from "../Layouts";
+import { DefaultLayout, PaymentLayout } from "../Layouts";
 import ComponentUserAccountNotify from "../Components/User_components/User_notification/user_account_notify_component";
 import ComponentUserPurchase from "../Components/User_components/User_purchase";
 import ComponentUserVoucher from "../Components/User_components/User_voucher";
 import ComponentUserCoin from "../Components/User_components/User_coin/User_coin";
 import CartPage from "../Page/Cart";
 import PaymentPage from "../Page/Payment";
+import QueryProductPage from "../Page/QueryProduct";
 const publicRoutes: Route[]  = [
     {
         path: '/',
@@ -25,7 +26,12 @@ const publicRoutes: Route[]  = [
     {
         path: "/checkout/payment",
         component: PaymentPage,
-        layout: null,
+        layout: PaymentLayout,
+    },
+    {
+        path: "/search",
+        component: QueryProductPage,
+        layout: DefaultLayout,
     },
     {
         path: "/profile",

@@ -22,9 +22,9 @@ const Search: React.FC = () => {
     setIsSearchFocused(false);
   };
   const handleChooseQuery = async (query: string) => {
-    const checkIsHave = historySearch.find((item: any) => item.query == query);
+    const checkIsHave = historySearch?.find((item: any) => item.query == query);
     if(!user || checkIsHave ){
-      history(`/query?q=${query}`);
+      history(`/search?q=${query}`);
       return;
     }
     const payload = {
@@ -37,7 +37,7 @@ const Search: React.FC = () => {
       console.log(error);
     } finally {
       refetch();
-      history(`/query?q=${query}`);
+      history(`/search?q=${query}`);
     }
   }
   useEffect(() => {
@@ -64,6 +64,7 @@ const Search: React.FC = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+  console.log(result);
   
   return (
     <div className="flex flex-col relative flex-start items-center">

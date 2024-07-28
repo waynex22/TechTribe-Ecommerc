@@ -91,14 +91,6 @@ const HomePage: React.FC = () => {
           <h3>Gợi ý cho bạn hôm nay </h3>
         </div>
         <Catelog />
-       <div className="flex items-start justify-center">
-       <button
-          className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 border border-primary text-primary hover:opacity-75 focus:ring focus:ring-gray-300 active:opacity-[0.85] rounded-full"
-          type="button"
-        >
-          Xem thêm
-        </button>
-       </div>
       </div>
     </div>
   );

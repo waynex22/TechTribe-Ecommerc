@@ -11,6 +11,7 @@ export interface createSubOrderPayload {
     voucherShop?: string;
     voucher2t?: string;
     coin?: number;
+    coinRefunt?: number;
     costShipping?: number;
     voucherShipping?: string;
     methodPayment?: string;
@@ -18,13 +19,14 @@ export interface createSubOrderPayload {
 }
 export interface UpdateSubOrderPayload {
     id: string | any;
-    customerId?: string;
+    customerId?: string | any;
     status?: string;
     address?: string;
     shipping?: string;
     voucherShop?: string;
     voucher2t?: string;
     coin?: number;
+    coinRefunt?: number;
     costShipping?: number;
     voucherShipping?: string;
     methodPayment?: string;
@@ -44,7 +46,7 @@ export const orderApi = createApi({
     reducerPath: 'orderQuery',
     baseQuery: customBaseQuery,
     endpoints: (builder) => ({
-        getSubOrder: builder.query<Order, string>({
+        getSubOrder: builder.query<Order | any, string>({
             query: (id) => ({
                 url: `sub-order/${id}`,
                 method: 'GET'

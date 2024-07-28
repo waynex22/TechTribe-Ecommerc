@@ -7,7 +7,8 @@ export type Order = {
     voucherShop?: string | any;
     voucher2t?: string | any;
     coin?: number;
-    totalDiscount?: number;
+    coinRefunt?: number | any;
+    totalDisCount?: number | any;
     costShipping?: number;
     voucherShipping?: string | any;
     methodPayment?: string;

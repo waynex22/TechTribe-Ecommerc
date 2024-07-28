@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { formatNumberVnd } from "../../utils/fortmartNumberVnd/index";
@@ -34,16 +34,41 @@ const ProductDetail: React.FC = () => {
   const ProductPriceSelected = product?.product_price?.find((item: any) => {
     if (selectedColor && selectedSize) {
       return item.id_color[0]?._id === selectedColor && item.id_size[0]._id === selectedSize;
-    }else if( item.id_color.length === 0 && item.id_size.length !=0 && selectedSize){
+    }else if( item.id_color.length === 0 && item.id_size.length !==0 && selectedSize){
       return item.id_size[0]._id === selectedSize;
-    }else if( item.id_color.length !=0 && item.id_size.length === 0 && selectedColor){
+    }else if( item.id_color.length !==0 && item.id_size.length === 0 && selectedColor){
       return item.id_color[0]?._id === selectedColor;
     }
   })
+  const isOnStock = (colorId: any, sizeId: any) => {
+    if (!colorId) return true; // If no color is selected yet, consider all sizes in stock
+    if (!sizeId) {
+      // If color is selected but no size is selected, check if any size with the selected color is in stock
+      return product?.product_price.some((item: any) =>
+        item.id_color[0]?._id === colorId && item.stock > 0
+      );
+    }
+    // If both color and size are selected, check the specific combination
+    const productPrice = product?.product_price.find((item: any) => {
+      return (
+        item.id_color[0]?._id === colorId && item.id_size[0]?._id === sizeId
+      );
+    });
+    return productPrice ? productPrice.stock > 0 : false;
+  };
   // console.log(ProductPriceSelected);
+  // console.log(product);
+  
 
   const handleAddProductToCart = async (customerId: string, quantity: number) => {
-    if (!user || !ProductPriceSelected) return;
+    if (!user) {
+      handleSetToast({ message: 'Bạn cần đăng nhập để thực hiện', type: "error" });
+      return
+    };
+    if (!ProductPriceSelected) {
+      handleSetToast({ message: 'Bạn cần chọn màu và kích thước', type: "error" });
+      return
+    };
     const payload: UpdateCartPayload = {
       customerId: customerId,
       productPriceId: ProductPriceSelected?._id,
@@ -60,6 +85,8 @@ const ProductDetail: React.FC = () => {
     }
   }
   // console.log(ProductPriceSelected);
+  console.log(product);
+  
 
   if (isLoading) return <ProductDetailLoading />;
   const minMaxPrice = getMinMaxPriceInArr(product?.product_price);
@@ -97,7 +124,7 @@ const ProductDetail: React.FC = () => {
                       alt=""
                     />
                     <span className="ml-3 font-light text-sm">
-                      {product?.description}
+                      Sản phẩm hót
                     </span>
                   </div>
                 </div>
@@ -120,7 +147,7 @@ const ProductDetail: React.FC = () => {
                 <div className="flex items-center justify-start gap-2">
                   <p className="text-[14px]">Thương hiệu : </p>
                   <span className="text-blue-500 text-sm font-light">
-                    Apple
+                    No brand
                   </span>
                 </div>
               </div>
@@ -224,9 +251,9 @@ const ProductDetail: React.FC = () => {
                   <div className="text-lg absolute right-[-16px] top-[-6px]">
                     đ
                   </div>
-                  <div className="absolute text-gray-700 font-light-bold text-sm bg-gray-200 p-1 rounded-3xl right-[-70px]">
+                  {/* <div className="absolute text-gray-700 font-light-bold text-sm bg-gray-200 p-1 rounded-3xl right-[-70px]">
                     -31%
-                  </div>
+                  </div> */}
                 </div>
               </div>
               {product?.variation_color ? (
@@ -240,7 +267,7 @@ const ProductDetail: React.FC = () => {
                         className={`p-1 border rounded-lg cursor-pointer relative w-[100px] flex items-center justify-around ${selectedColor === color._id
                           ? "border-blue-600 border-2"
                           : "border-gray-200"
-                          }`}
+                          } ${!isOnStock(color._id, selectedSize) ? "opacity-10" : ""}`}
                       >
                         {selectedColor === color._id && (
                           <div className="absolute top-[-1px] right-0">
@@ -273,7 +300,7 @@ const ProductDetail: React.FC = () => {
                         className={` border rounded-lg cursor-pointer relative py-2 px-3  ${selectedSize === size._id
                           ? "border-blue-600 border-2"
                           : "border-gray-200"
-                          }`}
+                          } ${isOnStock(size._id, selectedSize) ? "opacity-10" : ""}`}
                       >
                         {selectedSize === size._id && (
                           <div className="absolute top-[-1px] right-0">
@@ -290,7 +317,6 @@ const ProductDetail: React.FC = () => {
                   </div>
                 </div>
               ) : null}
-              <span className="text-[12px] text-black">Còn lại : {ProductPriceSelected?.stock}</span>
             </div>
             <div className="p-4 mt-4 bg-white rounded-xl">
               <h3>Vận chuyển</h3>
@@ -465,7 +491,10 @@ const ProductDetail: React.FC = () => {
                 </div>
               </div>
               <div className="my-2">
+                <div className="flex items-center gap-2">
                 <p className="font-semibold text-sm text-gray-900">Số lượng</p>
+                {ProductPriceSelected && <p className="text-[12px] text-red-500">Còn lại : {ProductPriceSelected?.stock}</p>}
+                </div>
                 <div className="flex items-center space-x-2 my-2 mb-4">
                   <button
                     onClick={decrement}

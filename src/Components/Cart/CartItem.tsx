@@ -54,9 +54,6 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
         }
       }
     };
-    const handleRemoveChildItem = async () => {
-      await removeChildItem(payload);
-    }
     if (itemCart.quantity === 1 && quantity === -1) {
       setIsModalOpen(true);
       setModalAction(() => updateCartAction);
@@ -64,7 +61,16 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
       await updateCartAction();
     }
   };
-
+  const handleRemoveChildItem = async (productPriceId: string) => {
+    setLoading(true);
+    const payload = {
+      customerId: user?.sub,
+      productPriceId: productPriceId
+    }
+    await removeChildItem(payload);
+    refetch();
+    setLoading(false);
+  }
   const handleConfirm = async () => {
     if (modalAction) {
       await modalAction();
@@ -81,18 +87,15 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
       productPriceId: productPriceId,
     }
     if (payload) {
-      setLoading(true);
       try {
         await updateCartSelect(payload).unwrap();
         refetchCartSelect();
       } catch (error) {
         console.error('Error adding product to cart:', error);
       } finally {
-        setLoading(false);
       }
     }
   }
-  // console.log(cartSelect);
 
   return (
     <>
@@ -106,29 +109,6 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
         />
         {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
         <div className="w-full">
-          {/* <div className="h-[40px] w-full flex items-center justify-start p-2 gap-x-2 ">
-            <input
-              type="checkbox"
-              className="w-5 h-5 outline-none rounded-md border-solid border-[1px] border-gray-300 focus:ring-0 checked:bg-secondary transition-all duration-300"
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-5 text-gray-500"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"
-              />
-            </svg>
-            <Link to={`shop/${productPriceId?.id_product[0]?.id_shop[0]?._id}`} className="text-sm font-light-medium">
-              {productPriceId?.id_product[0]?.id_shop[0]?.name}
-            </Link>
-          </div> */}
           <div className="h-[120px] w-full flex items-center justify-start">
             <div className="w-[50%] flex items-center justify-start p-2 gap-x-2">
               <input
@@ -194,7 +174,7 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
               </div>
             </div>
             <div className="w-[5%] flex items-center justify-start p-2 gap-x-2 cursor-pointer">
-              <svg
+              <svg onClick={() => handleRemoveChildItem(productPriceId?._id)} 
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"

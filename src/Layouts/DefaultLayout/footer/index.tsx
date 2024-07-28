@@ -246,12 +246,7 @@ const Footer: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="text-blue-500">
-                <i className="fab fa-youtube"></i>
-              </div>
-              <div className="text-blue-500">
-                <i className="fab fa-zalo"></i>
-              </div>
+              
             </div>
             <h3 className="font-semibold mb-2 mt-4">
               Tải ứng dụng trên điện thoại

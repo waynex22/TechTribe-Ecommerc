@@ -11,6 +11,7 @@ const ProductItem = ({product}: any) => {
     <div className="col-span-1 rounded-lg border-solid border-[1px] border-gray-200 p-2">
       <div className="w-full h-[231px]">
         <img
+          loading="lazy"
           src={thumbnails[0]}
           className="w-[181px] h-[181px] object-cover"
           alt=""
@@ -53,10 +54,10 @@ const ProductItem = ({product}: any) => {
           )}
         </div>
       </div>
-      <div className="my-2 h-[50px]">
+      <div className="my-2 h-[30px]">
           <Link to={`/product/${product?._id}`} className="text-sm font-light">{name}</Link>
       </div>
-      <div className="flex items-center">
+      <div className="flex items-center my-2">
         {Array.from({ length: 5 }).map((_, index) => (
           <svg
             key={index}
@@ -75,7 +76,7 @@ const ProductItem = ({product}: any) => {
       <div className="flex items-center gap-4">
 
       </div>
-      <div className="flex items-center text-red-500 justify-start relative w-fit">
+      <div className="flex items-center text-gray-800 justify-start relative w-fit">
         <span className=" text-md w-fit font-bold">{formatNumberVnd(product?.product_price[0]?.price)}</span>
         <div className="text-sm font-light-bold absolute right-[-12px] top-[-6px]">
           đ

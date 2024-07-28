@@ -13,6 +13,11 @@ export interface UpdateCartSelect {
     customerId: string;
     productPriceId: string;
 }
+export interface SelectAllCart {
+    customerId: string;
+    type: string;
+    listProductSelect: any ;
+}
 interface DeleteCartPayload {
     customerId: string;
     productId: string;
@@ -89,9 +94,16 @@ export const cartApi = createApi({
                 }
             }
         }),
+        selectAllCart: builder.mutation<Cart, SelectAllCart>({
+            query: (payload) => ({
+                url: `cart-select/select-all/${payload.customerId}`,
+                method: 'PATCH',
+                body: payload
+            }),
+        }),
         removeChildItem: builder.mutation<Cart, UpdateCartSelect>({
             query: (payload) => ({
-                url: `cart-select/remove-child-item/${payload.customerId}`,
+                url: `cart/remove-child-item/${payload.customerId}`,
                 method: 'PATCH',
                 body: payload
             }),
@@ -107,4 +119,4 @@ export const cartApi = createApi({
     }),
 });
 
-export const { useGetCartMeQuery, useUpdateCartMutation, useDeleteCartMutation , useUpdateCartSelectMutation, useGetCartSelectQuery, useRemoveChildItemMutation } = cartApi;
+export const { useGetCartMeQuery, useUpdateCartMutation, useDeleteCartMutation, useUpdateCartSelectMutation, useGetCartSelectQuery, useRemoveChildItemMutation, useSelectAllCartMutation } = cartApi;

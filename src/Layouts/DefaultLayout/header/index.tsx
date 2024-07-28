@@ -66,7 +66,7 @@ const Header: React.FC = () => {
       {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
         <div className="md:container md:mx-auto flex items-center justify-between py-2">
           <Link to="/">
-            <img src="logo-nontext.png" className="w-[60px] h-[60px]" alt="" />
+            <img src="https://i.imgur.com/1rzy8ne.png" className="w-[60px] h-[60px]" alt="" />
           </Link>
           <Search />
           <div className="flex items-center justify-center">

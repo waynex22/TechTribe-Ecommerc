@@ -10,7 +10,7 @@ const PaymentMethod: React.FC<Props> = ({ subOrder , refecth }) => {
     const [loading, setLoading] = useState(false);
     const [update] = useUpdateSubOrderDtoMutation();
     const paymentMethods = [
-        { id: 'cash', name: 'Thanh toán tiền mặt', logo: 'https://salt.tikicdn.com/ts/upload/92/b2/78/1b3b9cda5208b323eb9ec56b84c7eb87.png' },
+        { id: 'cash', name: 'Thanh toán khi nhận hàng', logo: 'https://salt.tikicdn.com/ts/upload/92/b2/78/1b3b9cda5208b323eb9ec56b84c7eb87.png' },
         { id: 'viettelMoney', name: 'Viettel Money', logo: 'https://salt.tikicdn.com/ts/upload/5f/f9/75/d7ac8660aae903818dd7da8e4772e145.png' },
         { id: 'momo', name: 'Ví Momo', logo: 'https://salt.tikicdn.com/ts/upload/ce/f6/e8/ea880ef285856f744e3ffb5d282d4b2d.jpg' },
         { id: 'zalopay', name: 'Ví ZaloPay', logo: 'https://salt.tikicdn.com/ts/upload/2f/43/da/dd7ded6d3659036f15f95fe81ac76d93.png' },

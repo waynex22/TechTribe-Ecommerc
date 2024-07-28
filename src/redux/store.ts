@@ -10,6 +10,7 @@ import { productSclice } from './rtkQuery/product';
 import { cartApi } from './rtkQuery/cart';
 import { orderApi } from './rtkQuery/order';
 import { searchApi } from './rtkQuery/search';
+import { voucherApi } from './rtkQuery/voucher';
 export const store = configureStore({
   reducer: {
     [authSlice.reducerPath]: authSlice.reducer,
@@ -20,6 +21,7 @@ export const store = configureStore({
     [cartApi.reducerPath]: cartApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
     [searchApi.reducerPath]: searchApi.reducer,
+    [voucherApi.reducerPath]: voucherApi.reducer,
     auth: authReducer,
     cart: cartReducer
   },
@@ -32,7 +34,9 @@ export const store = configureStore({
       .concat(specificationsSlice.middleware)
       .concat(cartApi.middleware)
       .concat(searchApi.middleware)
+      .concat(voucherApi.middleware)
       .concat(orderApi.middleware),
+
 });
 
 setupListeners(store.dispatch);

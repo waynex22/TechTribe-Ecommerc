@@ -1,11 +1,13 @@
 import { useSelector } from "react-redux";
-import { useGetCartMeQuery, useGetCartSelectQuery } from "../../redux/rtkQuery/cart";
+import { useGetCartMeQuery, useGetCartSelectQuery, useSelectAllCartMutation, useUpdateCartSelectMutation } from "../../redux/rtkQuery/cart";
 import CartItem from "./CartItem";
 import { useEffect, useMemo, useState } from "react";
 import { formatNumberVnd } from "../../utils/fortmartNumberVnd";
 import { useNavigate } from "react-router-dom";
 import { useCreateSubOrderMutation } from "../../redux/rtkQuery/order";
 import Spinner from "../spinner/Spinner";
+import { ToastProps } from "../../Type";
+import Toast from "../toast/Toast";
 
 const groupByShop = (cartItems: any[]) => {
   return cartItems.reduce((groups: any, item: any) => {
@@ -23,13 +25,29 @@ const Cart: React.FC = () => {
   const { data: cart, isLoading } = useGetCartMeQuery(user?.sub, {
     skip: !user,
   });
-  const { data: cartSelect } = useGetCartSelectQuery(user?.sub, {
+  const { data: cartSelect , refetch: refetchCartSelect } = useGetCartSelectQuery(user?.sub, {
     skip: !user,
   })
   const navigate = useNavigate();
   const [listProductSelect, setListProductSelect] = useState<any>([]);
   const [createSubOrder] = useCreateSubOrderMutation();
   const [total, setTotal] = useState(0);
+  const [toast, setToast] = useState<ToastProps | null>(null);
+  const [checkedAll, setCheckedAll] = useState(false);
+  const [selectAll] = useSelectAllCartMutation();
+  const handleSetToast = (toast: any) => {
+    setToast({ ...toast, message: toast.message, type: toast.type, onClose: () => setToast(null) });
+  }
+  const handleSelectAllCart = async  (type: string) => {
+    const listId = cart?.cartItems.map((item: any) => ({ _id: item.productPriceId._id }));
+    const payLoad = {
+      customerId: user?.sub,
+      type: type,
+      listProductSelect: listId,
+    }
+    await selectAll(payLoad);
+    refetchCartSelect();
+  } 
   useEffect(() => {
     if (cart?.cartItems) {
       const selectedProductIds = cartSelect?.listProductSelect.map((item: any) => item._id);
@@ -38,6 +56,11 @@ const Cart: React.FC = () => {
         productPriceId: item.productPriceId._id,
         quantity: item.quantity,
       }));
+      if(simplifiedItems.length === cart?.cartItems.length) {
+        setCheckedAll(true);
+      } else {
+        setCheckedAll(false);
+      }
       setListProductSelect(simplifiedItems);
       const total = filteredItems.reduce((acc: any, item: any) => {
         return acc + item.quantity * item.productPriceId.price;
@@ -46,7 +69,10 @@ const Cart: React.FC = () => {
     }
   }, [cartSelect?.listProductSelect, cart?.cartItems]);
   const handlePayment = async (customerId: string) => {
-    if(listProductSelect.length === 0) return
+    if (listProductSelect.length === 0) {
+      handleSetToast({ message: 'Bạn chưa chọn sản phẩm nào', type: "error" });
+      return;
+    }
     const payload = {
       customerId: customerId,
       items: listProductSelect,
@@ -55,7 +81,7 @@ const Cart: React.FC = () => {
     if (payload) {
       try {
         const response = await createSubOrder(payload).unwrap();
-        console.log(response);
+        // console.log(response);
         if (response.status === 200) {
           navigate('/checkout/payment')
         } else {
@@ -73,6 +99,7 @@ const Cart: React.FC = () => {
   return (
     <>
       <Spinner loading={loading} />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
       <div className="my-5">
         {cart?.cartItems.length === 0 ? (
           <>
@@ -95,6 +122,8 @@ const Cart: React.FC = () => {
                 <div className="w-[50%] flex items-center justify-start p-2 gap-x-2">
                   <input
                     type="checkbox"
+                    onChange={() => handleSelectAllCart(checkedAll ? "false" : "true")}
+                    checked={checkedAll}
                     className="w-5 h-5 outline-none rounded-md border-solid border-[1px] focus:ring-0 border-gray-300 checked:bg-secondary transition-all duration-300"
                   />
                   <span className="text-sm font-light">Tất cả ({cart?.cartItems.length} sản phẩm) </span>
@@ -132,12 +161,12 @@ const Cart: React.FC = () => {
                 </div>
               </div>
               <div className="bg-white mt-5 rounded-md flex flex-col items-start justify-start h-fit overflow-hidden">
-                {Object.keys(groupedItems).map((shopId: string) => {
+                {Object.keys(groupedItems).map((shopId: string, index: number) => {
                   const items = groupedItems[shopId];
                   const shopName = items[0].productPriceId.id_product[0].id_shop[0].name;
                   return (
                     <>
-                      <div className="bg-white rounded-md flex items-center justify-start p-2 gap-x-2">
+                      <div key={index} className="bg-white rounded-md flex items-center justify-start p-2 gap-x-2">
                         <input
                           type="checkbox"
                           className="w-5 h-5 outline-none rounded-md border-solid border-[1px] border-gray-300 focus:ring-0 checked:bg-secondary transition-all duration-300"
