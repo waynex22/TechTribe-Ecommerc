@@ -9,9 +9,9 @@ const sellerRoutes: Route[] = [
         component: SellerComponent,
         layout: SellerLayout,
         children: [
-            { path: '', component: AddProduct },
-            { path: 'product/new', component: AddProduct },
-            { path: 'voucher', component: AddVoucher },
+            { path: '', component: AddProduct, layout: null },
+            { path: 'product/new', component: AddProduct, layout: null },
+            { path: 'voucher', component: AddVoucher,layout: null },
         ],
     },
 

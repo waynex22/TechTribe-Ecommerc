@@ -2,18 +2,20 @@ import React from "react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { formatNumberVnd } from "../../utils/fortmartNumberVnd/index";
-import { useGetProductByIdQuery } from "../../redux/rtkQuery/product";
+import { useGetProductByIdQuery, useGetProductQuery } from "../../redux/rtkQuery/product";
 import ProductDetailLoading from "../skeletonLoading/ProductDetailLoading";
 import { UpdateCartPayload, useGetCartMeQuery, useUpdateCartMutation } from "../../redux/rtkQuery/cart";
 import { useSelector } from "react-redux";
 import Toast from "../toast/Toast";
 import { ToastProps } from "../../Type";
 import { getMinMaxPriceInArr } from "../../utils/getMinMax/getMinMaxPrice";
+import ProductItem from "./ProductItem";
 const ProductDetail: React.FC = () => {
   const { slug } = useParams();
   const [updateCart] = useUpdateCartMutation();
   const { user } = useSelector((state: any) => state.auth);
   const { refetch } = useGetCartMeQuery(user?.sub);
+  const { data: products } = useGetProductQuery();
   const { data: product, isLoading } = useGetProductByIdQuery(`${slug}`);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -41,14 +43,12 @@ const ProductDetail: React.FC = () => {
     }
   })
   const isOnStock = (colorId: any, sizeId: any) => {
-    if (!colorId) return true; // If no color is selected yet, consider all sizes in stock
+    if (!colorId) return true; 
     if (!sizeId) {
-      // If color is selected but no size is selected, check if any size with the selected color is in stock
       return product?.product_price.some((item: any) =>
         item.id_color[0]?._id === colorId && item.stock > 0
       );
     }
-    // If both color and size are selected, check the specific combination
     const productPrice = product?.product_price.find((item: any) => {
       return (
         item.id_color[0]?._id === colorId && item.id_size[0]?._id === sizeId
@@ -57,7 +57,9 @@ const ProductDetail: React.FC = () => {
     return productPrice ? productPrice.stock > 0 : false;
   };
   // console.log(ProductPriceSelected);
-  // console.log(product);
+  const listProductLikeCategory = products?.filter((item: any) =>
+    item.id_categoryDetail[0].name === product?.id_categoryDetail[0].name && item._id !== product?._id);
+  // console.log(listProductLikeCategory);
   
 
   const handleAddProductToCart = async (customerId: string, quantity: number) => {
@@ -131,7 +133,7 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="col-span-3 ">
+          <div className="col-span-3">
             <div className="p-4  bg-white h-fit rounded-xl">
               <div className="flex items-center justify-start gap-4">
                 <img
@@ -300,7 +302,7 @@ const ProductDetail: React.FC = () => {
                         className={` border rounded-lg cursor-pointer relative py-2 px-3  ${selectedSize === size._id
                           ? "border-blue-600 border-2"
                           : "border-gray-200"
-                          } ${isOnStock(size._id, selectedSize) ? "opacity-10" : ""}`}
+                          } ${isOnStock(size._id, selectedColor) ? "opacity-10" : ""}`}
                       >
                         {selectedSize === size._id && (
                           <div className="absolute top-[-1px] right-0">
@@ -382,12 +384,29 @@ const ProductDetail: React.FC = () => {
                 </span>
               </div>
             </div>
+            <div>
+              <div className="p-4 mt-4 bg-white rounded-xl">
+                <h3>Thông tin chi tiết</h3>
+                {product && product?.product_specifications?.map((specification: any , index: number) => (
+                  <>                  <div key={index} className="flex flex-1 items-center justify-start gap-4 my-2">
+                    <p className="w-[50%] font-normal text-sm text-gray-500">{specification.id_specifications.name}</p>
+                    <p className="w-[50%] text-sm text-gray-800">{specification.id_specifications_detail.name}</p>
+                  </div>
+                  <div className="h-[1px] w-full bg-gray-300"></div>
+                  </>
+                ))}
+              </div>
+            </div>
+            <div className="p-4 mt-4 bg-white rounded-xl">
+                <h3>Mô tả sản phẩm</h3>
+                <p className="text-sm text-gray-600">{product?.description}</p>
+              </div>
             <div className="p-4 mt-4 bg-white rounded-xl">
               <h3>Sản phẩm tương tự</h3>
               <div className="grid md:grid-cols-4 lg:grid-cols-3 gap-4 items-center mt-2">
-                {/* {Array.from({ length: 6 }).map((_, index: number) => (
-                  // <ProductItem product={} key={index} />
-                ))} */}
+                {listProductLikeCategory?.map((item: any, index: number) => (
+                  <ProductItem product={item} key={index}/>
+                ))}
               </div>
             </div>
           </div>
@@ -395,7 +414,7 @@ const ProductDetail: React.FC = () => {
             <div className="p-4">
               <div className="flex gap-4 ">
                 <img
-                  src="https://cdn2.cellphones.com.vn/insecure/rs:fill:100:100/q:90/plain/https://cellphones.com.vn/media/wysiwyg/HI.gif"
+                  src={`http://localhost:8080/uploads/${product?.id_shop[0]?.thumbnail}`}
                   alt=""
                   className="rounded-full w-12 h-12 object-cover"
                 />

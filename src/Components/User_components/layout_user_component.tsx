@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
@@ -9,11 +9,33 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { Outlet, Link } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 const LayoutUserComponent: React.FC = () => {
+
+  const [accessToken, setAccessToken] = useState<string>('');
+  const [infoUserFormToken, setInfoUserFormToken] = useState<{ [key: string]: any } | null>(null);
+
+  useEffect(() => {
+    const getAccessToken = localStorage.getItem('access_token');
+  
+    console.log(getAccessToken);
+  
+    if (getAccessToken !== null) {
+      setAccessToken(getAccessToken);
+    }
+  }, []);
+  
+  useEffect(() => {
+    if (accessToken !== '') {
+      const decodeToken = jwtDecode(accessToken) as { [key: string]: any };
+      setInfoUserFormToken(decodeToken)
+      console.log(decodeToken);
+    }
+  }, [accessToken]);
   return (
-    <div className="bg-gray-100 ">
+    <div className="bg-white ">
       <div className="grid  grid-cols-12 gap-4 max-w-[1200px] m-auto pt-5 pb-8">
-        <div className="col-span-2">
+        <div className="col-span-2 bg-slate-50 p-2">
           <div className="flex pb-3 items-center">
             <div className="text-2xl border border-gray-300 rounded-full w-14 h-14 relative">
               <div className="text-2xl absolute overflow-hidden h-full w-full block">
@@ -24,7 +46,7 @@ const LayoutUserComponent: React.FC = () => {
               </div>
             </div>
             <div className="flex flex-col justify-center ps-4">
-              <div className=" text-left">Ten user</div>
+              <div className=" text-left">{infoUserFormToken?.fullName}</div>
               <a href="/user" className=" font-light text-sm text-gray-500">
                 <FontAwesomeIcon icon={faPen} /> Sửa hồ sơ
               </a>
@@ -33,7 +55,7 @@ const LayoutUserComponent: React.FC = () => {
           <hr />
           <div className=" mt-7">
             <div className="your-account mb-3">
-              <Link to="account/profile" className="flex items-center">
+              <Link className="focus:text-primary flex items-center" to="account/">
                 <div className="text-xl text-primary pb-2">
                   <FontAwesomeIcon icon={faUser} />
                 </div>
@@ -42,85 +64,77 @@ const LayoutUserComponent: React.FC = () => {
                 </span>
               </Link>
               <div className=" text-left ps-7">
-                <div className="hover:text-primary active:text-primary text-sm text-gray-700 font-normal pb-2">
-                  <Link to="account/profile">Hồ Sơ</Link>
+                <div className="hover:text-primary active:text-primary text-sm  text-gray-700 font-normal pb-2">
+                  <Link className="focus:text-primary" to="account/">Hồ Sơ</Link>
                 </div>
                 <div className="hover:text-primary active:text-primary text-sm text-gray-700 font-normal pb-2">
-                  <Link to="account/payment">Ngân Hàng</Link>
+                  <Link className="focus:text-primary" to="account/payment">Ngân Hàng</Link>
                 </div>
                 <div className="hover:text-primary active:text-primary text-sm text-gray-700 font-normal pb-2">
-                  <Link to="account/address">Địa chỉ </Link>
+                  <Link className="focus:text-primary" to="account/address">Địa chỉ </Link>
                 </div>
                 <div className="hover:text-primary active:text-primary text-sm text-gray-700 font-normal pb-2">
-                  <Link to="account/password">Đổi Mật Khẩu</Link>
+                  <Link className="focus:text-primary" to="account/password">Đổi Mật Khẩu</Link>
                 </div>
                 <div className="hover:text-primary active:text-primary text-sm text-gray-700 font-normal pb-2">
-                  <Link to="account/notification">Cài Đặt Thông Báo</Link>
+                  <Link className="focus:text-primary" to="account/notification">Cài Đặt Thông Báo</Link>
                 </div>
                 <div className="hover:text-primary active:text-primary text-sm text-gray-700 font-normal pb-2">
-                  <Link to="account/privacy">
+                  <Link className="focus:text-primary" to="account/privacy">
                     Những Thiết Lập Riêng Tư
                   </Link>
                 </div>
               </div>
             </div>
             <div className="your-purchase mb-3">
-              <Link to="purchase/" className="flex items-center">
-                <div className="text-xl text-primary">
+              <Link className="focus:text-primary flex items-center text-gray-700 text-sm hover:text-primary" to="purchase/">
+                <div className="text-xl text-primary pe-3">
                   <FontAwesomeIcon icon={faClipboard} />
                 </div>
-                <span className="text-gray-700 text-sm ps-2 hover:text-primary">
-                  Đơn Mua
-                </span>
+                 Đơn Mua
               </Link>
             </div>
             <div className="your-notification mb-3">
-              <Link to="notification/order" className="flex items-center pb-1">
-                <div className="text-xl text-primary">
+              <Link className="focus:text-primary flex items-center  text-gray-700 text-sm hover:text-primary" to="notification/order">
+                <div className="text-xl text-primary pe-2">
                   <FontAwesomeIcon icon={faBell} />
                 </div>
-                <span className="text-gray-700 text-sm ps-2 hover:text-primary">
                   Thông Báo
-                </span>
               </Link>
               <div className=" text-left ps-7">
                 <div className="hover:text-primary active:text-primary text-sm text-gray-700 font-normal pb-2">
-                  <Link to="notification/order">Cập Nhật Đơn Hàng</Link>
+                  <Link className="focus:text-primary" to="notification/order">Cập Nhật Đơn Hàng</Link>
                 </div>
                 <div className="hover:text-primary active:text-primary text-sm text-gray-700 font-normal pb-2">
-                  <Link to="account/payment">Khuyến Mãi</Link>
+                  <Link className="focus:text-primary" to="account/payment">Khuyến Mãi</Link>
                 </div>
                 <div className="hover:text-primary active:text-primary text-sm text-gray-700 font-normal pb-2">
-                  <Link to="account/address">Cập Nhật Ví</Link>
+                  <Link className="focus:text-primary" to="account/address">Cập Nhật Ví</Link>
                 </div>
                 <div className="hover:text-primary active:text-primary text-sm text-gray-700 font-normal pb-2">
-                  <Link to="account/password">Cập Nhật Shopee</Link>
+                  <Link className="focus:text-primary" to="account/password">Cập Nhật Shopee</Link>
                 </div>
               </div>
             </div>
             <div className="your-voucher-wallet mb-3">
-              <Link to="voucher-wallet/" className="flex items-center">
-                <div className="text-xl text-primary">
+              <Link className="focus:text-primary flex items-center text-gray-700 text-sm hover:text-primary" to="voucher-wallet/">
+                <div className="text-xl text-primary pe-2">
                   <FontAwesomeIcon icon={faTicket} />
                 </div>
-                <span className="text-gray-700 text-sm ps-2 hover:text-primary">
                   Kho Voucher
-                </span>
               </Link>
             </div>
             <div className="your-coin mb-3">
-              <Link to="coin/" className="flex items-center">
-                <div className="text-xl text-primary">
+              <Link className="focus:text-primary hover:text-primary flex items-center text-gray-700 text-sm" to="coin/">
+                <div className="text-xl text-primary pe-2">
                   <FontAwesomeIcon icon={faCoins} />
                 </div>
-                <span className="text-gray-700 text-sm ps-2 hover:text-primary">
                   TechTriber Coin
-                </span>
               </Link>
             </div>
           </div>
         </div>
-        <div className="col-span-10 shadow-md bg-white rounded">
+        <div className="col-span-10  bg-white rounded">
           <Outlet />
         </div>
       </div>

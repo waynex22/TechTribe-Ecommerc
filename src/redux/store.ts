@@ -7,6 +7,8 @@ import { authSlice } from './rtkQuery/auth'
 import authReducer from './slices/authSlice';
 import cartReducer from './slices/cartSlice';
 import { productSclice } from './rtkQuery/product';
+// import { cartSlice } from './rtkQuery/cart';
+import { userApi } from './rtkQuery/user_customers';
 import { cartApi } from './rtkQuery/cart';
 import { orderApi } from './rtkQuery/order';
 import { searchApi } from './rtkQuery/search';
@@ -14,6 +16,7 @@ import { voucherApi } from './rtkQuery/voucher';
 export const store = configureStore({
   reducer: {
     [authSlice.reducerPath]: authSlice.reducer,
+    [userApi.reducerPath]: userApi.reducer,
     [productSclice.reducerPath]: productSclice.reducer,
     [categorySlice.reducerPath]: categorySlice.reducer,
     [categoryDetailSlice.reducerPath]: categoryDetailSlice.reducer,
@@ -32,6 +35,8 @@ export const store = configureStore({
       .concat(categorySlice.middleware)
       .concat(categoryDetailSlice.middleware)
       .concat(specificationsSlice.middleware)
+      // .concat(cartSlice.middleware)
+      .concat(userApi.middleware)
       .concat(cartApi.middleware)
       .concat(searchApi.middleware)
       .concat(voucherApi.middleware)
@@ -43,4 +48,8 @@ setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-                                                                                
+
+// function authReducer(state: unknown, action: UnknownAction): unknown {
+//   throw new Error("Function not implemented.");
+// }
+

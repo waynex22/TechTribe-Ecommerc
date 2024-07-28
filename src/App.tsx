@@ -7,6 +7,7 @@ import { sellerRoutes } from "./Routes/seller";
 import SellerLayout from "./Layouts/SellerLayout";
 import PrivateRoute from "./Routes/PrivateRoute";
 import ScrollToTop from "./Components/scroll/autoScrollTop";
+import { userProfileRouter } from "./Routes/UserProfileRoute";
 import CheckSubOrder from "./Components/payment/checkSubOrder";
 
 
@@ -33,6 +34,41 @@ const App: React.FC = () => {
             );
           })}
 
+          {userProfileRouter.map((route, index) => {
+            const Layout = route.layout || DefaultLayout;
+            const Page = route.component;
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      <Page />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              >
+                {route.children &&
+                  route.children.map((childRoute, childIndex) => {
+                    const ChildLayout = childRoute.layout || React.Fragment;
+                    const ChildPage = childRoute.component;
+                    return (
+                      <Route
+                        key={childIndex}
+                        path={childRoute.path}
+                        element={
+                          <ChildLayout>
+                            <ChildPage />
+                          </ChildLayout>
+                        }
+                      />
+                    );
+                  })}
+              </Route>
+            );
+          })}
+
           {sellerRoutes.map((route, index) => {
             const Layout = route.layout || SellerLayout;
             const Page = route.component;
@@ -46,7 +82,8 @@ const App: React.FC = () => {
                       <Page />
                     </Layout>
                   </PrivateRoute>
-                }>
+                }
+              >
                 {route.children &&
                   route.children.map((child, childIndex) => {
                     const ChildPage = child.component;
@@ -54,9 +91,7 @@ const App: React.FC = () => {
                       <Route
                         key={childIndex}
                         path={child.path}
-                        element={
-                            <ChildPage />
-                        }
+                        element={<ChildPage />}
                       />
                     );
                   })}
@@ -70,5 +105,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-
