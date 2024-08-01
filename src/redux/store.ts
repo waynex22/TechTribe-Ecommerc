@@ -12,6 +12,8 @@ import shopReducer  from './features/shop'
 import discountReducer  from './features/discount'
 import productReducer  from './features/product'
 import voucherReducer  from './features/voucher'
+import flashSaleReducer  from './features/flashSale'
+import roomChatReducer  from './features/message'
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +21,8 @@ export const store = configureStore({
     discount: discountReducer,
     product: productReducer,
     voucher: voucherReducer,
+    flashSale: flashSaleReducer,
+    roomChat: roomChatReducer,
     [authSlice.reducerPath]: authSlice.reducer,
     [productSclice.reducerPath]: productSclice.reducer,
     [authApi.reducerPath]: authApi.reducer,

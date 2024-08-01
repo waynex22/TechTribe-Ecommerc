@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../../../redux/hook'
-import { fetchDiscount, SelectListDiscount,  } from '../../../../../redux/features/discount'
+import { fetchDiscount, SelectListDiscount, } from '../../../../../redux/features/discount'
 import { formatShowDate } from '../../../../../utils/fortmartNumberVnd/formartDate'
 
 import EmptyBox from '../create/emptyBox'
@@ -15,13 +15,8 @@ const ListDiscount = () => {
   return (
     <>
       <div className=' bg-white shadow-md my-6 py-6 rounded px-4 flex flex-col gap-6'>
-        <div className=' flex border-b'>
-          <p className=' p-4 border-b-4 border-primary text-primary font-bold'>Tất cả</p>
-          <p className=' p-4 hover:text-primary cursor-pointer'>Chương Trình Của Shop</p>
-          <p className=' p-4 hover:text-primary cursor-pointer'>Combo Khuyến Mãi</p>
-          <p className=' p-4 hover:text-primary cursor-pointer'>Mua Kèm Deal Sốc</p>
-        </div>
-        <div className=''>
+
+        {/* <div className=''>
           <h4 className=' text-base py-1'>Hiệu quả Khuyến Mãi</h4>
           <div className=' border p-4 grid grid-cols-4 gap-4 rounded my-4'>
             <div className=' border-r'>
@@ -41,7 +36,7 @@ const ListDiscount = () => {
               <p>0</p>
             </div>
           </div>
-        </div>
+        </div> */}
         <div className=''>
           <h4 className=' text-base py-1 '>Danh sách chương trình</h4>
           <p className=' text-gray-600 text-sm'>Thiết lập các chương trình khuyến mãi riêng của Shop để tăng Doanh số</p>
@@ -68,33 +63,36 @@ const ListDiscount = () => {
                 </div>
               </div>
             </div>
-            {listDiscount[0]._id && listDiscount.length > 0 ? listDiscount.map(item => {
-              return (
-                <div key={item._id} className=' flex gap-4 items-center p-2 border-b text-xs'>
-                  <div className=' w-2/6 px-6'>
-                    <div className=' flex'> {checkTimeStatus(item.time_start, item.time_end)} </div>
-                    <p className=' py-2 font-semibold text-base truncate'>{item.name}</p>
+            {listDiscount &&
+            listDiscount.length > 0 &&
+              listDiscount[0]._id ? listDiscount.map(item => {
+                return (
+                  <div key={item._id} className=' flex gap-4 items-center p-2 border-b text-xs'>
+                    <div className=' w-2/6 px-6'>
+                      <div className=' flex'> {checkTimeStatus(item.time_start, item.time_end)} </div>
+                      <p className=' py-2 font-semibold text-base truncate'>{item.name}</p>
+                    </div>
+                    <div className=' w-1/5'>
+                      <p>{item.type}</p>
+                    </div>
+                    <div className=' w-1/5'>
+                      <p>Chưa có sản phẩm</p>
+                    </div>
+                    <div className=' w-1/5'>
+                      <p> {formatShowDate(item.time_start)} </p>
+                      <p> - </p>
+                      <p> {formatShowDate(item.time_end)} </p>
+                    </div>
+                    <div className=' w-1/6'>
+                      <CheckTimeOperation time_start={item.time_start} time_end={item.time_end} endpoint={`discount/${item._id}`} />
+                    </div>
                   </div>
-                  <div className=' w-1/5'>
-                    <p>{item.type}</p>
-                  </div>
-                  <div className=' w-1/5'>
-                    <p>Chưa có sản phẩm</p>
-                  </div>
-                  <div className=' w-1/5'>
-                    <p> {formatShowDate(item.time_start)} </p>
-                    <p> - </p>
-                    <p> {formatShowDate(item.time_end)} </p>
-                  </div>
-                  <div className=' w-1/6'>
-                    <CheckTimeOperation time_start={item.time_start} time_end={item.time_end} id={item._id} />
-                  </div>
-                </div>
-              )
-            }):
-            <>
-              <EmptyBox />
-            </>}
+                )
+              }) :
+              <>
+                <EmptyBox />
+              </>
+            }
           </div>
         </div>
       </div>

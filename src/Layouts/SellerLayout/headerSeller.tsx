@@ -1,12 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { TfiMoreAlt } from "react-icons/tfi";
 import { IoMdNotifications } from "react-icons/io";
 import { FaAngleDown } from "react-icons/fa";
 import { CiShop } from "react-icons/ci";
 import { CiSettings } from "react-icons/ci";
 import { AiOutlineLogout } from "react-icons/ai";
+import { useAppDispatch, useAppSelector } from "../../redux/hook";
+import { SelectShop } from "../../redux/features/shop";
+import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../../redux/slices/authSlice";
 
 const HeaderSeller: React.FC  = () => {
+    const navigate = useNavigate()
+    const dispatch = useAppDispatch()
+    const shop = useAppSelector(SelectShop)
+    const handleLogou = () =>{
+        dispatch(logout())
+        navigate('/')
+    }
     return (
         <div className="">
             <div className=" fixed flex justify-between w-screen bg-white shadow-sm border-b z-20 items-center">
@@ -110,30 +121,31 @@ const HeaderSeller: React.FC  = () => {
                             </div>
                         </div>
                     </div>
-                    <div className=" relative group">
+                    {shop._id && 
+                        <div className=" relative group">
                         <div className="p-4 flex gap-2 items-center hover:bg-gray-100 cursor-pointer">
-                            <img className=" w-7 h-7 rounded-full object-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6vvbFR_-UXTv9XI91T-9x6oEgqNtwRAwrjg&s" alt="" />
-                            <p>Luffy </p>
+                            <img className=" w-7 h-7 rounded-full object-cover" src={shop.thumbnail} alt="" />
+                            <p>{ shop.name}  </p>
                             <p className=" text-xl"><FaAngleDown /></p>
                         </div>
                         <div className=" absolute hidden group-hover:block top-full right-0 p-2">
                             <div className="bg-white w-[250px] rounded-lg shadow-lg">
                                 <div className=" flex flex-col py-2 gap-2 items-center">
-                                    <img className=" w-12 h-12 rounded-full object-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6vvbFR_-UXTv9XI91T-9x6oEgqNtwRAwrjg&s" alt="" />
-                                    <p>Luffy </p>
+                                    <img className=" w-12 h-12 rounded-full object-cover" src={shop.thumbnail} alt="" />
+                                    <p> { shop.name} </p>
                                 </div>
                                 <div className=" text-left font-normal">
                                     <div className=" border-y py-2">
-                                        <p className="p-1 px-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+                                        <Link to={'/seller/settings/profile'} className="p-1 px-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
                                             <CiShop></CiShop>Hồ sơ shop
-                                        </p>
-                                        <p className="p-1 px-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+                                        </Link>
+                                        <Link to={'/seller/settings/profile'} className="p-1 px-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
                                             <CiSettings />
                                             Thiết lập shop
-                                        </p>
+                                        </Link>
                                     </div>
                                     <div className=" py-1">
-                                        <p className="p-1 px-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+                                        <p onClick={()=>handleLogou()} className="p-1 px-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2">
                                             <AiOutlineLogout />
                                             Đăng xuất
                                         </p>
@@ -142,6 +154,7 @@ const HeaderSeller: React.FC  = () => {
                             </div>
                         </div>
                     </div>
+                    }
                 </div>
             </div>
         </div>

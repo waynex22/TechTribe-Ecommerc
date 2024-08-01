@@ -9,7 +9,7 @@ const VoucherComponet: React.FC = () => {
 
   return (
     <>
-            <div className=' p-6 bg-white rounded shadow-md my-6'>
+            <div className=' p-6 bg-white rounded shadow-md'>
                 <div className=' py-2'>
                     <h4 className=' text-xl py-1 '>Tạo Voucher</h4>
                     <p className=' text-gray-600 text-sm'>Tạo Mã giảm giá toàn shop hoặc Mã giảm giá sản phẩm ngay bây giờ để thu hút người mua.</p>

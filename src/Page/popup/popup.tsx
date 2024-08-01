@@ -3,7 +3,7 @@ const Popup = ({ children, onHandlePopup }: { children: React.ReactNode, onHandl
     
     return (
         <>
-            <div className=" fixed top-0 left-0 h-screen w-screen z-30">
+            <div className=" fixed top-0 left-0 h-screen w-screen z-50 pointer-events-auto" style={{zIndex: 100}}>
                 <div onClick={() => { onHandlePopup() }} className="fixed top-0 left-0 h-screen w-screen bg-black opacity-35">
                 </div>
                 <div className="fixed top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/3">

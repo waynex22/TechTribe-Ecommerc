@@ -10,7 +10,7 @@ import VariationsProduct from '../add/variations';
 import DefaultInfoAddProduct from '../add/defaultInfo';
 import { useAppDispatch, useAppSelector } from '../../../../redux/hook';
 import { fetchProductById, SelectProduct } from '../../../../redux/features/product';
-import { FormErrorsProduct } from '../../../../utils/validatetor/createproduct';
+import { FormErrorsProduct, validateFormProductVariation } from '../../../../utils/validatetor/createproduct';
 
 const defaultSpecifications: typeSpecifications[] = [];
 const defaultVariation: TypeVariation = {}
@@ -24,8 +24,12 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
   }, [dispatch, idProduct])
   const [formAddProduct, setFormAddProduct] = useState({} as typeFormCreateProduct)
   const [prevImages, setPrevImages] = useState([] as { preview: string }[])
-
+  const [isSubmit, setIsSubmit] = useState(false)
   const [errForm, setErrForm] = useState({} as FormErrorsProduct)
+  useEffect(() => {
+    if (isSubmit === true)
+      setErrForm(validateFormProductVariation(formAddProduct))
+  }, [formAddProduct, isSubmit])
 
   const handleFormAddproduct = (
     key: string,
@@ -44,6 +48,15 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
 
   const updateProduct = (e: React.FormEvent) => {
     e.preventDefault()
+    console.log(formAddProduct);
+    setIsSubmit(true)
+    const errors = validateFormProductVariation(formAddProduct)
+    if (Object.keys(errors).length > 0) {
+      setErrForm(errForm)
+      if (errors.variation)
+        window.scrollTo({ top: 900, behavior: "smooth" });
+      return
+    }
     uploadFiles(product._id)
     updateSpecification()
     requestApi(`product/${product._id}`, 'PATCH', formAddProduct, 'application/json')

@@ -4,15 +4,16 @@ import ItemSlectLimit from './ItemSlectLimit'
 import ItemSwitcher from './itemSwitcher'
 import { typeProductPriceResult } from '../../../../../../utils/types/product'
 import { typeCreaeteDiscount } from '../../../../../../utils/types/discount'
+import { typeFlashSaleDetail } from '../../../../../../utils/types/flashSale'
 
-const ItemProductPriceTable = ({productPrice, fomCreateDiscount, onHandleListCreate, isSubmitForm}: {
+const ItemProductPriceTable = ({productPrice, itemCreate, onHandleListCreate, isSubmitForm}: {
     productPrice: typeProductPriceResult,
-    fomCreateDiscount: typeCreaeteDiscount
+    itemCreate: typeCreaeteDiscount | typeFlashSaleDetail
     onHandleListCreate:  (idPrice: string, key: string, value:string | number | boolean) => void
     isSubmitForm: boolean
 }) => {
     const [newPrice, setNewPrice] = useState(productPrice.price)
-    const [percent, setPercent] = useState(fomCreateDiscount.percent)
+    const [percent, setPercent] = useState(itemCreate.percent)
     const [err, setError] = useState('')
     useEffect(()=>{
         setNewPrice(productPrice.price - (productPrice.price * percent/100))
@@ -20,8 +21,8 @@ const ItemProductPriceTable = ({productPrice, fomCreateDiscount, onHandleListCre
             setError('')
     },[productPrice.price, percent])
     useEffect(()=>{
-        setPercent(fomCreateDiscount.percent)
-    },[fomCreateDiscount.percent])
+        setPercent(itemCreate.percent)
+    },[itemCreate.percent])
     const handleNewPrice = (value: string) => {
         if(/^\d*$/.test(value)){
             let price = Number(Number(value).toFixed(0))
@@ -69,28 +70,28 @@ const ItemProductPriceTable = ({productPrice, fomCreateDiscount, onHandleListCre
                 <p className=' text-center'> {formatNumberVnd(productPrice.price)} </p>
             </div>
             <div className=' w-32'>
-                <div className={` w-28 border rounded p-0.5 relative  ${!fomCreateDiscount.status && 'bg-gray-200 cursor-not-allowed'}`}>
+                <div className={` w-28 border rounded p-0.5 relative  ${!itemCreate.status && 'bg-gray-200 cursor-not-allowed'}`}>
                     <input 
-                        readOnly={!fomCreateDiscount.status}
+                        readOnly={!itemCreate.status}
                         value={newPrice.toFixed(0)}
                         onChange={(e)=> handleNewPrice(e.target.value)}
                         type="number" 
-                        className={` w-24 ${!fomCreateDiscount.status && 'bg-gray-200 cursor-not-allowed'}`} 
+                        className={` w-24 ${!itemCreate.status && 'bg-gray-200 cursor-not-allowed'}`} 
                     />
                     <p className=' absolute top-1/2 -translate-y-1/2 right-1'>đ</p>
                 </div>
-                <p className=' text-red-600 text-xs'>{fomCreateDiscount.status && err}</p>
+                <p className=' text-red-600 text-xs'>{itemCreate.status && err}</p>
             </div>
             <div className=' w-32'>
-                <div className={`w-[120px] border rounded p-0.5  relative  ${!fomCreateDiscount.status && 'bg-gray-200 cursor-not-allowed'} ${((isSubmitForm && !percent) || percent > 50) &&'border-red-500'}`}>
+                <div className={`w-[120px] border rounded p-0.5  relative  ${!itemCreate.status && 'bg-gray-200 cursor-not-allowed'} ${((isSubmitForm && !percent) || percent > 50) &&'border-red-500'}`}>
                     <input 
-                        readOnly={!fomCreateDiscount.status}
+                        readOnly={!itemCreate.status}
                         onChange={(e)=> handlepercent(e.target.value)}
                         value={percent.toFixed(0)}
                         type="string" 
-                        className={` w-[70px] ${!fomCreateDiscount.status && 'bg-gray-200 cursor-not-allowed'}`} 
+                        className={` w-[70px] ${!itemCreate.status && 'bg-gray-200 cursor-not-allowed'}`} 
                     />
-                    <div className={` text-gray-500 border-l pl-2 text-xs absolute right-2 top-1/2 -translate-y-1/2 ${!fomCreateDiscount.status && 'bg-gray-200 cursor-not-allowed'}`}>
+                    <div className={` text-gray-500 border-l pl-2 text-xs absolute right-2 top-1/2 -translate-y-1/2 ${!itemCreate.status && 'bg-gray-200 cursor-not-allowed'}`}>
                         <p>%GIẢM</p>
                     </div>
                 </div>
@@ -102,19 +103,19 @@ const ItemProductPriceTable = ({productPrice, fomCreateDiscount, onHandleListCre
                 <ItemSlectLimit 
                 onHandleSetValue={handleValueLimit} 
                 name='limit_product' 
-                valueNameSelect={fomCreateDiscount.limit_product}
-                status={fomCreateDiscount.status} />
+                valueNameSelect={itemCreate.limit_product}
+                status={itemCreate.status} />
             </div>
             <div className=' w-36'>
                 <ItemSlectLimit 
                 onHandleSetValue={handleValueLimit} 
                 name='limit_customer' 
-                valueNameSelect={fomCreateDiscount.limit_customer}
-                status={fomCreateDiscount.status}  />
+                valueNameSelect={itemCreate.limit_customer}
+                status={itemCreate.status}  />
             </div>
             <div className='w-16'>
                 <ItemSwitcher 
-                fomCreateDiscount={fomCreateDiscount} 
+                itemCreate={itemCreate} 
                 onHandleListCreate={onHandleListCreate} />
             </div>
             <div className=' w-16'>

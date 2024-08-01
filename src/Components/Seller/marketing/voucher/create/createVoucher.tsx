@@ -13,7 +13,7 @@ import {
   validateFormVoucher,
 } from "../../../../../utils/validatetor/createVoucher";
 
-const CreateVoucherComponent = () => {
+const CreateVoucherComponent: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const shop = useAppSelector(SelectShop);

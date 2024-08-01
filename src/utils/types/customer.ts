@@ -13,3 +13,10 @@ export const defaultUser: TypePayload = {
   sub: '',
   avata: '',
 }
+
+export type typeCustomer = {
+  _id: string,
+  name: string,
+  phone: string,
+  avata: string
+}

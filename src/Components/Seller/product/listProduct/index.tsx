@@ -45,7 +45,6 @@ const ListProduct: React.FC = () => {
   const startIndex = (currentPage - 1) * countPages;
   const endIndex = startIndex + countPages;
   const currentItems = listShow.slice(startIndex, endIndex);
-  console.log(currentItems.length);
   
   const setProductByActiveFilter = () => {
     switch (activeFilter) {
@@ -106,8 +105,6 @@ const ListProduct: React.FC = () => {
     setSort(newSortType);
   };
 
-  console.log(products);
-  
   return (
     <>
       <div className=' flex justify-between'>

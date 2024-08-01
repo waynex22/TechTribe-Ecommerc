@@ -23,7 +23,7 @@ export type typeDiscount = {
 
 export type typeDiscountDetail = {
     _id: string,
-    id_discocunt: string,
+    id_discount: string,
     id_productPrice: typeProductPriceResult,
     percent: number,
     limit_product: number | "Không giới hạn";

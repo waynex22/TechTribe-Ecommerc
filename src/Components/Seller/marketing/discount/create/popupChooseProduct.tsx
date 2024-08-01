@@ -10,11 +10,12 @@ import ItemSearchProduct from "./itemSearchProduct";
 import { TypeSelectTimeDiscount } from "./createProgram";
 
 
-const ChooseProductComponent = ({onHandlePopup, listChoose, onHandleListChoose, selectNameTime}:{
+const ChooseProductComponent = ({ onHandlePopup, listChoose, onHandleListChoose, selectNameTime, maximunProduct }: {
     onHandlePopup: () => void
     listChoose: typeProduct[]
     onHandleListChoose: (newListChoose: typeProduct[]) => void
     selectNameTime?: TypeSelectTimeDiscount
+    maximunProduct?: number
 }) => {
     const dispath = useAppDispatch()
     const shop = useAppSelector(SelectShop)
@@ -24,7 +25,7 @@ const ChooseProductComponent = ({onHandlePopup, listChoose, onHandleListChoose, 
     const [showSelect, setShowSelelect] = useState('')
     const [nameSearch, setNameSearch] = useState('Tên sản phẩm')
     const [valueSearch, setValueSearch] = useState('')
-    
+    const [err, setErr] = useState('')
     useEffect(() => {
         dispath(fetchProductByIdShop(shop._id))
     }, [dispath, shop._id])
@@ -45,9 +46,9 @@ const ChooseProductComponent = ({onHandlePopup, listChoose, onHandleListChoose, 
     }
     const handleFindListShow = () => {
         setListShow(() => {
-            if(nameSearch === 'Tên sản phẩm'){
+            if (nameSearch === 'Tên sản phẩm') {
                 return getListProductActive().filter(item => item.name.includes(valueSearch))
-            }else {
+            } else {
                 return getListProductActive().filter(item => item.code === valueSearch)
             }
         })
@@ -55,6 +56,12 @@ const ChooseProductComponent = ({onHandlePopup, listChoose, onHandleListChoose, 
     const handleListChoose = (status: boolean, product: typeProduct) => {
         setNewListChoose((prev) => {
             if (status) {
+                if (maximunProduct) {
+                    if (listChoose.length + newListChoose.length >= maximunProduct) {
+                        setErr(`Bạn chỉ chọn được tối đa ${maximunProduct} sản phẩm`)
+                        return [...prev]
+                    }
+                }
                 return [...prev, product];
             } else {
                 return prev.filter(item => item._id !== product._id);
@@ -64,12 +71,20 @@ const ChooseProductComponent = ({onHandlePopup, listChoose, onHandleListChoose, 
     const chooseFullList = (status: boolean) => {
         setNewListChoose((prev) => {
             if (status) {
-                return listShow.filter(item=>{
+                const newList = listShow.filter(item => {
                     const check = listChoose.find(id => id._id === item._id)
                     return !check && item
                 })
+
+                if (maximunProduct) {
+                    if (listChoose.length + newList.length > maximunProduct) {
+                        setErr(`Bạn chỉ chọn được tối đa ${maximunProduct} sản phẩm`)
+                        return newList.slice(0, 10 - listChoose.length)
+                    }
+                }
+                return newList
             } else {
-                return prev.filter(item=>{
+                return prev.filter(item => {
                     return !listShow.some(itemShow => itemShow._id === item._id)
                 })
             }
@@ -78,16 +93,16 @@ const ChooseProductComponent = ({onHandlePopup, listChoose, onHandleListChoose, 
     const getListProductActive = () => {
         return listProduct.filter(item => !item.banned && !item.unlisted)
     }
-    const confirm = ()=>{
+    const confirm = () => {
         onHandlePopup()
         onHandleListChoose(newListChoose)
     }
-    
+
     return (
         <div className=" bg-white w-[1000px] rounded shadow-md py-6 px-10">
             <div className=" flex items-center justify-between">
                 <h3 className=" text-2xl py-2">Chọn sản phẩm</h3>
-                <p  onClick={()=> onHandlePopup()} className=" text-2xl cursor-pointer"><IoMdClose /></p>
+                <p onClick={() => onHandlePopup()} className=" text-2xl cursor-pointer"><IoMdClose /></p>
             </div>
             <div className=" border-t p-4 flex flex-col gap-4">
                 <div className=" flex justify-between items-center">
@@ -98,38 +113,12 @@ const ChooseProductComponent = ({onHandlePopup, listChoose, onHandleListChoose, 
                                 <p className=" w-[200px] truncate">Tất cả ngành hàng</p>
                                 <p className=" absolute top-1/2 right-2 -translate-y-1/2"> <IoIosArrowDown /></p>
                             </div>
-                            {/* {showSelect === 'category' &&
-                                <div className=" absolute top-full pt-1 z-10 w-screen">
-                                    <div className=" flex  rounded ">
-                                        <div>
-                                            <div className=" border py-2 shadow-md flex flex-col gap-2 bg-white">
-                                                <p className=" px-4 py-1 cursor-pointer hover:bg-gray-100">Tất cả ngành hàng</p>
-                                                <p className=" px-4 py-1 cursor-pointer hover:bg-gray-100 flex items-center gap-2">Ngành hàng <MdChevronRight /></p>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className=" border py-2  shadow-md flex flex-col gap-2 bg-white">
-                                                <p className=" px-4 py-1 cursor-pointer hover:bg-gray-100">Tất cả ngành hàng</p>
-                                                <p className=" px-4 py-1 cursor-pointer hover:bg-gray-100">Tất cả ngành hàng</p>
-                                                <p className=" px-4 py-1 cursor-pointer hover:bg-gray-100">Tất cả ngành hàng</p>
-                                                <p className=" px-4 py-1 cursor-pointer hover:bg-gray-100 flex items-center gap-2">Ngành hàng <MdChevronRight /></p>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className=" border py-2  shadow-md flex flex-col gap-2 bg-white">
-                                                <p className=" px-4 py-1 cursor-pointer hover:bg-gray-100">Tất cả ngành hàng</p>
-                                                <p className=" px-4 py-1 cursor-pointer hover:bg-gray-100 flex items-center gap-2">Ngành hàng <MdChevronRight /></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            } */}
                         </div>
                     </div>
                     <div className=" flex items-center gap-2">
                         <p>Tìm</p>
                         <div>
-                                <ItemSearchProduct valueSearch={valueSearch} onHandleNameSearch={handleNameSearch} onSetValueSearch={setValueSearch} />
+                            <ItemSearchProduct valueSearch={valueSearch} onHandleNameSearch={handleNameSearch} onSetValueSearch={setValueSearch} />
                         </div>
                     </div>
                 </div>
@@ -137,8 +126,11 @@ const ChooseProductComponent = ({onHandlePopup, listChoose, onHandleListChoose, 
                     <button onClick={() => handleFindListShow()} className=" px-6 py-2 rounded bg-primary text-white hover:shadow hover:shadow-primary hover:bg-opacity-90">Tìm</button>
                     <button onClick={() => resetListShow()} className=" px-4 py-2 rounded border hover:bg-gray-100 hover:shadow-md">Nhập lại</button>
                 </div>
+                {maximunProduct &&
+                    <p className=" text-sm text-red-600"> {err} </p>
+                }
 
-                {listShow && listShow.length>0 ?<div>
+                {listShow && listShow.length > 0 ? <div>
                     <div className="relative overflow-x-auto max-h-[400px] overflow-y-scroll border rounded shadow">
                         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <thead style={{ zIndex: 1 }} className="text-xs sticky top-0  text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 sticky-header">
@@ -163,19 +155,19 @@ const ChooseProductComponent = ({onHandlePopup, listChoose, onHandleListChoose, 
                                 {listShow.length > 0 &&
                                     listShow.map((item) => {
                                         const check = listChoose.find(id => id._id === item._id)
-                                        return <tr key={item._id} className={`${check ? 'border bg-gray-100 cursor-not-allowed': 'bg-white'} border-b dark:bg-gray-800 dark:border-gray-700`}>
+                                        return <tr key={item._id} className={`${check ? 'border bg-gray-100 cursor-not-allowed' : 'bg-white'} border-b dark:bg-gray-800 dark:border-gray-700`}>
                                             <th scope="row" className={` px-6 py-4 font-medium text-gray-900 whitespace-nowrap `}>
                                                 <div className=" flex gap-2 items-center">
                                                     <div>
                                                         {!check ?
                                                             <input type="checkbox"
-                                                            className=""
-                                                            checked={newListChoose.some(chosenItem => chosenItem._id === item._id)}
-                                                            onChange={(e) => handleListChoose(e.target.checked, item)} />
-                                                        :
-                                                        <input type="checkbox" className=" cursor-not-allowed" readOnly name="" checked id="" />
+                                                                className=""
+                                                                checked={newListChoose.some(chosenItem => chosenItem._id === item._id)}
+                                                                onChange={(e) => handleListChoose(e.target.checked, item)} />
+                                                            :
+                                                            <input type="checkbox" className=" cursor-not-allowed" readOnly name="" checked id="" />
                                                         }
-                                                        
+
                                                     </div>
                                                     <img className=" w-12 border" src={item.thumbnails[0]} alt="" />
                                                     <div className="flex-1 w-full">
@@ -201,26 +193,26 @@ const ChooseProductComponent = ({onHandlePopup, listChoose, onHandleListChoose, 
                         </table>
                     </div>
 
-                </div>:
-                <EmptyBox />}
+                </div> :
+                    <EmptyBox />}
 
                 <div className=" flex flex-row-reverse gap-4 items-center">
-                    <p 
-                        onClick={()=> newListChoose.length && confirm()}  
+                    <p
+                        onClick={() => newListChoose.length && confirm()}
                         className={` px-4 py-2 rounded bg-primary text-white 
                         ${newListChoose.length > 0 ? 'cursor-pointer' : ' cursor-not-allowed bg-opacity-60'}`}>
-                            Xác nhận
+                        Xác nhận
                     </p>
-                    <p 
-                        onClick={()=> onHandlePopup()}  
+                    <p
+                        onClick={() => onHandlePopup()}
                         className=" px-4 py-2 rounded border cursor-pointer hover:bg-gray-100">
                         Hủy
                     </p>
-                    {listChoose.length + newListChoose.length >0 && 
-                    <p className="text-xs text-gray-500">Đã chọn 
-                        <span className=" text-gray-800"> {listChoose.length + newListChoose.length}/{getListProductActive().length} </span>
-                        sản phẩm
-                    </p>}
+                    {listChoose.length + newListChoose.length > 0 &&
+                        <p className="text-xs text-gray-500">Đã chọn
+                            <span className=" text-gray-800"> {listChoose.length + newListChoose.length}/{getListProductActive().length} </span>
+                            sản phẩm
+                        </p>}
                 </div>
             </div>
         </div>

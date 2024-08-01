@@ -1,12 +1,16 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ItemSearchProduct from '../create/itemSearchProduct'
 import { GoSearch } from 'react-icons/go'
 import { IoCloseSharp } from 'react-icons/io5'
+import { typeDiscountDetail } from '../../../../../utils/types/discount'
+import { RiDeleteBinLine } from 'react-icons/ri'
+import ItemShowDetailDiscount from './itemShowDetailDiscount'
+import { typeFlashSaleDetailResult } from '../../../../../utils/types/flashSale'
 
-const ShowDiscountDetail = () => {
+const ShowDiscountDetail = ({ discountDetail }: { discountDetail: typeDiscountDetail[] | typeFlashSaleDetailResult[]}) => {
     const [nameSearch, setNameSearch] = useState('Tên sản phẩm')
     const [valueSearch, setValueSearch] = useState('')
-
+    const [listDiscountByIdProduct, setListDiscountByIDProduct] = useState([] as typeDiscountDetail[][] | typeFlashSaleDetailResult[][]) 
     const handleNameSearch = (value: string) => {
         setNameSearch(value)
     }
@@ -15,6 +19,10 @@ const ShowDiscountDetail = () => {
     const removeFindName = () => {
         setValueSearch('')
     }
+    useEffect(()=>{
+        setListDiscountByIDProduct(groupByProduct(discountDetail))
+    },[discountDetail])
+    
     return (
         <>
             <div className=' bg-white my-6 shadow-md py-6 rounded px-4 flex flex-col gap-6  font-normal text-sm'>
@@ -66,9 +74,17 @@ const ShowDiscountDetail = () => {
                                 <p className=' text-center'>Bật / Tắt</p>
                             </div>
                             <div className=' w-16'>
-                                <p className=' text-center'>Thao tác</p>
+                                <p className=' text-center'></p>
                             </div>
                         </div>
+                    </div>
+
+                    <div className=' flex flex-col gap-4'>
+                        {listDiscountByIdProduct.map((item, index) => {
+                            return (
+                                <ItemShowDetailDiscount key={index} listDiscount={item} />
+                            )
+                        })}
                     </div>
                 </div>
             </div>
@@ -76,4 +92,33 @@ const ShowDiscountDetail = () => {
     )
 }
 
+
+type GroupedDiscountDetails = {
+    [key: string]: typeDiscountDetail[] | typeFlashSaleDetailResult[];
+};
+
+function groupByProduct(discount_detail: (typeDiscountDetail | typeFlashSaleDetailResult)[]) {
+    
+    const grouped = discount_detail.reduce((acc, detail) => {
+        // Assuming 'id_productPrice' and 'id_product' exist on both types
+        const productId = detail.id_productPrice.id_product[0];
+
+        // Check if 'detail' is of type 'typeDiscountDetail' or 'typeFlashSaleDetailResult'
+        if ((detail as typeDiscountDetail).id_discount !== undefined) {
+            if (!acc[productId]) {
+                acc[productId] = [];
+            }
+            (acc[productId] as typeDiscountDetail[]).push(detail as typeDiscountDetail);
+        } else {
+            if (!acc[productId]) {
+                acc[productId] = [];
+            }
+            (acc[productId] as typeFlashSaleDetailResult[]).push(detail as typeFlashSaleDetailResult);
+        }
+
+        return acc;
+    }, {} as GroupedDiscountDetails);
+
+    return Object.values(grouped);
+}
 export default ShowDiscountDetail

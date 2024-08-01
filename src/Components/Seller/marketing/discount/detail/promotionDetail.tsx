@@ -1,10 +1,8 @@
-import { MdEdit } from 'react-icons/md'
 import { useAppDispatch, useAppSelector } from '../../../../../redux/hook'
 import { fetchDiscountByID, SelectDiscount } from '../../../../../redux/features/discount'
 import { useEffect } from 'react'
 import { checkTimeStatus } from '../list/listDiscout'
 import { formatShowDate } from '../../../../../utils/fortmartNumberVnd/formartDate'
-import SlectProductDiscount from '../create/slectProduct'
 import ShowDiscountDetail from './showDiscount'
 
 const PromotionDetail = ({idDiscount}: {idDiscount: string}) => {
@@ -13,8 +11,6 @@ const PromotionDetail = ({idDiscount}: {idDiscount: string}) => {
   useEffect(()=>{
     dispatch(fetchDiscountByID(idDiscount))
   },[dispatch, idDiscount])
-  console.log(discount);
-  
   return (
     <>
       <div className=' bg-white shadow-md py-6 rounded px-4 flex flex-col gap-6  font-normal text-sm'>
@@ -37,7 +33,7 @@ const PromotionDetail = ({idDiscount}: {idDiscount: string}) => {
         </div>
       </div>
 
-      <ShowDiscountDetail />
+      {discount.discount_detail && <ShowDiscountDetail discountDetail={discount.discount_detail} />}
     </>
   )
 }

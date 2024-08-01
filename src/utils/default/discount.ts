@@ -11,7 +11,7 @@ export const defaultvalueDiscount: typeDiscount = {
 }
 export const defaultValueDiscountDetail: typeDiscountDetail = {
     _id: '',
-    id_discocunt: '',
+    id_discount: '',
     id_productPrice: defaultValueProductPrice,
     percent: 0,
     limit_product: "Không giới hạn",

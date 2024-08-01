@@ -6,12 +6,15 @@ import Popup from '../../../../../Page/popup/popup';
 import { IoMdClose } from 'react-icons/io';
 import requestApi from '../../../../../helper/api';
 import { toast } from 'react-toastify';
-import { useAppDispatch } from '../../../../../redux/hook';
+import { useAppDispatch, useAppSelector } from '../../../../../redux/hook';
 import { fetchDiscount } from '../../../../../redux/features/discount';
+import { SelectShop } from '../../../../../redux/features/shop';
+import { fetchFlashSaleByIdShop } from '../../../../../redux/features/flashSale';
 
 
-const CheckTimeOperation = ({ time_start, time_end, id }: { time_start: Date, time_end: Date, id: string }) => {
+const CheckTimeOperation = ({ time_start, time_end, endpoint }: { time_start: Date, time_end: Date, endpoint: string }) => {
     const dispatch = useAppDispatch()
+    const shop = useAppSelector(SelectShop)
     const dateNow = new Date();
     const startDate = new Date(time_start);
     const endDate = new Date(time_end);
@@ -27,9 +30,11 @@ const CheckTimeOperation = ({ time_start, time_end, id }: { time_start: Date, ti
     const comfirm =() =>{
         handlePopup()
         if(promotion === 'Xóa') {
-            requestApi(`discount/${id}`, 'DELETE', {}, "application/json")
+            requestApi(endpoint, 'DELETE', {}, "application/json")
             .then(()=> {
                 dispatch(fetchDiscount())
+                if (shop._id)
+                    dispatch(fetchFlashSaleByIdShop(shop._id))
                 toast.success('Xóa thành công')
             })
             .catch((err)=>{
@@ -39,9 +44,11 @@ const CheckTimeOperation = ({ time_start, time_end, id }: { time_start: Date, ti
         }else {
             let currentDate = new Date();
             let time_end = new Date(currentDate.getTime() - 1 * 60);
-            requestApi(`discount/${id}`, 'PATCH', {time_end}, "application/json")
+            requestApi(endpoint, 'PATCH', {time_end}, "application/json")
             .then(()=> {
                 dispatch(fetchDiscount())
+                if (shop._id)
+                    dispatch(fetchFlashSaleByIdShop(shop._id))
                 toast.success('Kết thúc thành công')
             })
             .catch((err)=>{
@@ -53,7 +60,7 @@ const CheckTimeOperation = ({ time_start, time_end, id }: { time_start: Date, ti
     return (
         <>
             <div className=' flex gap-2 flex-col'>
-                <Link to={`/seller/marketing/discount/${id}`} className=' flex gap-2 items-center cursor-pointer  hover:text-primary'>	Chi tiết   <MdEdit />
+                <Link to={`/seller/marketing/${endpoint}`} className=' flex gap-2 items-center cursor-pointer  hover:text-primary'>	Chi tiết   <MdEdit />
                 </Link>
 
                 {dateNow < startDate &&

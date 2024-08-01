@@ -159,7 +159,6 @@ const SlectProductDiscount = ({ selectNameTime, errorForm, isSubmitForm, formCre
     }
   }
   const handleListCreate = (idPrice: string, key: string, value: string | number | boolean) => {
-
     setFormCreateDiscount((prev) => {
       return prev.map(item => {
         if (item.id_productPrice === idPrice) {

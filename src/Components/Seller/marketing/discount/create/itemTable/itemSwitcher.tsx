@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { typeCreaeteDiscount } from '../../../../../../utils/types/discount'
+import { typeFlashSaleDetail } from '../../../../../../utils/types/flashSale'
 
-const ItemSwitcher = ({fomCreateDiscount, onHandleListCreate}:{
-  fomCreateDiscount: typeCreaeteDiscount
+const ItemSwitcher = ({itemCreate, onHandleListCreate}:{
+  itemCreate: typeCreaeteDiscount | typeFlashSaleDetail
   onHandleListCreate:  (idPrice: string, key: string, value:string | number | boolean) => void
 }) => {
-    const [isChecked, setIsChecked] = useState(fomCreateDiscount.status)
+    const [isChecked, setIsChecked] = useState(itemCreate.status)
     useEffect(()=>{
-      setIsChecked(fomCreateDiscount.status)
-    },[fomCreateDiscount.status])
+      setIsChecked(itemCreate.status)
+    },[itemCreate.status])
     const handleCheckboxChange = () => {
       setIsChecked(!isChecked)
-      onHandleListCreate(fomCreateDiscount.id_productPrice,'status', !isChecked)
+      onHandleListCreate(itemCreate.id_productPrice,'status', !isChecked)
     }
   
     return (

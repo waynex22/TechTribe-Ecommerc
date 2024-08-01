@@ -45,16 +45,19 @@ const ListVoucherComponent = ({ id_shop }: { id_shop: string }) => {
           <div className=' border rounded overflow-hidden text-sm'>
             <div className='px-4 bg-gray-100 py-4 border-b'>
               <div className=' flex gap-4 items-center'>
-                <div className=' w-2/6'>
+                <div className=' w-3/12'>
                   <p>Tên Voucher | Mã voucher</p>
                 </div>
-                <div className=' w-1/5'>
+                <div className=' w-1/6'>
                   <p>Loại khuyến mãi</p>
                 </div>
-                <div className=' w-1/5'>
-                  <p>Sản phẩm</p>
+                <div className=' w-1/6'>
+                  <p>Hình thức</p>
                 </div>
-                <div className=' w-1/5'>
+                <div className=' w-1/6'>
+                  <p> Tỉ lệ </p>
+                </div>
+                <div className=' w-1/6'>
                   <p>	Thời Gian</p>
                 </div>
                 <div className=' w-1/6'>
