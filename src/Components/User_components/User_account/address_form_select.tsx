@@ -21,7 +21,7 @@ interface AddressSelectorProps {
   onAddressChange: (province: string, district: string, ward: string) => void;
 }
 
-const AddressSelector: React.FC<AddressSelectorProps> = ({ onAddressChange }) => {
+const AddressSelectorAdd: React.FC<AddressSelectorProps> = ({ onAddressChange }) => {
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
@@ -90,6 +90,11 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ onAddressChange }) =>
     onAddressChange(selectedProvince, selectedDistrict, selectedWard);
   }, [selectedProvince, selectedDistrict, selectedWard, onAddressChange]);
 
+  // useEffect(() => {
+  //   onAddressChangeToUpdate(selectedProvinceToUpdate, selectedDistrict, selectedWard);
+  // }, [selectedProvinceToUpdate, selectedDistrict, selectedWard, onAddressChangeToUpdate]);
+
+  
   return (
     <Box sx={{display: "flex"}}>
       <FormControl fullWidth margin="normal" sx={{ mr: 2 }}>
@@ -170,4 +175,4 @@ const AddressSelector: React.FC<AddressSelectorProps> = ({ onAddressChange }) =>
   );
 };
 
-export default AddressSelector;
+export default AddressSelectorAdd;

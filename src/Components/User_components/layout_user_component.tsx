@@ -10,10 +10,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Outlet, Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { useGetUserMutation } from "src/redux/rtkQuery/user_customers";
 const LayoutUserComponent: React.FC = () => {
-
+  const [getUser] = useGetUserMutation();
   const [accessToken, setAccessToken] = useState<string>('');
   const [infoUserFormToken, setInfoUserFormToken] = useState<{ [key: string]: any } | null>(null);
+  const [infoUser, setInfoUser] = useState<{ [key: string]: any } | null>(null);
 
   useEffect(() => {
     const getAccessToken = localStorage.getItem('access_token');
@@ -23,7 +25,19 @@ const LayoutUserComponent: React.FC = () => {
     if (getAccessToken !== null) {
       setAccessToken(getAccessToken);
     }
-  }, []);
+  },[infoUserFormToken]);
+
+  // useEffect(() => {
+  //   const getUserWithtk = async () => {
+  //     if(accessToken) {
+  //       const response = await getUser(accessToken).unwrap()
+  //       console.log(response);
+  //       // setInfoUser(response.data)
+  //     }
+  //   }
+
+  //   getUserWithtk()
+  // },[])
 
   const decodeToken = () => {
     if (accessToken !== '') {

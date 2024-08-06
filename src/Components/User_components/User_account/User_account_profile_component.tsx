@@ -99,7 +99,6 @@ const ComponentUserAccountProfile: React.FC = () => {
         formData: formData,
         token: accessToken,
       }).unwrap();
-      decodeToken();
       toast.success(response.message)
     } catch (error) {
       console.log("Error uploading avatar:", error);
@@ -262,7 +261,7 @@ const ComponentUserAccountProfile: React.FC = () => {
                 </td>
               </tr> */}
 
-              <tr>
+              {/* <tr>
                 <td className="text-sm font-normal ps-8 pb-5 text-center">
                   <button
                     onClick={handleSubmit}
@@ -272,7 +271,7 @@ const ComponentUserAccountProfile: React.FC = () => {
                     Update
                   </button>
                 </td>
-              </tr>
+              </tr> */}
             </table>
           </form>
         </div>
@@ -309,6 +308,8 @@ const ComponentUserAccountProfile: React.FC = () => {
                 />
               </div>
             )} */}
+            <div className="flex justify-center ">
+
             <input
               type="file"
               accept=".jpg,.jpeg,.png"
@@ -317,17 +318,19 @@ const ComponentUserAccountProfile: React.FC = () => {
               onChange={handlePhotoChange}
             />
             <label
-              className=" border rounded bg-blue-500 text-white p-2 mt-2 cursor-pointer hover:bg-blue-600 duration-200"
+              className=" rounded bg-blue-100 text-primary p-2 mt-2 cursor-pointer hover:bg-blue-500 hover:text-white duration-200 me-2"
               htmlFor="upload-img-user-profile"
             >
               Chọn ảnh
             </label>
             <button
-              className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+              className=" rounded bg-green-100 text-green-500 p-2 mt-2 cursor-pointer hover:bg-green-500 hover:text-white duration-200 ms-2"
               onClick={handleUploadAvatar}
             >
-              Update
+              Cập nhật
             </button>
+            </div>
+
             <div className="mt-4 text-left">
               <div className="text-gray-500 text-sm font-light mb-1">
                 Dụng lượng file tối đa 1 MB

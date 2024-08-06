@@ -14,7 +14,7 @@ import {
   Select,
   FormHelperText,
 } from "@mui/material";
-import AddressSelector from "./address_form_select";
+// import AddressSelector from "./address_form_select";
 import axios from "axios";
 
 const style = {
@@ -68,7 +68,7 @@ interface AddressModalProps {
     phoneNumber?: string;
     address?: string;
   };
-  onAddressChange: (province: string, district: string, ward: string) => void;
+  onAddressChangeToUpdate: (province: string, district: string, ward: string) => void;
 }
 
 const AddressModal: React.FC<AddressModalProps> = ({
@@ -76,9 +76,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
   handleClose,
   dataAddressById,
   handleSubmit,
-  onAddressChange,
+  onAddressChangeToUpdate,
 }) => {
-  const [addressData, setAddressData] = useState<AddressDataInModal>({
+  const [addressDataToUpdate, setAddressDataToUpdate] = useState<AddressDataInModal>({
     fullName: "",
     phoneNumber: "",
     address: "",
@@ -100,19 +100,19 @@ const AddressModal: React.FC<AddressModalProps> = ({
     let tempErrors = { fullName: "", phoneNumber: "", address: "" , province: "", district: "", ward: ""};
     const phoneNumberPattern = /^[0-9]{10}$/;
 
-    if (!addressData.fullName)
+    if (!addressDataToUpdate.fullName)
       tempErrors.fullName = "Họ và tên không được để trống";
-    if (!addressData.phoneNumber)
+    if (!addressDataToUpdate.phoneNumber)
       tempErrors.phoneNumber = "Số điện thoại không được để trống";
-    else if (!phoneNumberPattern.test(addressData.phoneNumber))
+    else if (!phoneNumberPattern.test(addressDataToUpdate.phoneNumber))
       tempErrors.phoneNumber = "Số điện thoại không hợp lệ";
-    if (!addressData.address)
+    if (!addressDataToUpdate.address)
       tempErrors.address = "Địa chỉ không được để trống";
-    if (!addressData.province)
+    if (!addressDataToUpdate.province)
       tempErrors.province = "Địa chỉ tỉnh/thành phó không được để trống";
-    if (!addressData.district)
+    if (!addressDataToUpdate.district)
       tempErrors.district = "Địa chỉ quận/huyện không được để trống";
-    if (!addressData.ward)
+    if (!addressDataToUpdate.ward)
       tempErrors.ward = "Địa chỉ xã/phường không được để trống";
     setErrors(tempErrors);
     return Object.values(tempErrors).every((x) => x === "");
@@ -120,7 +120,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
   useEffect(() => {
     if (dataAddressById) {
-      setAddressData({
+      setAddressDataToUpdate({
         fullName: dataAddressById.fullName || "",
         phoneNumber: dataAddressById.phoneNumber || "",
         address: dataAddressById.address || "",
@@ -134,20 +134,20 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setAddressData((prevData) => ({
+    setAddressDataToUpdate((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
 
-  console.log(addressData);
+  console.log(addressDataToUpdate);
 
   const handleAddressTypeChange = (
     event: React.MouseEvent<HTMLElement>,
     newAddressType: boolean | null
   ) => {
     if (newAddressType !== null) {
-      setAddressData((prevData) => ({
+      setAddressDataToUpdate((prevData) => ({
         ...prevData,
         addressType: newAddressType,
       }));
@@ -158,8 +158,8 @@ const AddressModal: React.FC<AddressModalProps> = ({
     e.preventDefault();
 
     if (validateFormUpdate()) {
-      handleSubmit(addressData);
-      setSelectedProvince("")
+      handleSubmit(addressDataToUpdate);
+      setSelectedProvinceToUpdate("")
       setSelectedDistrict("")
       setSelectedWard("")
     } else {
@@ -171,7 +171,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
   const [districts, setDistricts] = useState<District[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
 
-  const [selectedProvince, setSelectedProvince] = useState<string>("");
+  const [selectedProvinceToUpdate, setSelectedProvinceToUpdate] = useState<string>("");
   const [selectedDistrict, setSelectedDistrict] = useState<string>("");
   const [selectedWard, setSelectedWard] = useState<string>("");
 
@@ -193,10 +193,10 @@ const AddressModal: React.FC<AddressModalProps> = ({
   }, []);
 
   useEffect(() => {
-    if (selectedProvince) {
+    if (selectedProvinceToUpdate) {
       const fetchDistricts = async () => {
         const province = provinces.find(
-          (p) => p.ProvinceName === selectedProvince
+          (p) => p.ProvinceName === selectedProvinceToUpdate
         );
         const response = await axios.post(
           "https://online-gateway.ghn.vn/shiip/public-api/master-data/district",
@@ -213,7 +213,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
 
       fetchDistricts();
     }
-  }, [selectedProvince, provinces]);
+  }, [selectedProvinceToUpdate, provinces]);
 
   useEffect(() => {
     if (selectedDistrict) {
@@ -239,19 +239,19 @@ const AddressModal: React.FC<AddressModalProps> = ({
   }, [selectedDistrict, districts]);
 
   useEffect(() => {
-    onAddressChange(selectedProvince, selectedDistrict, selectedWard);
-  }, [selectedProvince, selectedDistrict, selectedWard, onAddressChange]);
+    onAddressChangeToUpdate(selectedProvinceToUpdate, selectedDistrict, selectedWard);
+  }, [selectedProvinceToUpdate, selectedDistrict, selectedWard, onAddressChangeToUpdate]);
 
   useEffect(() => {
-    setAddressData((prevData) => ({
+    setAddressDataToUpdate((prevData) => ({
       ...prevData,
-      province: selectedProvince,
+      province: selectedProvinceToUpdate,
       district: selectedDistrict,
       ward: selectedWard,
     }));
-  },[selectedProvince, selectedDistrict, selectedWard])
+  },[selectedProvinceToUpdate, selectedDistrict, selectedWard])
 
-  const addressValue = addressData.province +","+ addressData.district + "," + addressData.ward
+  const addressValue = addressDataToUpdate.province +","+ addressDataToUpdate.district + "," + addressDataToUpdate.ward
 
   return (
     <Modal
@@ -272,7 +272,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
               fullWidth
               label="Họ và tên"
               name="fullName"
-              value={addressData.fullName}
+              value={addressDataToUpdate.fullName}
               onChange={handleChange}
               sx={{ mr: 1 }}
               error={!!errors.fullName}
@@ -283,7 +283,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
               fullWidth
               label="Số điện thoại"
               name="phoneNumber"
-              value={addressData.phoneNumber}
+              value={addressDataToUpdate.phoneNumber}
               onChange={handleChange}
               sx={{ ml: 1 }}
               error={!!errors.phoneNumber}
@@ -295,7 +295,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             fullWidth
             label="Địa chỉ cụ thể"
             name="address"
-            value={addressData.address}
+            value={addressDataToUpdate.address}
             onChange={handleChange}
             error={!!errors.address}
             helperText={errors.address}
@@ -313,9 +313,9 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <FormControl fullWidth margin="normal" sx={{ mr: 2 }}>
               <InputLabel>Tỉnh/Thành phố</InputLabel>
               <Select
-                value={addressData.province|| selectedProvince}
+                value={addressDataToUpdate.province|| selectedProvinceToUpdate}
                 onChange={(e) => {
-                  setSelectedProvince(e.target.value as string)
+                  setSelectedProvinceToUpdate(e.target.value as string)
                   setSelectedDistrict("");
                   setWards([]);
                   setSelectedWard("");
@@ -343,12 +343,12 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <FormControl fullWidth margin="normal" sx={{}}>
               <InputLabel>Quận/Huyện</InputLabel>
               <Select
-                value={selectedDistrict}
+                value={addressDataToUpdate.district || selectedDistrict}
                 onChange={(e) => {
                   setSelectedDistrict(e.target.value as string);
                   setSelectedWard("");
                 }}
-                disabled={!selectedProvince}
+                disabled={!selectedProvinceToUpdate}
                 MenuProps={{
                   PaperProps: {
                     style: {
@@ -372,7 +372,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
             <FormControl fullWidth margin="normal" sx={{ ml: 2 }}>
               <InputLabel>Phường/Xã</InputLabel>
               <Select
-                value={selectedWard}
+                value={addressDataToUpdate.ward || selectedWard}
                 onChange={(e) => {
                   setSelectedWard(e.target.value as string);
                 }}
@@ -396,7 +396,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
           </Box>
           <Typography sx={{ mt: 2, mb: 1 }}>Loại địa chỉ</Typography>
           <ToggleButtonGroup
-            value={addressData.addressType}
+            value={addressDataToUpdate.addressType}
             exclusive
             onChange={handleAddressTypeChange}
             aria-label="Loại địa chỉ"
