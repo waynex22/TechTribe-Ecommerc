@@ -10,8 +10,10 @@ import {
   faVenus,
 } from "@fortawesome/free-solid-svg-icons";
 import { useUpdateUserMutation } from "../../../redux/rtkQuery/user_customers";
+import { useUpdateAvatarMutation } from "../../../redux/rtkQuery/user_customers";
 import { jwtDecode } from "jwt-decode";
-
+import { toast } from "react-toastify";
+import { Refresh } from "@mui/icons-material";
 
 interface UserInfo {
   name: string;
@@ -21,29 +23,37 @@ interface UserInfo {
 }
 
 const ComponentUserAccountProfile: React.FC = () => {
-  
-  const [accessToken, setAccessToken] = useState<string>('');
-  const [infoUserFormToken, setInfoUserFormToken] = useState<{ [key: string]: any } | null>(null);
+  const [updateAvatar] = useUpdateAvatarMutation();
+
+  const [accessToken, setAccessToken] = useState<string>("");
+  const [infoUserFormToken, setInfoUserFormToken] = useState<{
+    [key: string]: any;
+  } | null>(null);
+  const [fileToUpdate, setFileToUpdate] = useState<File | null>(null);
 
   useEffect(() => {
-    const getAccessToken = localStorage.getItem('access_token');
-  
+    const getAccessToken = localStorage.getItem("access_token");
+
     console.log(getAccessToken);
-  
+
     if (getAccessToken !== null) {
       setAccessToken(getAccessToken);
     }
   }, []);
-  
-  useEffect(() => {
-    if (accessToken !== '') {
+
+  const decodeToken = () => {
+    if (accessToken !== "") {
       const decodeToken = jwtDecode(accessToken) as { [key: string]: any };
-      setInfoUserFormToken(decodeToken)
+      setInfoUserFormToken(decodeToken);
       console.log(decodeToken);
     }
-  }, [accessToken]);
-  
+  };
 
+  useEffect(() => {
+    if (accessToken !== null) {
+      decodeToken();
+    }
+  }, [accessToken]);
 
   const [userInfo, setUserInfo] = useState<UserInfo>({
     name: "",
@@ -64,42 +74,66 @@ const ComponentUserAccountProfile: React.FC = () => {
   };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const fileImage = e.target.files ? e.target.files[0] : null;
-    setUserInfo({ ...userInfo, photo: fileImage });
+    const fileImage = e.target.files?.[0];
     if (fileImage) {
+      setFileToUpdate(fileImage);
+      setUserInfo({ ...userInfo, photo: fileImage });
       const url = URL.createObjectURL(fileImage); // Tạo URL dựa trên file
       //   setImage(file);
       setImageUrl(url); // Lưu URL vào state để hiển thị xem trước
     }
   };
 
+  console.log("fileToUpdate", fileToUpdate);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+  const handleUploadAvatar = async () => {
+    if (!userInfo.photo) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("avatar", userInfo.photo);
+    try {
+      const response = await updateAvatar({
+        formData: formData,
+        token: accessToken,
+      }).unwrap();
+      decodeToken();
+      toast.success(response.message)
+    } catch (error) {
+      console.log("Error uploading avatar:", error);
+    }
+  };
+
   const [updateUser] = useUpdateUserMutation();
   const handleSubmit = async (e: React.FormEvent) => {
     const formData = new FormData();
-    formData.append('name', userInfo.name)
-    formData.append('birthDate', userInfo.birthDate ? userInfo.birthDate.toISOString().split('T')[0] : '');
-    formData.append('gender', userInfo.gender);
+    formData.append("name", userInfo.name);
+    formData.append(
+      "birthDate",
+      userInfo.birthDate ? userInfo.birthDate.toISOString().split("T")[0] : ""
+    );
+    formData.append("gender", userInfo.gender);
+
+    console.log("FormdataSubmit: ", formData.getAll("name"));
+
     if (userInfo.photo) {
-      formData.append('photo', userInfo.photo);
+      formData.append("photo", userInfo.photo);
     }
     try {
       const response = await updateUser(formData).unwrap();
       console.log(response);
-      
-    }catch(error) {
-      console.error('Error updating user info:', error);
+    } catch (error) {
+      console.error("Error updating user info:", error);
     }
-
   };
-
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const currentDay = new Date();
 
   const handleBirthDayChange = (date: Date | null) => {
     setUserInfo({ ...userInfo, birthDate: date });
   };
-
 
   const handleGenderChange = (e: SelectChangeEvent<string>) => {
     const { value } = e.target;
@@ -118,7 +152,7 @@ const ComponentUserAccountProfile: React.FC = () => {
       <hr />
       <div className=" grid grid-cols-12 gap-4">
         <div className=" col-span-8 ps-10 pe-10 mt-8 border-r">
-          <form action="">
+          <form action="" className="flex justify-center">
             <table>
               <tr>
                 <td className=" text-base font-normal text-gray-600 pb-5 text-right">
@@ -128,7 +162,7 @@ const ComponentUserAccountProfile: React.FC = () => {
                   {infoUserFormToken !== null ? infoUserFormToken.username : ""}
                 </td>
               </tr>
-              <tr>
+              {/* <tr>
                 <td className=" text-base font-normal text-gray-600 pb-5 text-right">
                   Tên
                 </td>
@@ -142,7 +176,7 @@ const ComponentUserAccountProfile: React.FC = () => {
                     sx={{width: 300}}
                   />
                 </td>
-              </tr>
+              </tr> */}
               <tr>
                 <td className=" text-base font-normal text-gray-600 pb-5 text-right">
                   Email
@@ -157,10 +191,10 @@ const ComponentUserAccountProfile: React.FC = () => {
                   Số điện thoại
                 </td>
                 <td className=" text-sm font-normal ps-8 pb-5 text-left">
-                {infoUserFormToken !== null ? infoUserFormToken.phone : ""}
+                  {infoUserFormToken !== null ? infoUserFormToken.phone : ""}
                 </td>
               </tr>
-              <tr>
+              {/* <tr>
                 <td className=" text-base font-normal text-gray-600 pb-5 text-right">
                   Giới tính
                 </td>
@@ -194,9 +228,9 @@ const ComponentUserAccountProfile: React.FC = () => {
                     </MenuItem>
                   </Select>
                 </div>
-              </tr>
+              </tr> */}
 
-              <tr>
+              {/* <tr>
                 <td className=" text-base font-normal text-gray-600 pb-5 text-right">
                   Ngày sinh
                 </td>
@@ -214,7 +248,6 @@ const ComponentUserAccountProfile: React.FC = () => {
                       }
                     />
                   </div>
-                  {/* Check ngày sinh */}
                   {userInfo.birthDate !== null ? (
                     currentDay <= userInfo.birthDate ? (
                       <div className="text-red-500 text-sm font-normal block mt-2">
@@ -227,13 +260,12 @@ const ComponentUserAccountProfile: React.FC = () => {
                     ""
                   )}
                 </td>
-              </tr>
+              </tr> */}
 
               <tr>
-                <td></td>
-                <td className="text-sm font-normal ps-8 pb-5 text-left">
+                <td className="text-sm font-normal ps-8 pb-5 text-center">
                   <button
-                    onChange={handleSubmit}
+                    onClick={handleSubmit}
                     className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
                     type="button"
                   >
@@ -250,20 +282,21 @@ const ComponentUserAccountProfile: React.FC = () => {
             {infoUserFormToken !== null ? (
               <div className=" border rounded-full w-24 h-24 overflow-hidden">
                 {imageUrl ? (
-                  
                   <img
-                  className="w-full h-full object-cover"
-                  src={imageUrl}
-                  alt="Preview"
-                />
+                    className="w-full h-full object-cover"
+                    src={imageUrl}
+                    alt="Preview"
+                  />
                 ) : (
                   <img
-                  className="w-full h-full object-cover"
-                  src={infoUserFormToken.avata}
+                    className="w-full h-full object-cover"
+                    src={infoUserFormToken.avata}
                   />
                 )}
               </div>
-            ) : ""}
+            ) : (
+              ""
+            )}
             {/* {!imageUrl && (
               <div className=" border rounded-full w-24 h-24 overflow-hidden"></div>
             )}
@@ -289,6 +322,12 @@ const ComponentUserAccountProfile: React.FC = () => {
             >
               Chọn ảnh
             </label>
+            <button
+              className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+              onClick={handleUploadAvatar}
+            >
+              Update
+            </button>
             <div className="mt-4 text-left">
               <div className="text-gray-500 text-sm font-light mb-1">
                 Dụng lượng file tối đa 1 MB

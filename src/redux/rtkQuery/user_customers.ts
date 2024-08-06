@@ -70,8 +70,19 @@ export const userApi = createApi({
         method: "PUT",
         body: addressData
       })
+    }),
+
+    updateAvatar : builder.mutation({
+      query: ({formData, token}: {formData: FormData, token: string}) => ({
+        url: `/customer/update-avatar`,
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
     })
   }),
 });
 
-export const {useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation } = userApi;
+export const {useUpdateAvatarMutation,useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation } = userApi;

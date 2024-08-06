@@ -24,29 +24,33 @@ const LayoutUserComponent: React.FC = () => {
       setAccessToken(getAccessToken);
     }
   }, []);
-  
-  useEffect(() => {
+
+  const decodeToken = () => {
     if (accessToken !== '') {
       const decodeToken = jwtDecode(accessToken) as { [key: string]: any };
       setInfoUserFormToken(decodeToken)
       console.log(decodeToken);
     }
+  }
+  
+  useEffect(() => {
+    decodeToken()
   }, [accessToken]);
   return (
     <div className="bg-white ">
       <div className="grid  grid-cols-12 gap-4 max-w-[1200px] m-auto pt-5 pb-8">
         <div className="col-span-2 bg-slate-50 p-2">
           <div className="flex pb-3 items-center">
-            <div className="text-2xl border border-gray-300 rounded-full w-14 h-14 relative">
+            <div className="text-2xl border border-gray-300 rounded-full overflow-hidden w-14 h-14 relative">
               <div className="text-2xl absolute overflow-hidden h-full w-full block">
-                <img
-                  src="https://icons.veryicon.com/png/o/internet--web/prejudice/user-128.png"
+                <img className=" h-full w-full object-cover"
+                  src={infoUserFormToken?.avata}
                   alt=""
                 />
               </div>
             </div>
             <div className="flex flex-col justify-center ps-4">
-              <div className=" text-left">{infoUserFormToken?.fullName}</div>
+              <div className=" text-left">{infoUserFormToken?.username}</div>
               <a href="/user" className=" font-light text-sm text-gray-500">
                 <FontAwesomeIcon icon={faPen} /> Sửa hồ sơ
               </a>
