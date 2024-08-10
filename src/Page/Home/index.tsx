@@ -4,6 +4,7 @@ import Modal from "../../Components/modal/Modal";
 import FlastSale from "../../Components/Sales/FlastSale";
 import ProductItem from "../../Components/Product/ProductItem";
 import Catelog from "../../Components/Catelog/Catelog";
+import HotProduct from "src/Components/ProductHot/HotProduct";
 const HomePage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   useEffect(() => {
@@ -84,6 +85,17 @@ const HomePage: React.FC = () => {
       <div className="my-5 h-fit bg-white p-4 rounded-lg mx-auto">
         <div className="flex gap-2 items-center justify-start">
           <img
+            src="https://salt.tikicdn.com/ts/upload/f8/77/0b/0923990ed377f50c3796f9e6ce0dddde.png"
+            className="w-52 h-9 object-fill"
+            alt=""
+          />
+          {/* <h3>Sản phẩm Hot</h3> */}
+        </div>
+        <HotProduct />
+      </div>
+      <div className="my-5 h-fit bg-white p-4 rounded-lg mx-auto">
+        <div className="flex gap-2 items-center justify-start">
+          <img
             src="	https://salt.tikicdn.com/cache/w100/ts/ta/70/b9/49/43f25c0f4ee6b7a0d918f047e37e8c87.png.webp"
             className="w-12 h-12 object-fill"
             alt=""
@@ -92,6 +104,7 @@ const HomePage: React.FC = () => {
         </div>
         <Catelog />
       </div>
+      
     </div>
   );
 };

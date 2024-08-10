@@ -1,24 +1,18 @@
 import { useSelector } from "react-redux";
-import { useGetCartMeQuery, useGetCartSelectQuery, useSelectAllCartMutation, useUpdateCartSelectMutation } from "../../redux/rtkQuery/cart";
+import { useGetCartMeQuery, useGetCartSelectQuery, useSelectAllCartMutation } from "../../redux/rtkQuery/cart";
 import CartItem from "./CartItem";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { formatNumberVnd } from "../../utils/fortmartNumberVnd";
 import { useNavigate } from "react-router-dom";
 import { useCreateSubOrderMutation } from "../../redux/rtkQuery/order";
 import Spinner from "../spinner/Spinner";
 import { ToastProps } from "../../Type";
 import Toast from "../toast/Toast";
+import { useGetAddressByUserIdQuery } from "src/redux/rtkQuery/user_customers";
+import CartLoading from "../skeletonLoading/CartLoading";
+import { checkDiscount } from "src/utils/checkDiscount";
+import { discountPrice } from "src/utils/getMinMax/getMinMaxPrice";
 
-const groupByShop = (cartItems: any[]) => {
-  return cartItems.reduce((groups: any, item: any) => {
-    const shopId = item.productPriceId.id_product[0].id_shop[0]._id;
-    if (!groups[shopId]) {
-      groups[shopId] = [];
-    }
-    groups[shopId].push(item);
-    return groups;
-  }, {});
-};
 const Cart: React.FC = () => {
   const { user } = useSelector((state: any) => state.auth);
   const [loading, setLoading] = useState(false);
@@ -35,11 +29,19 @@ const Cart: React.FC = () => {
   const [toast, setToast] = useState<ToastProps | null>(null);
   const [checkedAll, setCheckedAll] = useState(false);
   const [selectAll] = useSelectAllCartMutation();
+  const {data : addressUser } = useGetAddressByUserIdQuery(user?.sub, {
+    skip: !user
+  });
+  
   const handleSetToast = (toast: any) => {
     setToast({ ...toast, message: toast.message, type: toast.type, onClose: () => setToast(null) });
   }
   const handleSelectAllCart = async  (type: string) => {
-    const listId = cart?.cartItems.map((item: any) => ({ _id: item.productPriceId._id }));
+    const listId = cart?.cartItems
+  .map((item: any) => 
+    item.items.map((itemOfItems: any) => ({_id: itemOfItems.productPriceId._id}))
+  )
+  .flat(); 
     const payLoad = {
       customerId: user?.sub,
       type: type,
@@ -47,35 +49,70 @@ const Cart: React.FC = () => {
     }
     await selectAll(payLoad);
     refetchCartSelect();
-  } 
+  }
+  const totalItemInCart = cart?.cartItems?.reduce((acc: number, item: any) => acc + item.items.length, 0)
   useEffect(() => {
-    if (cart?.cartItems) {
-      const selectedProductIds = cartSelect?.listProductSelect.map((item: any) => item._id);
-      const filteredItems = cart?.cartItems.filter((item: any) => selectedProductIds?.includes(item.productPriceId._id));
-      const simplifiedItems = filteredItems.map((item: any) => ({
-        productPriceId: item.productPriceId._id,
-        quantity: item.quantity,
+    if (cart?.cartItems && cartSelect?.listProductSelect) {
+      const selectedProductIds = cartSelect.listProductSelect.map((item: any) => item._id);
+      const filteredItems = cart.cartItems
+        .map((shopCart: any) => ({
+          shopId: shopCart.shopId,
+          items: shopCart.items.filter((item: any) =>
+            selectedProductIds.includes(item.productPriceId._id)
+          ),
+        }))
+        .filter((shopCart) => shopCart.items.length > 0); 
+      const simplifiedItems = filteredItems.map((shopCart) => ({
+        shopId: shopCart.shopId,
+        items: shopCart.items.map((item: any) => ({
+          productPriceId: item.productPriceId._id,
+          quantity: item.quantity,
+          discountDetailId: item.discountDetailId ? item.discountDetailId._id : null,
+        })),
       }));
-      if(simplifiedItems.length === cart?.cartItems.length) {
+      const totalItemsSimplified = simplifiedItems.reduce((acc: number, shopCart: any) => (acc + shopCart.items.length), 0);
+      if(totalItemInCart === totalItemsSimplified) {
         setCheckedAll(true);
-      } else {
+      }else {
         setCheckedAll(false);
       }
+     
       setListProductSelect(simplifiedItems);
-      const total = filteredItems.reduce((acc: any, item: any) => {
-        return acc + item.quantity * item.productPriceId.price;
+      const total = filteredItems.reduce((acc: number, shopCart: any) => {
+        return acc + shopCart.items.reduce((innerAcc: number, item: any) => {
+          if(item.discountDetailId) {
+            const discount = checkDiscount(item.discountDetailId?.id_discount?.time_start, item.discountDetailId?.id_discount?.time_end);
+            if(discount) {
+              const price = discountPrice(item.productPriceId.price, item.discountDetailId?.percent);
+              return innerAcc + item.quantity * price;
+            }else {
+              return innerAcc + item.quantity * item.productPriceId.price;
+            }
+          }else {
+            const productPrice = item.productPriceId.price;
+            return innerAcc + item.quantity * productPrice;
+          }
+        }, 0);
       }, 0);
       setTotal(total);
     }
-  }, [cartSelect?.listProductSelect, cart?.cartItems]);
+  }, [cartSelect?.listProductSelect, cart?.cartItems, totalItemInCart]);
+  
   const handlePayment = async (customerId: string) => {
     if (listProductSelect.length === 0) {
       handleSetToast({ message: 'Bạn chưa chọn sản phẩm nào', type: "error" });
       return;
     }
+    if(addressUser.length === 0) {
+      navigate('/checkout/address')
+    }
+    const defaultAddress = addressUser?.find((item: any) => item.isDefault);
     const payload = {
       customerId: customerId,
       items: listProductSelect,
+      methodPayment: "Thanh toán khi nhận hàng",
+      address: defaultAddress?._id,
+      subTotal: total
     }
     setLoading(true);
     if (payload) {
@@ -94,8 +131,9 @@ const Cart: React.FC = () => {
       }
     }
   }
-  const groupedItems = useMemo(() => groupByShop(cart?.cartItems || []), [cart]);
-  if (isLoading) return <div>Loading</div>;
+  // console.log(listProductSelect);
+  
+  if (isLoading) return <CartLoading />;
   return (
     <>
       <Spinner loading={loading} />
@@ -126,7 +164,7 @@ const Cart: React.FC = () => {
                     checked={checkedAll}
                     className="w-5 h-5 outline-none rounded-md border-solid border-[1px] focus:ring-0 border-gray-300 checked:bg-secondary transition-all duration-300"
                   />
-                  <span className="text-sm font-light">Tất cả ({cart?.cartItems.length} sản phẩm) </span>
+                  <span className="text-sm font-light">Tất cả ({totalItemInCart} sản phẩm) </span>
                 </div>
                 <div className="w-[20%] flex items-center justify-start p-2 gap-x-2">
                   <span className="text-sm font-light text-gray-500">
@@ -161,16 +199,10 @@ const Cart: React.FC = () => {
                 </div>
               </div>
               <div className="bg-white mt-5 rounded-md flex flex-col items-start justify-start h-fit overflow-hidden">
-                {Object.keys(groupedItems).map((shopId: string, index: number) => {
-                  const items = groupedItems[shopId];
-                  const shopName = items[0].productPriceId.id_product[0].id_shop[0].name;
-                  return (
-                    <>
-                      <div key={index} className="bg-white rounded-md flex items-center justify-start p-2 gap-x-2">
-                        <input
-                          type="checkbox"
-                          className="w-5 h-5 outline-none rounded-md border-solid border-[1px] border-gray-300 focus:ring-0 checked:bg-secondary transition-all duration-300"
-                        />
+                {cart?.cartItems.map((item: any, index: number) => (
+                  <>
+                  <div key={index} className="bg-white rounded-md flex items-center justify-start p-2 gap-x-2">
+                        
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
@@ -186,17 +218,18 @@ const Cart: React.FC = () => {
                           />
                         </svg>
                         <div className="text-sm font-light-medium">
-                          {shopName}
+                          {item.shopId?.name}
                         </div>
                       </div>
                       <div className="w-full">
-                        {items.map((item: any, index: number) => (
+                        {item.items?.map((item: any, index: number) => (
                           <CartItem itemCart={item} key={index} />
                         ))}
                       </div>
-                    </>
-                  );
-                })}
+                  </>
+                ))}
+                      
+                  
               </div>
             </div>
             <div className="col-span-2">

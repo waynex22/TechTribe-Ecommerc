@@ -2,9 +2,10 @@ export type Order = {
     _id?: string | any;
     customerId: string | any;
     status?: string;
-    address?: string;
+    address?: string | any;
     shipping?: string;
     voucherShop?: string | any;
+    totalDiscountShop?: number | any;
     voucher2t?: string | any;
     coin?: number;
     coinRefunt?: number | any;
@@ -15,4 +16,6 @@ export type Order = {
     items: { productPriceId: string; quantity: number }[];
     subTotal?: number | any;
     total?: number | any;
+    customerReward?: any;
+    listProduct?: any;
 }

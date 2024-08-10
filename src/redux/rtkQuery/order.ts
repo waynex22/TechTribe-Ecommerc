@@ -75,6 +75,21 @@ export const orderApi = createApi({
                 }
             }
         }),
+        getOrderByUserId: builder.mutation<any, string>({
+            query: (id) => ({
+                url: `order/user/${id}`,
+                method: 'GET'
+            })
+        })
+        ,
+        createOrder: builder.mutation<any, any>({
+            query: (payload) => ({
+                url: 'order',
+                method: 'POST',
+                body: payload
+            })
+        })
+        ,
         UpdateSubOrderDto: builder.mutation<any, UpdateSubOrderPayload>({
             query: (payload) => ({
                 url: `sub-order/${payload.id}`,
@@ -87,8 +102,15 @@ export const orderApi = createApi({
                 url: `sub-order/${id}`,
                 method: 'DELETE'
             })
+        }),
+        updateItemsSubOrder: builder.mutation<any, any>({
+            query: (payload) => ({
+                url: `items-sub-order/${payload._id}`,
+                method: 'PATCH',
+                body: payload
+            })
         })
     }),
 });
 
-export const { useGetSubOrderQuery, useCreateSubOrderMutation, useDeleteSubOrderMutation , useUpdateSubOrderDtoMutation } = orderApi;
+export const { useGetSubOrderQuery, useCreateSubOrderMutation, useDeleteSubOrderMutation , useUpdateSubOrderDtoMutation, useUpdateItemsSubOrderMutation, useCreateOrderMutation } = orderApi;

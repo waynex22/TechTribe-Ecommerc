@@ -2,13 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getIdOrderNotComplete, removeIdOrderNotComplete } from '../../utils/localStorage/token';
 import ModalAccept from '../modal/ModalAccept';
-import { useDeleteSubOrderMutation } from '../../redux/rtkQuery/order';
+import { useDeleteSubOrderMutation, useGetSubOrderQuery } from '../../redux/rtkQuery/order';
+import { useSelector } from 'react-redux';
 
 
 const CheckSubOrder: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [deleteSubOrder] = useDeleteSubOrderMutation();
   const [orderId, setOrderId] = useState<any>(null);
+  const { user } = useSelector((state: any) => state.auth);
+  const {data: order , refetch} = useGetSubOrderQuery(user?.sub, {
+    skip: !user,
+  })
   const location = useLocation();
   const history = useNavigate();
 
@@ -31,9 +36,16 @@ const CheckSubOrder: React.FC = () => {
 
   const handleDelete = async () => {
     removeIdOrderNotComplete();
-    await deleteSubOrder(orderId).unwrap();
-    handleClose();
+    if(order.subOrder) {
+      await deleteSubOrder(order?.subOrder?._id).unwrap();
+      handleClose();
+    }else {
+      await deleteSubOrder(orderId).unwrap();
+      handleClose();
+    }
+    refetch();
   };
+// console.log(order);
 
   return (
     <div>

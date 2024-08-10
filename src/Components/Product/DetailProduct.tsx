@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { formatNumberVnd } from "../../utils/fortmartNumberVnd/index";
@@ -8,11 +8,13 @@ import { UpdateCartPayload, useGetCartMeQuery, useUpdateCartMutation } from "../
 import { useSelector } from "react-redux";
 import Toast from "../toast/Toast";
 import { ToastProps } from "../../Type";
-import { getMinMaxPriceInArr } from "../../utils/getMinMax/getMinMaxPrice";
+import { discountPrice, getMinMaxPriceInArr } from "../../utils/getMinMax/getMinMaxPrice";
 import ProductItem from "./ProductItem";
+import { product } from "src/utils/types/product";
 const ProductDetail: React.FC = () => {
-  const { slug } = useParams();
+  const { slug } = useParams<{ slug: string }>();
   const [updateCart] = useUpdateCartMutation();
+  const { cart } = useSelector((state: any) => state.cart);
   const { user } = useSelector((state: any) => state.auth);
   const { refetch } = useGetCartMeQuery(user?.sub);
   const { data: products } = useGetProductQuery();
@@ -26,7 +28,7 @@ const ProductDetail: React.FC = () => {
     setToast({ ...toast, message: toast.message, type: toast.type, onClose: () => setToast(null) });
   }
   const increment = () => {
-    if (quantity + 1 > ProductPriceSelected?.stock) return
+    if (quantity + 1 > ProductPriceSelected?.stock || !ProductPriceSelected || ProductPriceSelected.stock === 0) return
     setQuantity((prev) => prev + 1);
   };
 
@@ -36,14 +38,14 @@ const ProductDetail: React.FC = () => {
   const ProductPriceSelected = product?.product_price?.find((item: any) => {
     if (selectedColor && selectedSize) {
       return item.id_color[0]?._id === selectedColor && item.id_size[0]._id === selectedSize;
-    }else if( item.id_color.length === 0 && item.id_size.length !==0 && selectedSize){
+    } else if (item.id_color.length === 0 && item.id_size.length !== 0 && selectedSize) {
       return item.id_size[0]._id === selectedSize;
-    }else if( item.id_color.length !==0 && item.id_size.length === 0 && selectedColor){
+    } else if (item.id_color.length !== 0 && item.id_size.length === 0 && selectedColor) {
       return item.id_color[0]?._id === selectedColor;
     }
   })
   const isOnStock = (colorId: any, sizeId: any) => {
-    if (!colorId) return true; 
+    if (!colorId) return true;
     if (!sizeId) {
       return product?.product_price.some((item: any) =>
         item.id_color[0]?._id === colorId && item.stock > 0
@@ -56,42 +58,109 @@ const ProductDetail: React.FC = () => {
     });
     return productPrice ? productPrice.stock > 0 : false;
   };
-  // console.log(ProductPriceSelected);
-  const listProductLikeCategory = products?.filter((item: any) =>
-    item.id_categoryDetail[0].name === product?.id_categoryDetail[0].name && item._id !== product?._id);
-  // console.log(listProductLikeCategory);
-  
-
+  const listProductLikeCategory = useMemo(() => {
+    return products?.filter((item: product) =>
+      item.id_categoryDetail[0].name === product?.id_categoryDetail[0].name && item._id !== product?._id
+    );
+  }, [products, product]);
+  const isDiscount: any = product?.discount?.find((item: any) => item.id_productPrice == ProductPriceSelected?._id);
   const handleAddProductToCart = async (customerId: string, quantity: number) => {
     if (!user) {
       handleSetToast({ message: 'Bạn cần đăng nhập để thực hiện', type: "error" });
       return
     };
     if (!ProductPriceSelected) {
-      handleSetToast({ message: 'Bạn cần chọn màu và kích thước', type: "error" });
+      handleSetToast({ message: 'Bạn cần chọn loại', type: "error" });
       return
     };
+    if (ProductPriceSelected?.stock === 0) {
+      handleSetToast({ message: 'Kho sản phẩm đã hết!', type: "error" });
+      return
+    }
+    if (isDiscount) {
+      const listItemsInCart = cart?.cart?.cartItems?.flatMap((item: any) => item.items) || [];
+      const itemInCart = listItemsInCart.find((item: any) => item.productPriceId._id === ProductPriceSelected?._id);
+      if (itemInCart) {
+        if (isDiscount.limit_customer !== "Không giới hạn") {
+          const checkQuantityLimit = itemInCart.quantity + quantity > isDiscount.limit_customer;
+          if (checkQuantityLimit) {
+            handleSetToast({ message: `Chương trình giới hạn và bạn chỉ còn có thể thêm tối đa (${isDiscount.limit_customer - itemInCart.quantity}) sản phẩm vào giỏ hàng!`, type: "error" });
+            return
+          }
+        }
+      }
+    }
     const payload: UpdateCartPayload = {
+      shopId: product?.id_shop[0]._id,
       customerId: customerId,
-      productPriceId: ProductPriceSelected?._id,
-      quantity: quantity,
+      items: {
+        productPriceId: ProductPriceSelected?._id,
+        quantity: quantity,
+        discountDetailId: isDiscount?._id
+      }
     }
     if (payload) {
       try {
-        await updateCart(payload).unwrap();
-        refetch();
-        handleSetToast({ message: 'Đã thêm vào giỏ hàng', type: "success" });
+        const result: any = await updateCart(payload).unwrap();
+        if (result?.status === 299) {
+          handleSetToast({ message: `Giỏ hàng đã có và bạn chỉ còn có thể thêm (${result?.count}) sản phẩm`, type: "success" });
+          return
+        } else {
+          refetch();
+          handleSetToast({ message: 'Thêm vào giỏ hàng thành công', type: "success" });
+        }
       } catch (error) {
         console.error('Error adding product to cart:', error);
       }
     }
   }
-  // console.log(ProductPriceSelected);
-  console.log(product);
-  
+
 
   if (isLoading) return <ProductDetailLoading />;
   const minMaxPrice = getMinMaxPriceInArr(product?.product_price);
+  const renderPrice = (price: number, discountedPrice: number) => (
+    <>
+      <span className="text-[24px] w-fit font-bold">{formatNumberVnd(discountedPrice || price)}</span>
+      {discountedPrice && (
+        <span className="text-sm text-gray-400 absolute top-8">
+          <del>{formatNumberVnd(price)}đ</del>
+        </span>
+      )}
+    </>
+  );
+
+  const renderPriceRange = (minPrice: number, maxPrice: number, discountMinPrice: number, discountMaxPrice: number) => (
+    <div className="flex items-center gap-4">
+      <div className="flex items-center justify-start relative w-fit">
+        <span className="text-[24px] w-fit font-bold">
+          {formatNumberVnd(discountMinPrice || minPrice)}
+        </span>
+        <div className="text-lg absolute right-[-16px] top-[-6px]">
+          đ
+        </div>
+        {product?.valuePriceDiscount && (
+            <div className="text-sm text-gray-400 absolute top-8 flex gap-2">
+              <del>{formatNumberVnd(minMaxPrice.min)}đ</del>
+              <span>-</span>
+              <del>{formatNumberVnd(minMaxPrice.max)}đ</del>
+            </div>
+          )}
+      </div>
+      {minPrice !== maxPrice && (
+        <>
+          <div className="">-</div>
+          <span className="text-[24px] w-fit font-bold">
+            {formatNumberVnd(discountMaxPrice || maxPrice)}
+          </span>
+          
+        </>
+      )}
+    </div>
+  );
+
+  const discountedPrice: any = isDiscount ? discountPrice(ProductPriceSelected.price, isDiscount.percent) : null;
+  console.log(product);
+  
   return (
     <>
       <div className="container mx-auto">
@@ -107,7 +176,7 @@ const ProductDetail: React.FC = () => {
                 />
                 <div className="flex space-x-2 mt-2">
                   {product?.thumbnails.map((item: string, index: number) => (
-                    <div key={index} className="border-solid border-[1px] cursor-pointer border-gray-200 rounded-sm p-1">
+                    <div key={index} className={`${indexThumbnail === index ? 'border-solid border-[1px] border-blue-500 rounded-xl' : ''}border-solid border-[1px] cursor-pointer border-gray-200 rounded-sm p-1`}>
                       <img
                         onClick={() => setIndexThumbnail(index)}
                         src={item}
@@ -161,68 +230,21 @@ const ProductDetail: React.FC = () => {
               <div className="my-4 flex items-center justify-start gap-2">
                 <p className="font-semibold text-sm">5.0</p>
                 <div className="flex items-center gap-1">
-                  <svg
-                    stroke="currentColor"
-                    fill="currentColor"
-                    strokeWidth="0"
-                    viewBox="0 0 24 24"
-                    color="#FFC400"
-                    height="16"
-                    width="16"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
-                  </svg>
-                  <svg
-                    stroke="currentColor"
-                    fill="currentColor"
-                    strokeWidth="0"
-                    viewBox="0 0 24 24"
-                    color="#FFC400"
-                    height="16"
-                    width="16"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
-                  </svg>
-                  <svg
-                    stroke="currentColor"
-                    fill="currentColor"
-                    strokeWidth="0"
-                    viewBox="0 0 24 24"
-                    color="#FFC400"
-                    height="16"
-                    width="16"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
-                  </svg>
-                  <svg
-                    stroke="currentColor"
-                    fill="currentColor"
-                    strokeWidth="0"
-                    viewBox="0 0 24 24"
-                    color="#FFC400"
-                    height="16"
-                    width="16"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
-                  </svg>
-                  <svg
-                    stroke="currentColor"
-                    fill="currentColor"
-                    strokeWidth="0"
-                    viewBox="0 0 24 24"
-                    color="#FFC400"
-                    height="16"
-                    width="16"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
-                  </svg>
+                  {[...Array(5)].map((_, index) => (
+                    <svg key={index}
+                      stroke="currentColor"
+                      fill="currentColor"
+                      strokeWidth="0"
+                      viewBox="0 0 24 24"
+                      color="#FFC400"
+                      height="16"
+                      width="16"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
+                    </svg>
+                  ))}
                 </div>
-                <p className="text-gray-400 text-sm">(341)</p>
                 <div className="w-[1px] h-5 bg-gray-300"></div>
                 <div className="flex items-center justify-start gap-2">
                   <p className="font-light text-sm text-gray-400">Đã bán : </p>
@@ -232,30 +254,22 @@ const ProductDetail: React.FC = () => {
               <div className="my-4 text-red-500 gap-2">
                 <div className="flex items-center justify-start relative w-fit">
                   {ProductPriceSelected ? (
-                    <span className=" text-[24px] w-fit font-bold">
-                      {formatNumberVnd(ProductPriceSelected?.price)}
-                    </span>
-                  ) :
-                    (
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center justify-start relative w-fit">
-                          <span className=" text-[24px] w-fit font-bold">{formatNumberVnd(minMaxPrice.min)}</span>
-                          <div className="text-lg absolute right-[-16px] top-[-6px]">
-                            đ
-                          </div>
-                        </div>
-                        <div className="ml-4">
-                          -
-                        </div>
-                        <span className=" text-[24px] w-fit font-bold">{formatNumberVnd(minMaxPrice.max)}</span>
-                      </div>
-                    )}
+                    isDiscount ? (
+                      renderPrice(ProductPriceSelected.price, discountedPrice)
+                    ) : (
+                      <span className="text-[24px] w-fit font-bold">{formatNumberVnd(ProductPriceSelected.price)}</span>
+                    )
+                  ) : (
+                    renderPriceRange(minMaxPrice.min, minMaxPrice.max, product?.valuePriceDiscount?.minPrice, product?.valuePriceDiscount?.maxPrice)
+                  )}
+                  {isDiscount && (
+                    <div className="absolute text-gray-700 font-light-bold text-sm bg-gray-200 p-1 rounded-3xl right-[-70px]">
+                      -{isDiscount?.percent}%
+                    </div>
+                  )}
                   <div className="text-lg absolute right-[-16px] top-[-6px]">
                     đ
                   </div>
-                  {/* <div className="absolute text-gray-700 font-light-bold text-sm bg-gray-200 p-1 rounded-3xl right-[-70px]">
-                    -31%
-                  </div> */}
                 </div>
               </div>
               {product?.variation_color ? (
@@ -387,25 +401,26 @@ const ProductDetail: React.FC = () => {
             <div>
               <div className="p-4 mt-4 bg-white rounded-xl">
                 <h3>Thông tin chi tiết</h3>
-                {product && product?.product_specifications?.map((specification: any , index: number) => (
-                  <>                  <div key={index} className="flex flex-1 items-center justify-start gap-4 my-2">
-                    <p className="w-[50%] font-normal text-sm text-gray-500">{specification.id_specifications.name}</p>
-                    <p className="w-[50%] text-sm text-gray-800">{specification.id_specifications_detail.name}</p>
-                  </div>
-                  <div className="h-[1px] w-full bg-gray-300"></div>
+                {product && product?.product_specifications?.map((specification: any, index: number) => (
+                  <>
+                    <div key={index} className="flex flex-1 items-center justify-start gap-4 my-2">
+                      <p className="w-[50%] font-normal text-sm text-gray-500">{specification.id_specifications.name}</p>
+                      <p className="w-[50%] text-sm text-gray-800">{specification.id_specifications_detail.name}</p>
+                    </div>
+                    <div className="h-[1px] w-full bg-gray-300"></div>
                   </>
                 ))}
               </div>
             </div>
             <div className="p-4 mt-4 bg-white rounded-xl">
-                <h3>Mô tả sản phẩm</h3>
-                <p className="text-sm text-gray-600">{product?.description}</p>
-              </div>
+              <h3>Mô tả sản phẩm</h3>
+              <div dangerouslySetInnerHTML={{ __html: product?.description ?? '' }} />
+            </div>
             <div className="p-4 mt-4 bg-white rounded-xl">
               <h3>Sản phẩm tương tự</h3>
               <div className="grid md:grid-cols-4 lg:grid-cols-3 gap-4 items-center mt-2">
-                {listProductLikeCategory?.map((item: any, index: number) => (
-                  <ProductItem product={item} key={index}/>
+                {listProductLikeCategory?.slice(0, 6).map((item: any, index: number) => (
+                  <ProductItem product={item} key={index} />
                 ))}
               </div>
             </div>
@@ -498,21 +513,28 @@ const ProductDetail: React.FC = () => {
                 </div>
               </div>
               <div className="w-full h-[0.1px] bg-gray-200 my-2"></div>
-              <div className="flex items-center gap-4">
-                <img
-                  className="w-14 h-14 object-cover"
-                  src={product?.thumbnails[0]}
-                  alt=""
-                />
-                <span className="text-md font-light-bold">{product?.name}</span>
-                <div className="flex items-start justify-normal gap-2">
+              {ProductPriceSelected && (
+                <div className="flex items-center gap-4">
+                  <img
+                    className="w-14 h-14 object-cover"
+                    src={product?.thumbnails[0]}
+                    alt=""
+                  />
+                  <div className="flex items-center gap-2">
+                    <span className="text-md font-light-bold">{ProductPriceSelected?.id_color[0]?.value}</span>
+                    ,
+                    <span className="text-md font-light-bold">{ProductPriceSelected?.id_size[0]?.value}</span>
+                  </div>
 
+                  <div className="flex items-start justify-normal gap-2">
+
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="my-2">
                 <div className="flex items-center gap-2">
-                <p className="font-semibold text-sm text-gray-900">Số lượng</p>
-                {ProductPriceSelected && <p className="text-[12px] text-red-500">Còn lại : {ProductPriceSelected?.stock}</p>}
+                  <p className="font-semibold text-sm text-gray-900">Số lượng</p>
+                  {ProductPriceSelected && <p className="text-[12px] text-red-500">Còn lại : {ProductPriceSelected?.stock}</p>}
                 </div>
                 <div className="flex items-center space-x-2 my-2 mb-4">
                   <button
@@ -540,7 +562,7 @@ const ProductDetail: React.FC = () => {
                   {ProductPriceSelected && (
                     <div className="flex items-center justify-start relative w-fit">
                       <span className=" text-[24px] w-fit font-bold">
-                        {formatNumberVnd(quantity * ProductPriceSelected?.price)}
+                        {ProductPriceSelected && !isDiscount ? formatNumberVnd(ProductPriceSelected?.price * quantity) : formatNumberVnd(quantity * (ProductPriceSelected.price - (ProductPriceSelected?.price * isDiscount?.percent / 100)))}
                       </span>
                       <div className="text-lg absolute right-[-16px] top-[-6px]">
                         đ

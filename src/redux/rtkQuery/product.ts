@@ -27,4 +27,4 @@ export const productSclice = createApi({
     })
   })
 
-export const { useGetProductQuery , useGetProductByIdQuery} = productSclice;
+export const { useGetProductQuery , useGetProductByIdQuery , useGetProductByCategoryQuery , useGetProductByShopQuery , useGetProductBySearchQuery , useGetProductByPriceQuery} = productSclice;
