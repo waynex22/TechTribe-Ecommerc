@@ -60,6 +60,7 @@ const Header: React.FC = () => {
   const handleMenuClose = () => {
     setMenuOpen(false);
   };
+  const totalItemsInCart = cart?.cart?.cartItems?.reduce((acc: number, item: any) => acc + item.items.length, 0);
   return (
     <>
       <div className="bg-white text-center">
@@ -209,7 +210,7 @@ const Header: React.FC = () => {
                   </svg>
                     {cart?.cart?.cartItems && 
                     <div className="absolute w-[12px] h-[16px] top-[20px] ml-4 rounded-full bg-red-500 text-white text-[12px]">
-                    {cart?.cart?.cartItems?.length}
+                    {totalItemsInCart}
                   </div>
                     }
                 </div>

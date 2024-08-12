@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { FaHome } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useGetAllShopQuery, useGetBanShopQuery } from "src/redux/rtkQuery/admin";
-import AdminFormBanShopComponent from "./admin_form_banshop";
+import AdminFormBanShopComponent from "./modal_banshop";
+import AdminShopComponentIsLoading from "./admin_shop_isLoading";
 
 const AdminShopComponent: React.FC = () => {
   const [openFormBanShop, setOpenFormBanShop] = useState(false);
@@ -11,12 +12,12 @@ const AdminShopComponent: React.FC = () => {
   const [idShop, setIdShop] = useState<string>('')
   const {
     data: shops,
+    isLoading,
   } = useGetAllShopQuery();
 
   const {
     data: banshops,
     error,
-    isLoading,
   } = useGetBanShopQuery();
 
   const conbinedData = [ ...(shops || []), ...(banshops || [])]
@@ -24,6 +25,7 @@ const AdminShopComponent: React.FC = () => {
   console.log(shops);
   
 
+  if(isLoading) return <AdminShopComponentIsLoading/>
   return (
     <div>
       <div className="flex items-center mb-4 text-gray-100">

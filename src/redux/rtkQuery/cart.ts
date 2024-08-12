@@ -5,13 +5,18 @@ import { setCart } from '../slices/cartSlice';
 import { get } from 'http';
 
 export interface UpdateCartPayload {
+    shopId: string;
     customerId: string;
-    productPriceId: string;
-    quantity: number;
+    items: {
+        productPriceId: string;
+        quantity: number;
+        discountDetailId?: string;
+    };
 }
 export interface UpdateCartSelect {
     customerId: string;
     productPriceId: string;
+    shopId?: string;
 }
 export interface SelectAllCart {
     customerId: string;
@@ -44,7 +49,6 @@ export const cartApi = createApi({
             async onQueryStarted(id, { dispatch, queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled;
-                    // console.log('fetch');
                     dispatch(setCart({ cart: data }));
                 } catch (error) {
                     console.log('error', error);

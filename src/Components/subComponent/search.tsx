@@ -64,7 +64,7 @@ const Search: React.FC = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-  console.log(result);
+  // console.log(result);
   
   return (
     <div className="flex flex-col relative flex-start items-center">

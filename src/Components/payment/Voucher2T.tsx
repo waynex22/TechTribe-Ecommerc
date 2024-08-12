@@ -49,6 +49,7 @@ const Voucher2T: React.FC<Props> = ({ subOrder, refecth }) => {
             setLoading(false);
         }
     }
+    
     if (isLoading) return <></>
     return (
         <>

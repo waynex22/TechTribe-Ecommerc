@@ -73,7 +73,12 @@ export const userApi = createApi({
         method: "GET"
       })
     }),
-
+    getAddressByUserId: builder.query< any, string>({
+      query: (id) => ({
+        url: `/address/customer/${id}`,
+        method: "GET"
+      })
+    }),
     updateAddress: builder.mutation({
       query: ({addressData,addressId}: {addressData: {fullName: string, phoneNumber:string, address: string, addressType: boolean, province: string, district: string, ward: string,}, addressId: string}) => ({
         url: `/address/${addressId}`,
@@ -95,4 +100,5 @@ export const userApi = createApi({
   }),
 });
 
-export const {useGetUserMutation,useUpdateAvatarMutation,useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation } = userApi;
+export const {useGetAddressByUserIdQuery,useGetUserMutation,useUpdateAvatarMutation,useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation } = userApi;
+// export const {useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation, useGetAddressByUserIdQuery } = userApi;

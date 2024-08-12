@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useUpdateSubOrderDtoMutation } from "../../redux/rtkQuery/order";
 import Spinner from "../spinner/Spinner";
+import { formatNumberVnd } from "src/utils/fortmartNumberVnd";
 interface Props {
     subOrder?: any,
     refecth: () => void
@@ -46,7 +47,10 @@ const Coin2T: React.FC<Props> = ({ subOrder, refecth }) => {
                         <img src="https://salt.tikicdn.com/ts/upload/2e/d0/67/6ea978a46f650dcd267445000840659a.png" className="w-6" alt="" />
                         <div>
                             <p className="text-gray-900 font-nomal text-sm">Sử dụng số coin tích điểm</p>
-                            <p className="text-[12px] text-gray-400">Bạn đang sỡ hữu {subOrder?.customerReward?.coin} coin</p>
+                            <div className="flex items-center gap-2">
+                            <p className="text-[12px] text-gray-400">Bạn đang có</p>
+                            <p className="text-[12px] text-green-400">{formatNumberVnd(subOrder?.customerReward?.coin)} xu</p>
+                            </div>
                         </div>
                     </div>
                     <div

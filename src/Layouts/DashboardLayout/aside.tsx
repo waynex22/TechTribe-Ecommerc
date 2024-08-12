@@ -15,6 +15,7 @@ import { jwtDecode } from "jwt-decode";
 import { useGetUserMutation } from "src/redux/rtkQuery/user_customers";
 import { FaHome, FaShopify, FaShoppingBag } from "react-icons/fa";
 import { Home } from "@mui/icons-material";
+import { RiCoupon3Fill } from "react-icons/ri";
 
 const AsideAdmin: React.FC = () => {
   const [getUser] = useGetUserMutation();
@@ -58,6 +59,12 @@ const AsideAdmin: React.FC = () => {
               <FaShoppingBag className="text-blue-500 text-base active:text-slate-50 flex my-0 mx-auto z-10"/>
             </div>
             <p className="text-gray-700 items-start">Shop</p>
+          </Link>
+          <Link to="/dashboard/voucher" className="flex justify-left items-center p-3 active:bg-gray-200 rounded-lg duration-300 bg-opacity-90 ">
+            <div className=" p-2 bg-slate-50 rounded-xl active:bg-blue-500 w-8 h-8 me-2" >
+              <RiCoupon3Fill className="text-blue-500 text-base active:text-slate-50 flex my-0 mx-auto z-10"/>
+            </div>
+            <p className="text-gray-700 items-start">Voucher</p>
           </Link>
       </div>
     </aside>

@@ -48,8 +48,8 @@ interface banShopForAdmin {
 }
 
 interface banShopData {
-  banStartDate: Date | '';
-  banEndDate: Date| '';
+  banStartDate: Date | "";
+  banEndDate: Date | "";
   reasonBan: string;
 }
 
@@ -64,14 +64,14 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
   const [shopData, setShopData] = useState<banShopForAdmin>();
   const [idShop, setIdShop] = useState<string>();
   const [banShopData, setBanShopData] = useState<banShopData>({
-    banStartDate: '',
-    banEndDate: '',
+    banStartDate: "",
+    banEndDate: "",
     reasonBan: "",
   });
 
-  let minEndDateString = ""; 
+  let minEndDateString = "";
 
-  if(banShopData.banStartDate) { 
+  if (banShopData.banStartDate) {
     const minEndDate = new Date(banShopData.banStartDate);
     minEndDate.setDate(minEndDate.getDate() + 1);
     minEndDateString = minEndDate?.toISOString().split("T")[0];
@@ -136,9 +136,9 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
   const validate = () => {
     let tempErrors = { banStartDate: "", banEndDate: "", reasonBan: "" };
 
-    if (banShopData.banStartDate == '')
+    if (banShopData.banStartDate == "")
       tempErrors.banStartDate = "Ngày bắt đầu cấm không được để trống !";
-    if (banShopData.banEndDate == '')
+    if (banShopData.banEndDate == "")
       tempErrors.banEndDate = "Ngày kết thúc cấm không được để trống  !";
     // if(banShopData.banEndDate >= banShopData.banStartDate )
     //   tempErrors.banEndDate = "Ngày kết thúc phải lớn hơn ngày bắt đầu !";
@@ -168,7 +168,8 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
         ) : null}
 
         <div className="mb-4 flex items-center">
-          Số lần đã vi phạm: <p className="text-red-500 ms-2"> {shop?.numberOfBan} lần </p>
+          Số lần đã vi phạm:{" "}
+          <p className="text-red-500 ms-2"> {shop?.numberOfBan} lần </p>
         </div>
 
         <div className="mb-4 ">
@@ -186,9 +187,7 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
             {/* Ngày bắt đầu: {shop?.banStartDate.toISOString()} */}
           </div>
           {errors.banStartDate ? (
-            <p className="text-red-500 text-sm mb-4">
-              {errors.banStartDate}
-            </p>
+            <p className="text-red-500 text-sm mb-4">{errors.banStartDate}</p>
           ) : null}
         </div>
 
@@ -205,9 +204,7 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
           />
           {/* <div>Ngày kết thúc: {shop?.banEndDate.toISOString()}</div> */}
           {errors.banEndDate ? (
-            <p className="text-red-500 text-sm mb-4">
-              {errors.banEndDate}
-            </p>
+            <p className="text-red-500 text-sm mb-4">{errors.banEndDate}</p>
           ) : null}
         </div>
 
@@ -224,7 +221,7 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
             }}
             className="px-4 py-2 bg-yellow-300 hover:bg-yellow-400 duration-300 text-white rounded flex items-center"
           >
-            Cấm <FaBan className="ms-1"/>
+            Cấm <FaBan className="ms-1" />
           </button>
         </div>
       </div>
@@ -244,6 +241,11 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
           placeholder="Lý do cấm cửa hàng"
           value={shop?.reasonBan}
         ></textarea>
+        
+        <div className="mb-4 flex items-center">
+          Số lần đã vi phạm:{" "}
+          <p className="text-red-500 ms-2"> {shop?.numberOfBan} lần </p>
+        </div>
 
         <div className="mb-4 flex items-center justify-between">
           {/* <label className="block text-base font-medium text-gray-700 mb-1 ">

@@ -12,6 +12,12 @@ export const voucherApi = createApi({
                 method: 'GET'
             })
         }),
+        getVoucherByShop: builder.query<Voucher[], string>({
+            query: (id) => ({
+                url: `voucher/shop/${id}`,
+                method: 'GET'
+            })
+        })
     })
 })
-export const { useGetVoucherQuery } = voucherApi;
+export const { useGetVoucherQuery, useGetVoucherByShopQuery } = voucherApi;

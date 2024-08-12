@@ -3,6 +3,7 @@ import { DefaultLayout, AdminLayout } from "../Layouts";
 import { Route } from "../Type";
 import AdminComponent from "src/Components/dashboard-admin/defaultAdminComponent";
 import AdminShopComponent from "src/Components/dashboard-admin/admin_shop_component";
+import AdminVoucherComponent from "src/Components/dashboard-admin/voucher_component";
 
 const adminRoute : Route[]= [
     {
@@ -20,6 +21,12 @@ const adminRoute : Route[]= [
                 component: AdminShopComponent,
                 layout: null,
             },
+            {
+                path: "voucher",
+                component: AdminVoucherComponent,
+                layout: null,
+            },
+
         ]    
     }
 ]

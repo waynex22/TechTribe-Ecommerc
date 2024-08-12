@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { setLogout } from '../../utils/localStorage/token';
+import { setCart } from './cartSlice';
 
 const initialState = {
   user: null,
@@ -15,6 +16,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       setLogout();
+      setCart(null);
     },
   },
 });

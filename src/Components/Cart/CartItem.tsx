@@ -7,6 +7,9 @@ import Toast from "../toast/Toast";
 import { ToastProps } from "../../Type";
 import ModalAccept from "../modal/ModalAccept";
 import Spinner from "../spinner/Spinner";
+import { checkDiscount } from "src/utils/checkDiscount";
+import { discountPrice } from "src/utils/getMinMax/getMinMaxPrice";
+import CountDown from "../Clock/CountDown";
 interface CartItemProps {
   itemCart: any;
 }
@@ -21,7 +24,9 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
   const [toast, setToast] = useState<ToastProps | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState<(() => void) | null>(null);
-  const [loading , setLoading] = useState(false);
+  const [isDiscount, setIsDiscount] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { discountDetailId } = itemCart;
   useEffect(() => {
     if (user) {
       refetchCartSelect();
@@ -31,10 +36,22 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
     setToast({ ...toast, message: toast.message, type: toast.type, onClose: () => setToast(null) });
   }
   const handleUpdateCart = async (customerId: string, quantity: number) => {
+    if(isDiscount){
+      if(discountDetailId.limit_customer !== "Không giới hạn" && quantity === 1){
+        const checkQuantityLimit = itemCart.quantity + 1 > discountDetailId.limit_customer;
+        if(checkQuantityLimit){
+          handleSetToast({ message: 'Bạn chỉ có thể mua tối đa ('+discountDetailId.limit_customer+') sản phẩm này với chương trình khuyến mãi!', type: "error" });
+          return
+        }
+      }
+    }
     const payload: UpdateCartPayload = {
       customerId: customerId,
-      productPriceId: productPriceId?._id,
-      quantity: quantity,
+      shopId: productPriceId.id_product[0].id_shop[0]._id,
+      items: {
+        productPriceId: productPriceId._id,
+        quantity: quantity
+      }
     };
 
     const updateCartAction = async () => {
@@ -42,7 +59,7 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
         setLoading(true);
         try {
           const res: any = await updateCart(payload).unwrap();
-          if (res?.statusCode === 299) {
+          if (res?.status === 299) {
             handleSetToast({ message: res.message, type: "success" });
           } else {
             refetch();
@@ -61,11 +78,12 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
       await updateCartAction();
     }
   };
-  const handleRemoveChildItem = async (productPriceId: string) => {
+  const handleRemoveChildItem = async () => {
     setLoading(true);
     const payload = {
       customerId: user?.sub,
-      productPriceId: productPriceId
+      productPriceId: productPriceId._id,
+      shopId: productPriceId.id_product[0].id_shop[0]._id
     }
     await removeChildItem(payload);
     refetch();
@@ -96,10 +114,17 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
       }
     }
   }
-
+  useEffect(() => {
+    if(itemCart?.discountDetailId){
+      setIsDiscount(checkDiscount(itemCart?.discountDetailId?.id_discount?.time_start, itemCart?.discountDetailId?.id_discount?.time_end));
+    }
+  }, [discountDetailId]);
+ 
+  // console.log(itemCart);
+  
   return (
     <>
-    <Spinner loading={loading} />
+      <Spinner loading={loading} />
       <div className="w-full flex items-center justify-start ">
         <ModalAccept
           isOpen={isModalOpen}
@@ -125,6 +150,25 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
                   alt=""
                 />
                 <div className="flex flex-col ">
+                  {isDiscount && itemCart?.discountDetailId ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-light text-red-600">
+                        Flash Sale
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] font-light text-red-600">
+                          kết thúc sau
+                        </span>
+                        <CountDown endTime={discountDetailId?.id_discount?.time_end} />
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                    {isDiscount == false && itemCart?.discountDetailId && <span className="text-[10px] font-light line-through text-red-600">
+                      Chương trình khuyến mãi đã kết thúc
+                    </span>}
+                    </>
+                  )}
                   <Link to={`/product/${productPriceId?.id_product[0]?._id}`} className="text-sm font-light-nomal">
                     {productPriceId?.id_product[0]?.name}
                   </Link>
@@ -135,12 +179,28 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
               </div>
             </div>
             <div className="w-[20%] flex items-center justify-start p-2 gap-x-2">
-              <div className="flex items-center justify-start relative w-fit">
-                <span className=" text-sm w-fit font-bold">{formatNumberVnd(productPriceId?.price)}</span>
-                <div className="text-[10px] underline font-light-bold absolute right-[-12px] top-[-6px]">
-                  đ
-                </div>
-              </div>
+              {isDiscount ? (
+                <>
+                  <div className="flex flex-col items-center justify-start relative">
+                    <span className="text-sm font-light-nomal">
+                      {formatNumberVnd(discountPrice(productPriceId?.price, discountDetailId?.percent))}
+                    </span>
+                    <div className="text-[10px] underline font-light-bold absolute right-[-12px] top-[-6px]">
+                      đ
+                    </div>
+                    <del className="text-gray-400 text-sm">{formatNumberVnd(productPriceId?.price)}đ</del>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center justify-start relative w-fit">
+                    <span className=" text-sm w-fit font-bold">{formatNumberVnd(productPriceId?.price)}</span>
+                    <div className="text-[10px] underline font-light-bold absolute right-[-12px] top-[-6px]">
+                      đ
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
             <div className="w-[20%]  p-2 gap-x-2 relative">
               <div className="flex items-center my-2 space-x-1 mb-4">
@@ -166,15 +226,30 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
               </div>
             </div>
             <div className="w-[20%] flex items-center justify-start p-2 gap-x-2">
-              <div className="flex items-center justify-start text-red-600 relative w-fit">
-                <span className=" text-md w-fit font-bold">{formatNumberVnd(productPriceId?.price * quantity)}</span>
-                <div className="text-[12px] underline font-light-bold absolute right-[-12px] top-[-6px]">
-                  đ
-                </div>
-              </div>
+              {isDiscount ? (
+                <>
+                  <div className="flex flex-col items-center justify-start relative">
+                    <span className="text-md font-light-nomal text-red-600">
+                      {formatNumberVnd(discountPrice(productPriceId?.price, discountDetailId?.percent) * quantity)}
+                    </span>
+                    <div className="text-[12px] underline font-light-bold absolute right-[-12px] top-[-6px] text-red-600">
+                      đ
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center justify-start relative w-fit">
+                    <span className=" text-md w-fit font-bold text-red-600">{formatNumberVnd(productPriceId?.price * quantity)}</span>
+                    <div className="text-[12px] underline font-light-bold absolute right-[-12px] top-[-6px] text-red-600">
+                      đ
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
             <div className="w-[5%] flex items-center justify-start p-2 gap-x-2 cursor-pointer">
-              <svg onClick={() => handleRemoveChildItem(productPriceId?._id)} 
+              <svg onClick={() => handleRemoveChildItem()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"

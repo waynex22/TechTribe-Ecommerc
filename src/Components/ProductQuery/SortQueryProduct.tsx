@@ -16,34 +16,34 @@ const SortQueryProduct: React.FC<Props> = ({ handleSort }) => {
         setMaxPrice(e.target.value);
     };
 
-   
+
     const handleApplySort = () => {
         if (minPrice !== '' && maxPrice !== '') {
-          handleSort({ priceMinMax: [Number(minPrice), Number(maxPrice)] });
+            handleSort({ priceMinMax: [Number(minPrice), Number(maxPrice)] });
         }
-      };
+    };
 
     return (
         <div className="p-4 bg-white rounded-xl mt-4">
             <div className="flex flex-wrap items-center justify-end gap-4">
-                <div className="w-full">
-                <p className='text-gray-500 text-sm'>Lọc theo giá</p>
+                {/* <div className="w-full">
+                    <p className='text-gray-500 text-sm'>Lọc theo giá</p>
                     <div className="flex gap-2 items-center w-1/4">
-                            <input
-                                type="number"
-                                placeholder="Từ"
-                                value={minPrice}
-                                onChange={handleMinPriceChange}
-                                className="border rounded px-2 py-1 w-full"
-                            />
-                            <input
-                                type="number"
-                                placeholder="Đến"
-                                value={maxPrice}
-                                onChange={handleMaxPriceChange}
-                                className="border rounded px-2 py-1 w-full"
-                            />
-                    
+                        <input
+                            type="number"
+                            placeholder="Từ"
+                            value={minPrice}
+                            onChange={handleMinPriceChange}
+                            className="border rounded px-2 py-1 w-full"
+                        />
+                        <input
+                            type="number"
+                            placeholder="Đến"
+                            value={maxPrice}
+                            onChange={handleMaxPriceChange}
+                            className="border rounded px-2 py-1 w-full"
+                        />
+
 
                         <div
                             onClick={handleApplySort}
@@ -52,13 +52,13 @@ const SortQueryProduct: React.FC<Props> = ({ handleSort }) => {
                             Tìm
                         </div>
                     </div>
-                </div>
+                </div> */}
 
                 <div className="flex items-center gap-2 mt-4">
                     <span className="font-bold text-sm">Sắp xếp</span>
                     <select
                         className="border rounded-xl px-2 py-1 border-gray-400 text-sm"
-                        onChange={(e) => handleSort({ sortOrder: e.target.value})}                   >
+                        onChange={(e) => handleSort({ sortOrder: e.target.value })}                   >
                         <option value='asc'>Giá cao đến thấp</option>
                         <option value='desc'>Giá thấp đến cao</option>
                     </select>

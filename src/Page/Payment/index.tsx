@@ -6,7 +6,6 @@ import PaymentMethod from "../../Components/payment/PaymentMethod";
 import ProductPayment from "../../Components/payment/ProductPayment";
 import Shipping from "../../Components/payment/Shipping";
 import Voucher2T from "../../Components/payment/Voucher2T";
-import VoucherShop from "../../Components/payment/VoucherShop";
 import { useGetSubOrderQuery } from "../../redux/rtkQuery/order";
 import { useEffect } from "react";
 import Spinner from "../../Components/spinner/Spinner";
@@ -20,7 +19,7 @@ const PaymentPage: React.FC = () => {
             refetch();
         }
     }, [user, refetch]);
-    console.log(subOrder);
+    // console.log(subOrder);
 
     if (!subOrder || isLoading) return <Spinner loading={isLoading} />
     return (
@@ -29,10 +28,8 @@ const PaymentPage: React.FC = () => {
                 <div className="flex items-start justify-between gap-4 mt-4">
                     <div className="w-[75%] h-fit">
                         <div className=" bg-white rounded-lg">
-                            <Shipping subOrder={subOrder.subOrder} refecth={refetch} />
                             <div className="p-4">
-                                <ProductPayment />
-                                <VoucherShop />
+                                <ProductPayment  subOrder={subOrder} refecth={refetch}/>
                             </div>
                         </div>
                         <div className="mt-4">
@@ -41,7 +38,7 @@ const PaymentPage: React.FC = () => {
                     </div>
                     <div className="w-[25%] h-fit">
                         <div className="p-4 bg-white rounded-lg">
-                            <Address subOrder={subOrder.subOrder} />
+                            <Address subOrder={subOrder.subOrder} refecth={refetch} />
                         </div>
                         <div className="mt-4">
                             <Voucher2T subOrder={subOrder} refecth={refetch} />
@@ -50,7 +47,7 @@ const PaymentPage: React.FC = () => {
                             <Coin2T subOrder={subOrder} refecth={refetch} />
                         </div>
                         <div className="mt-4">
-                            <AcceptOrder subOrder={subOrder.subOrder} />
+                            <AcceptOrder subOrder={subOrder.subOrder} items={subOrder?.listProduct}/>
                         </div>
                     </div>
                 </div>

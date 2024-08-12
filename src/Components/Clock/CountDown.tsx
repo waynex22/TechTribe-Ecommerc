@@ -37,32 +37,32 @@ const CountDown: React.FC<CountDownProps> = ({ endTime }) => {
   };
   return (
     <>
-      <div className="flex gap-1 items-center justify-center">
+      <div className="flex gap-1 items-center justify-center text-[12px] text-red-600">
         {Object.keys(timeLeft).length > 0 ? (
           <>
-            <div className="bg-red-500 text-white p-1 rounded-lg">
+            <div className="">
               {formatTime(timeLeft.hours)}
             </div>
             <span>:</span>
-            <div className="bg-red-500 text-white p-1 rounded-lg">
+            <div className="">
               {formatTime(timeLeft.minutes)}
             </div>
             <span>:</span>
-            <div className="bg-red-500 text-white p-1 rounded-lg">
+            <div className="">
               {formatTime(timeLeft.seconds)}
             </div>
           </>
         ) : (
           <>
-          <div className="bg-red-500 text-white p-1 rounded-lg">
+          <div className="">
             
             </div>
             <span>:</span>
-            <div className="bg-red-500 text-white p-1 rounded-lg">
+            <div className="">
              
             </div>
             <span>:</span>
-            <div className="bg-red-500 text-white p-1 rounded-lg">
+            <div className="">
               
             </div>
           </>
