@@ -33,9 +33,15 @@ module.exports = ({
         mint : '#82B3C2',
         mints: '#9ABFC7',
         bg_gray:' #efefef',
-      }
-
+        bg_admin: "#344767"
+      },
+      backgroundImage: theme => ({
+      'bg-admin-img': "url('https://parkersuccessacademy.com/wp-content/uploads/2020/01/iStock-1039532442.jpg')",
+      'footer-texture': "url('/img/footer-texture.png')",
+      })
     },
+
+
   },
   plugins: [
     require('flowbite/plugin')

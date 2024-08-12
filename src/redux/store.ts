@@ -13,10 +13,12 @@ import { cartApi } from './rtkQuery/cart';
 import { orderApi } from './rtkQuery/order';
 import { searchApi } from './rtkQuery/search';
 import { voucherApi } from './rtkQuery/voucher';
+import { adminApi } from './rtkQuery/admin'
 export const store = configureStore({
   reducer: {
     [authSlice.reducerPath]: authSlice.reducer,
     [userApi.reducerPath]: userApi.reducer,
+    [adminApi.reducerPath]: adminApi.reducer,
     [productSclice.reducerPath]: productSclice.reducer,
     [categorySlice.reducerPath]: categorySlice.reducer,
     [categoryDetailSlice.reducerPath]: categoryDetailSlice.reducer,
@@ -37,6 +39,7 @@ export const store = configureStore({
       .concat(specificationsSlice.middleware)
       // .concat(cartSlice.middleware)
       .concat(userApi.middleware)
+      .concat(adminApi.middleware)
       .concat(cartApi.middleware)
       .concat(searchApi.middleware)
       .concat(voucherApi.middleware)

@@ -39,10 +39,6 @@ interface AddressDataInModal {
   ward: string;
 }
 
-// interface AddressSelectorProps {
-//   onAddressChange: (province: string, district: string, ward: string) => void;
-// }
-
 interface District {
   DistrictID: number;
   DistrictName: string;
