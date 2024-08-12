@@ -139,12 +139,12 @@ const ProductDetail: React.FC = () => {
           đ
         </div>
         {product?.valuePriceDiscount && (
-            <div className="text-sm text-gray-400 absolute top-8 flex gap-2">
-              <del>{formatNumberVnd(minMaxPrice.min)}đ</del>
-              <span>-</span>
-              <del>{formatNumberVnd(minMaxPrice.max)}đ</del>
-            </div>
-          )}
+          <div className="text-sm text-gray-400 absolute top-8 flex gap-2">
+            <del>{formatNumberVnd(minMaxPrice.min)}đ</del>
+            <span>-</span>
+            <del>{formatNumberVnd(minMaxPrice.max)}đ</del>
+          </div>
+        )}
       </div>
       {minPrice !== maxPrice && (
         <>
@@ -152,7 +152,7 @@ const ProductDetail: React.FC = () => {
           <span className="text-[24px] w-fit font-bold">
             {formatNumberVnd(discountMaxPrice || maxPrice)}
           </span>
-          
+
         </>
       )}
     </div>
@@ -160,7 +160,7 @@ const ProductDetail: React.FC = () => {
 
   const discountedPrice: any = isDiscount ? discountPrice(ProductPriceSelected.price, isDiscount.percent) : null;
   console.log(product);
-  
+
   return (
     <>
       <div className="container mx-auto">
@@ -228,22 +228,35 @@ const ProductDetail: React.FC = () => {
                 </h3>
               </div>
               <div className="my-4 flex items-center justify-start gap-2">
-                <p className="font-semibold text-sm">5.0</p>
+                <p className="font-semibold text-sm">{product?.rating}</p>
                 <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, index) => (
-                    <svg key={index}
-                      stroke="currentColor"
-                      fill="currentColor"
-                      strokeWidth="0"
-                      viewBox="0 0 24 24"
-                      color="#FFC400"
-                      height="16"
-                      width="16"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
-                    </svg>
-                  ))}
+                  {[...Array(5)].map((_, index) => {
+                    const rating = product?.rating || 0;
+                    const isHalfStar = rating - index > 0 && rating - index < 1;
+
+                    return (
+                      <svg
+                        key={index}
+                        stroke="currentColor"
+                        fill={index < Math.floor(rating) ? "#FFC400" : isHalfStar ? "url(#half)" : "#E4E8EE"}
+                        strokeWidth="0"
+                        viewBox="0 0 24 24"
+                        height="16"
+                        width="16"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        {isHalfStar && (
+                          <defs>
+                            <linearGradient id="half">
+                              <stop offset="50%" stopColor="#FFC400" />
+                              <stop offset="50%" stopColor="#E4E8EE" />
+                            </linearGradient>
+                          </defs>
+                        )}
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
+                      </svg>
+                    );
+                  })}
                 </div>
                 <div className="w-[1px] h-5 bg-gray-300"></div>
                 <div className="flex items-center justify-start gap-2">

@@ -11,17 +11,17 @@ const Coin2T: React.FC<Props> = ({ subOrder, refecth }) => {
     const [updateSubOrder] = useUpdateSubOrderDtoMutation();
 
     const handleUseCoin = async () => {
-        if(subOrder?.customerReward?.coin === 0) return;
+        if (subOrder?.customerReward?.coin < 1000) return;
         setLoading(true);
         try {
-            if(subOrder?.customerReward?.coin !== 0 && subOrder?.subOrder?.coin === 0) {
+            if (subOrder?.customerReward?.coin !== 0 && subOrder?.subOrder?.coin === 0) {
                 const payload = {
                     id: subOrder?.subOrder._id,
-                    coin: subOrder?.customerReward?.coin 
+                    coin: subOrder?.customerReward?.coin
                 }
                 await updateSubOrder(payload);
                 refecth();
-            }else if(subOrder.coin !== 0) {
+            } else if (subOrder.coin !== 0) {
                 const payload = {
                     id: subOrder?.subOrder._id,
                     coin: 0,
@@ -30,14 +30,14 @@ const Coin2T: React.FC<Props> = ({ subOrder, refecth }) => {
                 await updateSubOrder(payload);
                 refecth();
             }
-        } catch(error) {
+        } catch (error) {
             console.error(error);
-        }finally {
+        } finally {
             setLoading(false);
         }
-        
+
     }
-    
+
     return (
         <>
             <Spinner loading={loading} />
@@ -45,12 +45,13 @@ const Coin2T: React.FC<Props> = ({ subOrder, refecth }) => {
                 <div className="flex items-start justify-between">
                     <div className="flex items-start gap-2">
                         <img src="https://salt.tikicdn.com/ts/upload/2e/d0/67/6ea978a46f650dcd267445000840659a.png" className="w-6" alt="" />
-                        <div>
+                        <div className="relative">
                             <p className="text-gray-900 font-nomal text-sm">Sử dụng số coin tích điểm</p>
                             <div className="flex items-center gap-2">
-                            <p className="text-[12px] text-gray-400">Bạn đang có</p>
-                            <p className="text-[12px] text-green-400">{formatNumberVnd(subOrder?.customerReward?.coin)} xu</p>
+                                <p className="text-[12px] text-gray-400">Bạn đang có</p>
+                                <p className="text-[12px] text-green-400">{formatNumberVnd(subOrder?.customerReward?.coin)} xu</p>
                             </div>
+                            {subOrder?.customerReward?.coin < 1000 && <p className="absolute text-[10px] text-gray-400">Sử dụng khi bạn có hơn 1000 xu</p>}
                         </div>
                     </div>
                     <div

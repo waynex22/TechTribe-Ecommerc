@@ -89,6 +89,5 @@ const publicRoutes: Route[]  = [
         component: ProductDetail,
         layout: DefaultLayout,
     },
-
 ]
 export { publicRoutes };

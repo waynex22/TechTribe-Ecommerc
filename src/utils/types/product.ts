@@ -25,6 +25,7 @@ export type product = {
     id_category:string,
     description:string,
     view:number,
+    rating:number | any,
     id_categoryDetail?:string | any;
     product_specifications?: typeProductSpecification[],
     specifications?: typeSpecifications[],

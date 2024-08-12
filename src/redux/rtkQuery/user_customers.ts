@@ -7,6 +7,16 @@ export const userApi = createApi({
     baseUrl: `${apiUrl}`,
   }),
   endpoints: (builder) => ({
+    getUser: builder.mutation({
+      query: (token: string) => ({
+        url:  `/customer/findOneUser`,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+
+      })
+    }),
     updateUser: builder.mutation({
       query: (formData: FormData) => ({
         url: "update",
@@ -75,8 +85,19 @@ export const userApi = createApi({
         method: "PUT",
         body: addressData
       })
+    }),
+
+    updateAvatar : builder.mutation({
+      query: ({formData, token}: {formData: FormData, token: string}) => ({
+        url: `/customer/update-avatar`,
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
     })
   }),
 });
 
-export const {useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation, useGetAddressByUserIdQuery } = userApi;
+export const {useGetUserMutation,useUpdateAvatarMutation,useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation, useGetAddressByUserIdQuery } = userApi;

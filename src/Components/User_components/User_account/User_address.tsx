@@ -10,9 +10,12 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import React from "react";
-import AddressForm from "./address_form_select";
+// import AddressForm from "./address_form_select";
 import "animate.css";
-import { useAddAddressMutation, useUpdateAddressMutation } from "../../../redux/rtkQuery/user_customers";
+import {
+  useAddAddressMutation,
+  useUpdateAddressMutation,
+} from "../../../redux/rtkQuery/user_customers";
 import { useGetAddressByIdCustomerMutation } from "../../../redux/rtkQuery/user_customers";
 import { useDeleteAddressMutation } from "../../../redux/rtkQuery/user_customers";
 import { useSetDefaultAddressMutation } from "../../../redux/rtkQuery/user_customers";
@@ -23,7 +26,8 @@ import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AddressModal from "./User_address_update_modal";
-import AddressSelector from "./address_form_select";
+// import AddressSelector from "./address_form_select";
+import AddressSelectorAdd from "./address_form_select";
 
 const style = {
   position: "absolute",
@@ -42,7 +46,10 @@ interface FormData {
   phoneNumber: string;
   address: string;
   addressType: boolean;
-  
+  province: string;
+  district: string;
+  ward: string;
+  customerId: string;
 }
 
 interface AddressDataInModal {
@@ -69,14 +76,47 @@ interface addressData {
   __v: number;
 }
 const ComponentUserAddress: React.FC = () => {
-  const [selectedProvince, setSelectedProvince] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState('');
-  const [selectedWard, setSelectedWard] = useState('');
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-  const handleAddressChange = (province: string, district: string, ward: string) => {
+  const handleOpenBoxUpdateAddress = () => setOpenBoxUpdateAddress(true);
+  const handleCloseBoxUpdateAddress = () => setOpenBoxUpdateAddress(false);
+
+  const handleOpenBoxConfirm = () => setOpenBoxConfirm(true);
+  const handleCloseBoxConfirm = () => setOpenBoxConfirm(false);
+
+  const handleCloseBoxConfirmDefaultAddress = () =>
+    setOpenBoxConfirmDefaultAddress(false);
+
+  const handleOpenBoxConfirmDefaultAddress = () =>
+    setOpenBoxConfirmDefaultAddress(true);
+
+  const [selectedProvince, setSelectedProvince] = useState<string>('');
+  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
+  const [selectedWard, setSelectedWard] = useState<string>('');
+
+  const [selectedProvinceToUpdate, setSelectedProvinceToUpdate] = useState<string>('');
+  const [selectedDistrictToUpdate, setSelectedDistrictToUpdate] = useState<string>('');
+  const [selectedWardToUpdate, setSelectedWardToUpdate] = useState<string>('');
+
+  const handleAddressChange = (
+    province: string,
+    district: string,
+    ward: string
+  ) => {
     setSelectedProvince(province);
     setSelectedDistrict(district);
     setSelectedWard(ward);
+  };
+
+  const handleAddressChangeToUpdate = (
+    province: string,
+    district: string,
+    ward: string
+  ) => {
+    setSelectedProvinceToUpdate(province);
+    setSelectedDistrictToUpdate(district);
+    setSelectedWardToUpdate(ward);
   };
   const [idAddressToDel, setIdAddressToDel] = useState<string>("");
   const [idAddressToSetDefault, setIdAddressToDefault] = useState<string>("");
@@ -85,18 +125,22 @@ const ComponentUserAddress: React.FC = () => {
     null
   );
   const [dataAddress, setDataAddress] = useState<addressData[]>([]);
-  const [dataAddressByIdInModal, setDataAddressInModal] = useState<AddressDataInModal >();
+  const [dataAddressByIdInModal, setDataAddressInModal] =
+    useState<AddressDataInModal>();
   const [dataAddressById, setDataAddressById] = useState<addressData>();
+  const [dataAddressToAdd, setDataAddressToAdd] = useState<FormData>();
+
+  // Của form cập nhật
   useEffect(() => {
     if (dataAddressById) {
       setDataAddressInModal({
-        fullName: dataAddressById.fullName || '',
-        phoneNumber: dataAddressById.phoneNumber || '',
-        address: dataAddressById.address || '',
+        fullName: dataAddressById.fullName || "",
+        phoneNumber: dataAddressById.phoneNumber || "",
+        address: dataAddressById.address || "",
         addressType: dataAddressById.addressType || false,
-        province: dataAddressById.province|| "",
-        district: dataAddressById.district|| "",
-        ward: dataAddressById.ward|| "",
+        province: dataAddressById.province || "",
+        district: dataAddressById.district || "",
+        ward: dataAddressById.ward || "",
       });
     }
   }, [dataAddressById]);
@@ -118,22 +162,27 @@ const ComponentUserAddress: React.FC = () => {
   const [openBoxUpdateAddress, setOpenBoxUpdateAddress] = useState(false);
   const [openBoxConfirmDefaultAddress, setOpenBoxConfirmDefaultAddress] =
     useState(false);
+
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
     phoneNumber: "",
     address: "",
     addressType: false,
+    province: "",
+    district: "",
+    ward: "",
+    customerId: idCustomer,
   });
 
   const handleGetAddressById = async (addressId: string) => {
     try {
-      const result = await getAddressByID({addressId: addressId}).unwrap()
+      const result = await getAddressByID({ addressId: addressId }).unwrap();
       console.log(result);
-      setDataAddressById(result)
-    }catch (error) {
+      setDataAddressById(result);
+    } catch (error) {
       console.error("Failed to fetch address data", error);
     }
-  }
+  };
 
   const handleGetIdAddressToDel = (idAddress: string) => {
     setIdAddressToDel(idAddress);
@@ -153,6 +202,21 @@ const ComponentUserAddress: React.FC = () => {
     ward: selectedWard,
     customerId: idCustomer,
   };
+
+  useEffect(() => {
+    if(dataAddressToAdd) {
+      setDataAddressToAdd({
+        fullName: formData.fullName,
+        phoneNumber: formData.phoneNumber,
+        address: formData.address,
+        addressType: formData.addressType,
+        province: selectedProvince,
+        district: selectedDistrict,
+        ward: selectedWard,
+        customerId: idCustomer,
+      });
+    }
+  }, [selectedProvince, selectedDistrict, selectedWard, formData]);
 
   const setDefaultAddressData = {
     customerId: idCustomer,
@@ -187,9 +251,9 @@ const ComponentUserAddress: React.FC = () => {
 
   // Debugging output
   useEffect(() => {
-    console.log('Tỉnh:', selectedProvince);
-    console.log('Quận/Huyện:', selectedDistrict);
-    console.log('Phường/Xã:', selectedWard); 
+    console.log("Tỉnh:", selectedProvince);
+    console.log("Quận/Huyện:", selectedDistrict);
+    console.log("Phường/Xã:", selectedWard);
   }, [selectedProvince, selectedDistrict, selectedWard]);
 
   const validate = () => {
@@ -208,29 +272,17 @@ const ComponentUserAddress: React.FC = () => {
   };
 
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const handleOpenBoxUpdateAddress = () => setOpenBoxUpdateAddress(true);
-  const handleCloseBoxUpdateAddress = () => setOpenBoxUpdateAddress(false);
-
-
-  const handleOpenBoxConfirm = () => setOpenBoxConfirm(true);
-  const handleCloseBoxConfirm = () => setOpenBoxConfirm(false);
-
-  const handleCloseBoxConfirmDefaultAddress = () => setOpenBoxConfirmDefaultAddress(false);
-
-  const handleOpenBoxConfirmDefaultAddress = () => setOpenBoxConfirmDefaultAddress(true);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
+      province: selectedProvince,
+      district: selectedDistrict,
+      ward: selectedWard,
     }));
   };
-
-  
 
   const handleAddressTypeChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -244,6 +296,7 @@ const ComponentUserAddress: React.FC = () => {
     }
   };
 
+  console.log("dataAddressToAdd", addressData);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
@@ -264,31 +317,33 @@ const ComponentUserAddress: React.FC = () => {
     } catch (error) {
       console.error("Error updating user info:", error);
     }
-    console.log(formData);
-    console.log(idCustomer);
+    console.log("dataAddressToAdd", addressData);
   };
 
-  const [updateAddress] = useUpdateAddressMutation()
-  const [addressIdToUpdate, setAddressIdToUpdate] = useState<string>("")
+  const [updateAddress] = useUpdateAddressMutation();
+  const [addressIdToUpdate, setAddressIdToUpdate] = useState<string>("");
   const handleSubmitUpdate = async (dataAddress: AddressDataInModal) => {
     try {
       // if (validateFormUpdate()) {
-        handleCloseBoxUpdateAddress();
-        const response = await updateAddress({addressId: addressIdToUpdate, addressData: dataAddress})
-        console.log("response update data: ",response);
-        toast.success(response.data.address.message)
-        getDataAddress();
+      handleCloseBoxUpdateAddress();
+      const response = await updateAddress({
+        addressId: addressIdToUpdate,
+        addressData: dataAddress,
+      });
+      console.log("response update data: ", response);
+      toast.success(response.data.address.message);
+      getDataAddress();
       // } else {
       //   console.log("Validation failed");
       // }
     } catch (error) {
       console.error("Error updating user info:", error);
     }
-    console.log(formData);
+    console.log(dataAddress);
     console.log(idCustomer);
   };
 
-
+  
   const handleDeleteAddress = async (idAddress: string) => {
     try {
       const result = await deleteAddress({ idAddress }).unwrap();
@@ -371,20 +426,28 @@ const ComponentUserAddress: React.FC = () => {
 
             <div className="flex items-end flex-col">
               <div className="flex items-center justify-between">
-                <div className="text-primary font-medium text-base pe-2 cursor-pointer hover:text-blue-500" onClick={() => (handleGetAddressById(item._id), handleOpenBoxUpdateAddress(), setAddressIdToUpdate(item._id))}>
+                <div
+                  className="text-primary font-medium text-base pe-2 cursor-pointer hover:text-blue-500"
+                  onClick={() => (
+                    handleGetAddressById(item._id),
+                    handleOpenBoxUpdateAddress(),
+                    setAddressIdToUpdate(item._id)
+                  )}
+                >
                   Cập nhật
                 </div>
                 {item.isDefault === false ? (
-
                   <div
-                  onClick={() => (
-                    handleOpenBoxConfirm(), handleGetIdAddressToDel(item._id)
-                  )}
-                  className="text-primary font-medium text-base ps-2 cursor-pointer border-l"
+                    onClick={() => (
+                      handleOpenBoxConfirm(), handleGetIdAddressToDel(item._id)
+                    )}
+                    className="text-primary font-medium text-base ps-2 cursor-pointer border-l"
                   >
-                  Xóa
-                </div>
-                ) : ""}
+                    Xóa
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
               <div>
                 {item.isDefault === true ? (
@@ -417,7 +480,6 @@ const ComponentUserAddress: React.FC = () => {
       {/* Box modal add address */}
 
       <div>
-
         {/* Box add address */}
         <Modal
           open={open}
@@ -455,7 +517,7 @@ const ComponentUserAddress: React.FC = () => {
                   helperText={errors.phoneNumber}
                 />
               </div>
-              <AddressSelector onAddressChange={handleAddressChange}/>
+              <AddressSelectorAdd onAddressChange={handleAddressChange} />
               <TextField
                 margin="normal"
                 fullWidth
@@ -475,10 +537,10 @@ const ComponentUserAddress: React.FC = () => {
                 aria-label="Loại địa chỉ"
                 fullWidth
               >
-                <ToggleButton value= {false} aria-label="Nhà riêng">
+                <ToggleButton value={false} aria-label="Nhà riêng">
                   Nhà riêng
                 </ToggleButton>
-                <ToggleButton value= {true} aria-label="Văn phòng">
+                <ToggleButton value={true} aria-label="Văn phòng">
                   Văn phòng
                 </ToggleButton>
               </ToggleButtonGroup>
@@ -494,14 +556,14 @@ const ComponentUserAddress: React.FC = () => {
           </Fade>
         </Modal>
 
-      {/* Update modal */}
-        <AddressModal 
-          openBoxUpdateAddress= {openBoxUpdateAddress}
+        {/* Update modal */}
+        <AddressModal
+          openBoxUpdateAddress={openBoxUpdateAddress}
           handleClose={handleCloseBoxUpdateAddress}
-          dataAddressById = {dataAddressByIdInModal}
+          dataAddressById={dataAddressByIdInModal}
           handleSubmit={handleSubmitUpdate}
           errors={errors}
-          onAddressChange={handleAddressChange}
+          onAddressChangeToUpdate={handleAddressChangeToUpdate}
         />
 
         {/* Box confirm delete address */}

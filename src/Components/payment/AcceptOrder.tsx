@@ -44,7 +44,7 @@ const AcceptOrder: React.FC<Props> = ({ subOrder, items }) => {
             if (data.status === 200) {
                 removeIdOrderNotComplete();
                 refetch();
-                history(`/checkout/cart`);
+                history(`/profile/purchase`);
             } else {
                 setModal(true);
                 setLoading(false);
