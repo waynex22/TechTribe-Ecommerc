@@ -181,8 +181,7 @@ const ComponentUserAccountProfile: React.FC = () => {
                   Email
                 </td>
                 <td className=" text-sm font-normal ps-8 pb-5 text-left">
-                  {/* {data.user.email} */}
-                  anpt@fpt.edu.vn
+                  {infoUserFormToken !== null ? infoUserFormToken.phone + '@2t.com.vn' : ""}
                 </td>
               </tr>
               <tr>

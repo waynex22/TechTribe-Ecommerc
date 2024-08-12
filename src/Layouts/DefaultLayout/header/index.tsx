@@ -153,7 +153,7 @@ const Header: React.FC = () => {
                     </div>
                     <div className="flex justify-center items-center hover:underline transition duration-150 ease-in-out">
                       <Link
-                        to="/orders"
+                        to="/profile/purchase"
                         className="block px-4 py-2 w-full text-sm text-white"
                       >
                         Đơn hàng của tôi

@@ -75,9 +75,16 @@ export const orderApi = createApi({
                 }
             }
         }),
-        getOrderByUserId: builder.mutation<any, string>({
+        getOrderByUserId: builder.query<any, string>({
             query: (id) => ({
-                url: `order/user/${id}`,
+                url: `items-order/customer/${id}`,
+                method: 'GET'
+            })
+        })
+        ,
+        getOrderById: builder.query<any, string>({
+            query: (id) => ({
+                url: `items-order/${id}`,
                 method: 'GET'
             })
         })
@@ -113,4 +120,4 @@ export const orderApi = createApi({
     }),
 });
 
-export const { useGetSubOrderQuery, useCreateSubOrderMutation, useDeleteSubOrderMutation , useUpdateSubOrderDtoMutation, useUpdateItemsSubOrderMutation, useCreateOrderMutation } = orderApi;
+export const { useGetSubOrderQuery, useCreateSubOrderMutation, useDeleteSubOrderMutation , useUpdateSubOrderDtoMutation, useUpdateItemsSubOrderMutation, useCreateOrderMutation, useGetOrderByUserIdQuery, useGetOrderByIdQuery } = orderApi;

@@ -1,3 +1,4 @@
+import OrderDetail from "src/Components/User_components/OrderDetail/OrderDetail";
 import LayoutUserComponent from "../Components/User_components/layout_user_component";
 import ComponentUserAccountProfile from "../Components/User_components/User_account/User_account_profile_component";
 import ComponentUserAddress from "../Components/User_components/User_account/User_address";
@@ -38,6 +39,11 @@ const userProfileRouter : Route[]= [
             {
                 path: "purchase",
                 component: ComponentUserPurchase,
+                layout: null,
+            },
+            {
+                path: "purchase/order/:slug",
+                component: OrderDetail,
                 layout: null,
             },
             {
