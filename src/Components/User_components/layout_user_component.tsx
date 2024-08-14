@@ -13,12 +13,14 @@ import { jwtDecode } from "jwt-decode";
 import { useGetUserMutation } from "src/redux/rtkQuery/user_customers";
 const LayoutUserComponent: React.FC = () => {
   const [getUser] = useGetUserMutation();
-  const [accessToken, setAccessToken] = useState<string>('');
-  const [infoUserFormToken, setInfoUserFormToken] = useState<{ [key: string]: any } | null>(null);
+  const [accessToken, setAccessToken] = useState<string>("");
+  const [infoUserFormToken, setInfoUserFormToken] = useState<{
+    [key: string]: any;
+  } | null>(null);
   const [infoUser, setInfoUser] = useState<{ [key: string]: any } | null>(null);
 
   useEffect(() => {
-    const getAccessToken = localStorage.getItem('access_token');
+    const getAccessToken = localStorage.getItem("access_token");
 
     // console.log(getAccessToken);
 
@@ -40,37 +42,41 @@ const LayoutUserComponent: React.FC = () => {
   // },[])
 
   const decodeToken = () => {
-    if (accessToken !== '') {
+    if (accessToken !== "") {
       const decodeToken = jwtDecode(accessToken) as { [key: string]: any };
-      setInfoUserFormToken(decodeToken)
+      setInfoUserFormToken(decodeToken);
       // console.log(decodeToken);
     }
-  }
+  };
 
   useEffect(() => {
-    decodeToken()
+    decodeToken();
   }, [accessToken]);
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto bg-white rounded-lg overflow-hidden">
       <div className="grid grid-cols-12 gap-4 m-auto pt-5 pb-8">
-        <div className="col-span-2 p-4 rounded-lg">
-          <div className="flex pb-3 items-center">
-            <div className="text-2xl border border-gray-300 rounded-full overflow-hidden w-14 h-14 relative">
-              <div className="text-2xl absolute overflow-hidden h-full w-full block">
-                <img className=" h-full w-full object-cover"
-                  src={infoUserFormToken?.avata}
-                  alt=""
-                />
-              </div>
+        <div className="col-span-2 p-4  border-r">
+          <div className="flex pb-3 items-center justify-between">
+            <div className="text-2xl overflow-hidden w-12 h-12 block rounded-full">
+              <img
+                className=" h-full w-full object-cover"
+                src={infoUserFormToken?.avata}
+                alt=""
+              />
             </div>
-            <div className="flex flex-col justify-center ps-4">
-              <div className="text-left">{infoUserFormToken?.username}</div>
+            <div className="text-gray-100">|</div>
+            <div className="flex flex-col justify-center">
+              <div className="text-left font-light text-sm">Tài khoản của</div>
+              <div className="text-left text-sm">{infoUserFormToken?.username}</div>
             </div>
           </div>
           <hr />
           <div className=" mt-7">
             <div className="your-account mb-3">
-              <Link className="focus:text-primary flex items-center" to="account/">
+              <Link
+                className="focus:text-primary flex items-center"
+                to="account/"
+              >
                 <div className="text-xl text-primary pb-2">
                   <FontAwesomeIcon icon={faUser} />
                 </div>
@@ -80,18 +86,27 @@ const LayoutUserComponent: React.FC = () => {
               </Link>
               <div className=" text-left ps-7">
                 <div className="hover:text-primary active:text-primary text-sm  text-gray-700 font-normal pb-2">
-                  <Link className="focus:text-primary" to="account/">Hồ Sơ</Link>
+                  <Link className="focus:text-primary" to="account/">
+                    Hồ Sơ
+                  </Link>
                 </div>
                 <div className="hover:text-primary active:text-primary text-sm text-gray-700 font-normal pb-2">
-                  <Link className="focus:text-primary" to="account/address">Địa chỉ </Link>
+                  <Link className="focus:text-primary" to="account/address">
+                    Địa chỉ{" "}
+                  </Link>
                 </div>
                 <div className="hover:text-primary active:text-primary text-sm text-gray-700 font-normal pb-2">
-                  <Link className="focus:text-primary" to="account/password">Đổi Mật Khẩu</Link>
+                  <Link className="focus:text-primary" to="account/password">
+                    Đổi Mật Khẩu
+                  </Link>
                 </div>
               </div>
             </div>
             <div className="your-purchase mb-3">
-              <Link className="focus:text-primary flex items-center text-gray-700 text-sm hover:text-primary" to="purchase/">
+              <Link
+                className="focus:text-primary flex items-center text-gray-700 text-sm hover:text-primary"
+                to="purchase/"
+              >
                 <div className="text-xl text-primary pe-3">
                   <FontAwesomeIcon icon={faClipboard} />
                 </div>
@@ -99,7 +114,10 @@ const LayoutUserComponent: React.FC = () => {
               </Link>
             </div>
             <div className="your-voucher-wallet mb-3">
-              <Link className="focus:text-primary flex items-center text-gray-700 text-sm hover:text-primary" to="voucher-wallet/">
+              <Link
+                className="focus:text-primary flex items-center text-gray-700 text-sm hover:text-primary"
+                to="voucher-wallet/"
+              >
                 <div className="text-xl text-primary pe-2">
                   <FontAwesomeIcon icon={faTicket} />
                 </div>
@@ -107,7 +125,10 @@ const LayoutUserComponent: React.FC = () => {
               </Link>
             </div>
             <div className="your-coin mb-3">
-              <Link className="focus:text-primary hover:text-primary flex items-center text-gray-700 text-sm" to="coin/">
+              <Link
+                className="focus:text-primary hover:text-primary flex items-center text-gray-700 text-sm"
+                to="coin/"
+              >
                 <div className="text-xl text-primary pe-2">
                   <FontAwesomeIcon icon={faCoins} />
                 </div>

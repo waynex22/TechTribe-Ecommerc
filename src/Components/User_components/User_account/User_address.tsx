@@ -28,6 +28,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AddressModal from "./User_address_update_modal";
 // import AddressSelector from "./address_form_select";
 import AddressSelectorAdd from "./address_form_select";
+import Toast from "src/Components/toast/Toast";
 
 const style = {
   position: "absolute",

@@ -7,6 +7,7 @@ import {
 import "animate.css";
 import BanTimeDisplay from "./banTime";
 import { FaBan } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const style = {
   position: "absolute",
@@ -57,7 +58,6 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
   id_shop,
   openFormBanShop,
   handleClose,
-  //   handleSubmit,
   //   handleOnChange,
 }) => {
   const today = new Date().toISOString().split("T")[0];
@@ -99,6 +99,12 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
       [name]: value,
     }));
   };
+  const {
+    data: shop,
+    isLoading,
+    error,
+    refetch,
+  } = useGetBanShopByIdShopQuery(id_shop, { skip: !id_shop });
 
   const handleSubmitUpdate = async () => {
     try {
@@ -109,17 +115,18 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
         }).unwrap();
         console.log(response);
         handleClose();
+        if (response.status === 201) {
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+        refetch();
+        window.location.reload();
       }
     } catch (error) {
       console.log("error at handleSubmitUpdate ", error);
     }
   };
-
-  const {
-    data: shop,
-    isLoading,
-    error,
-  } = useGetBanShopByIdShopQuery(id_shop, { skip: !id_shop });
 
   const { data: status } = useGetCheckStatusBanShopQuery(id_shop, {
     skip: !id_shop,
@@ -241,7 +248,7 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
           placeholder="Lý do cấm cửa hàng"
           value={shop?.reasonBan}
         ></textarea>
-        
+
         <div className="mb-4 flex items-center">
           Số lần đã vi phạm:{" "}
           <p className="text-red-500 ms-2"> {shop?.numberOfBan} lần </p>
@@ -254,23 +261,26 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
           <input type="date" className="w-full p-2 border rounded text-black" /> */}
           <div className="text-black">
             Ngày bắt đầu lệnh cấm:
-            <p>{shop?.banStartDate.toString()}</p>
+            <p className="text-primary">{shop?.banStartDate.toString()}</p>
           </div>
           <div>
             Ngày kết thúc lệnh cấm:
-            <p className="block">{shop?.banEndDate.toString()}</p>
+            <p className="block text-primary ">{shop?.banEndDate.toString()}</p>
           </div>
         </div>
 
         <div className="mb-4">
           <label className="block text-base font-medium text-gray-700 mb-1">
-            Thời gian còn lại :{" "}
-            {Math.floor(status?.remainingBanTime / (1000 * 60 * 60 * 24))} ngày{" "}
-            {Math.floor(
-              (status?.remainingBanTime % (1000 * 60 * 60 * 24)) /
-                (1000 * 60 * 60)
-            )}{" "}
-            giờ
+            Thời gian còn lại :
+            <span className="text-primary ms-2">
+              {Math.floor(status?.remainingBanTime / (1000 * 60 * 60 * 24))}{" "}
+              ngày{" "}
+              {Math.floor(
+                (status?.remainingBanTime % (1000 * 60 * 60 * 24)) /
+                  (1000 * 60 * 60)
+              )}{" "}
+              giờ
+            </span>
             {/* <BanTimeDisplay remainingBanTime = {status?.remainingBanTime}/> */}
           </label>
           {/* <input type="date" className="w-full p-2 border rounded text-black" /> */}
@@ -281,10 +291,10 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
             onClick={handleClose}
             className="px-4 py-2 bg-gray-500 hover:bg-gray-600 duration-300 text-white rounded mr-2"
           >
-            Hủy
+            Hủy X
           </button>
-          <button className="  cursor-not-allowed px-4 py-2 bg-gray-500 duration-300 text-white rounded">
-            Cấm
+          <button className="  cursor-not-allowed px-4 py-2 bg-gray-500 duration-300 text-white rounded flex items-center">
+            Cấm <FaBan className="ms-1" />
           </button>
         </div>
       </div>

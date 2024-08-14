@@ -10,7 +10,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className=" min-w-[1440px] min-h-screen bg-gray-100 bg-opacity-85">
       <HeaderAdmin />
-      <div className="flex gap-1 px-10">
+      <div className="flex gap-1">
         <AsideAdmin />
         <main className=' pt-16 w-full'>
           <div className=' p-4'>

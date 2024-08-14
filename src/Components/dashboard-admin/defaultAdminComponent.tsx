@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom'
 const AdminComponent: React.FC = () => {
   return (
     <div>
-      <main>
+      <main className=' rounded-lg overflow-hidden shadow-lg'>
         <Outlet />
       </main>
     </div>
