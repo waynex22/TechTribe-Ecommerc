@@ -7,6 +7,23 @@ export const userApi = createApi({
     baseUrl: `${apiUrl}`,
   }),
   endpoints: (builder) => ({
+    getAdminVoucher: builder.mutation({
+      query: ({code, id_customer}: {code: string, id_customer: { [key: string]: any } | null}) => ({
+        url: `/admin-voucher/getbycode/${code}/${id_customer}`,
+        method: "GET",
+      })
+    }),
+    getVoucherWallet: builder.query({
+      query: (id_customer) => `/voucher-wallet/findbyidcustomer/${id_customer}`
+    }),
+
+    getVoucherDetail: builder.mutation({
+      query: (id_voucher:string) =>({
+        url: `/admin-voucher/getbyid/${id_voucher}`,
+        method: "GET"
+      })
+    }),
+
     getUser: builder.mutation({
       query: (token: string) => ({
         url:  `/customer/findOneUser`,
@@ -100,5 +117,5 @@ export const userApi = createApi({
   }),
 });
 
-export const {useGetAddressByUserIdQuery,useGetUserMutation,useUpdateAvatarMutation,useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation } = userApi;
+export const {useGetAdminVoucherMutation,useGetVoucherDetailMutation,useGetVoucherWalletQuery,useGetAddressByUserIdQuery,useGetUserMutation,useUpdateAvatarMutation,useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation } = userApi;
 // export const {useGetUserMutation,useUpdateAvatarMutation,useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation, useGetAddressByUserIdQuery } = userApi;

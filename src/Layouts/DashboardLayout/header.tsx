@@ -33,7 +33,7 @@ const HeaderAdmin: React.FC = () => {
 
   return (
     <div className="">
-      <div className=" fixed flex justify-between w-screen shadow-sm px-10 border-b bg-white z-50">
+      <div className=" fixed flex justify-between w-screen shadow-sm ps-4 pe-8 border-b bg-white z-50">
         <div className="flex justify-center items-center">
           <div className=" ">
             <img className=" w-16 " src="https://i.imgur.com/1rzy8ne.png" alt="" />

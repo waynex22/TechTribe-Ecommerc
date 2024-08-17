@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import { typeReturnLogin } from "../types/login";
 
 const setToken = ( key: string, value:string ) => {
@@ -26,4 +27,4 @@ const getIdOrderNotComplete = () => {
 const removeIdOrderNotComplete = () => {
     removeToken('idOrderNotComplete');
 }
-export { setToken, getToken, removeToken , setLoginByToken , setLogout, setIdOrderNotComplete, removeIdOrderNotComplete , getIdOrderNotComplete};
+export {setToken, getToken, removeToken , setLoginByToken , setLogout, setIdOrderNotComplete, removeIdOrderNotComplete , getIdOrderNotComplete};

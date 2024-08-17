@@ -19,6 +19,53 @@ interface banShopForAdmin {
     numberOfBan: number,
     reasonBan: string
 }
+
+interface AdminVoucherDataToCreate {
+    type: string;
+  
+    name: string;
+  
+    code: string;
+  
+    time_start: Date | '';
+  
+    time_end: Date | '';
+  
+    percent: number;
+  
+    maximum_reduction: number;
+  
+    minimum_order_value: number;
+  
+    maximum_total_usage: number;
+  
+    is_public: boolean;
+  }
+
+export  interface AdminVoucherDataToGet {
+    _id: string,
+    type: string;
+  
+    name: string;
+  
+    code: string;
+  
+    time_start: Date | '';
+  
+    time_end: Date | '';
+  
+    percent: number;
+  
+    maximum_reduction: number;
+  
+    minimum_order_value: number;
+  
+    maximum_total_usage: number;
+  
+    is_public: boolean;
+
+    id_customer: string[]
+  }
 export const adminApi = createApi({
     reducerPath: "adminApi",
     baseQuery: fetchBaseQuery({
@@ -26,6 +73,15 @@ export const adminApi = createApi({
     }),
     
     endpoints: (builder) => ({
+        deleteAdminVoucher: builder.mutation({
+            query: (_id: string) => ({
+                url: `/admin-voucher/${_id}`,
+                method: "DELETE"
+            })
+        }),
+        getAllVoucherAdmin: builder.query<AdminVoucherDataToGet[],unknown> ({
+            query: () => '/admin-voucher',
+        }),
         getAllShop: builder.query<shopForAdmin[], void>({
             query: () => '/shop',
         }),
@@ -44,11 +100,23 @@ export const adminApi = createApi({
                 body: banShopData,
                 method: "PUT"
             })
+        }),
+
+        createAdminVoucher: builder.mutation({
+            query: ({data, token}: {data: AdminVoucherDataToCreate, token: string}) => ({
+                url: '/admin-voucher',
+                body: data,
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            })
         })
+
         
     })
 
     
 })
 
-export const {useGetCheckStatusBanShopQuery,useGetBanShopByIdShopQuery, useGetAllShopQuery, useGetBanShopQuery,useUpdateBanShopMutation} = adminApi
+export const {useDeleteAdminVoucherMutation ,useGetAllVoucherAdminQuery,useCreateAdminVoucherMutation,useGetCheckStatusBanShopQuery,useGetBanShopByIdShopQuery, useGetAllShopQuery, useGetBanShopQuery,useUpdateBanShopMutation} = adminApi

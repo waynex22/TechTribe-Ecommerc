@@ -1,21 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBell,
-  faClipboard,
-  faCoins,
-  faHome,
-  faPen,
-  faShop,
-  faTicket,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useGetUserMutation } from "src/redux/rtkQuery/user_customers";
-import { FaHome, FaShopify, FaShoppingBag } from "react-icons/fa";
-import { Home } from "@mui/icons-material";
+import { FaHome, FaList, FaShopify, FaShoppingBag } from "react-icons/fa";
 import { RiCoupon3Fill } from "react-icons/ri";
+import { IoList } from "react-icons/io5";
 
 const AsideAdmin: React.FC = () => {
   const [getUser] = useGetUserMutation();
@@ -65,6 +55,12 @@ const AsideAdmin: React.FC = () => {
               <RiCoupon3Fill className="text-blue-500 text-base active:text-slate-50 flex my-0 mx-auto z-10"/>
             </div>
             <p className="text-gray-700 items-start">Voucher</p>
+          </Link>
+          <Link to="/dashboard/category" className="flex justify-left items-center p-3 active:bg-gray-200 rounded-lg duration-300 bg-opacity-90 ">
+            <div className=" p-2 bg-slate-50 rounded-xl active:bg-blue-500 w-8 h-8 me-2" >
+              <FaList className="text-blue-500 text-base active:text-slate-50 flex my-0 mx-auto z-10"/>
+            </div>
+            <p className="text-gray-700 items-start">Category</p>
           </Link>
       </div>
     </aside>

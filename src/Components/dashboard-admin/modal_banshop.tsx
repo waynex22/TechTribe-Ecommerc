@@ -58,7 +58,6 @@ const AdminFormBanShopComponent: React.FC<formBanShopProps> = ({
   id_shop,
   openFormBanShop,
   handleClose,
-  //   handleOnChange,
 }) => {
   const today = new Date().toISOString().split("T")[0];
   const [shopData, setShopData] = useState<banShopForAdmin>();

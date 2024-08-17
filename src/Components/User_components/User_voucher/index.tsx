@@ -3,6 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faLock, faTicket } from "@fortawesome/free-solid-svg-icons";
 import { Box, TextField, Typography } from "@mui/material";
 import axios from "axios";
+import { useGetAdminVoucherMutation, useGetVoucherWalletQuery } from "src/redux/rtkQuery/user_customers";
+import { jwtDecode } from "jwt-decode";
+import DetailAdminVoucherComponent from "./detailAdminVoucherComponent";
+import { toast } from "react-toastify";
 
 interface voucherData {
   _id: string;
@@ -23,9 +27,55 @@ interface voucherData {
 }
 
 const ComponentUserVoucher: React.FC = () => {
-  const [codeVoucher, setCodeVoucer] = useState("");
+  const [accessToken, setAccessToken] = useState<string>("");
+  const [infoUserFormToken, setInfoUserFormToken] = useState<{
+    [key: string]: any;
+  } | null>(null);
+  const [idCustomer, setIdCustomer] = useState<string>("");
+  const [id_Customer, setId_Customer] = useState<{ [key: string]: any } | null>({
+    id_customer: ''
+  })
+
+  const [resultGetVoucher, setResultGetVoucher] = useState<{ [key: string]: any } | null>({
+    response: '',
+    status: 0,
+    message: "",
+    name: ""
+  })
+  const [codeVoucher, setCodeVoucher] = useState("");
   const [errorVoucher, setErrorVoucher] = useState("");
-  const [voucherData, setVoucherData] = useState<voucherData[]>([])
+  const [getAdminVoucher] = useGetAdminVoucherMutation()
+  useEffect(() => {
+    const getAccessToken = localStorage.getItem("access_token");
+
+    console.log(getAccessToken);
+
+    if (getAccessToken !== null) {
+      setAccessToken(getAccessToken);
+    }
+  }, []);
+  const decodeToken = () => {
+    if (accessToken !== "") {
+      const decodeToken = jwtDecode(accessToken) as { [key: string]: any };
+      // setInfoUserFormToken(decodeToken);
+      setIdCustomer(decodeToken?.sub);
+      setId_Customer(decodeToken?.sub)
+    }
+  };
+  useEffect(() => {
+    if (accessToken !== null) {
+      decodeToken();
+    }
+  }, [accessToken]);
+  useEffect(() => {
+    console.log("voucherWallet", voucherWallet);
+    console.log("resultGetVoucher",resultGetVoucher);
+    console.log("id_customer ",id_Customer);
+    
+  }, [idCustomer,resultGetVoucher,id_Customer]);
+
+  const { data: voucherWallet, refetch } = useGetVoucherWalletQuery(idCustomer);
+
   const validate = () => {
     let tempErrors = { errorVoucher: "" };
 
@@ -37,38 +87,43 @@ const ComponentUserVoucher: React.FC = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCodeVoucer(e.target.value);
+    setCodeVoucher(e.target.value);
   };
   console.log(codeVoucher);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    const formData = new FormData();
-    formData.append("codeVoucher", codeVoucher);
     try {
-      if (validate()) {
-        console.log(formData);
+      if (validate() && codeVoucher && idCustomer) {
+        const result = await getAdminVoucher({code: codeVoucher, id_customer: id_Customer});
+        refetch();
+        if(result.data.status === 200) {
+          toast.success(result.data.message)
+        }else {
+          toast.error(result.data.message)
+        }
       } else {
         console.log("Validation failed");
       }
+      
     } catch (error) {
       console.error("Error updating user info:", error);
     }
   };
 
-  const getAllVoucher = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/voucher");
-      console.log(response);
+  // const getAllVoucher = async () => {
+  //   try {
+  //     const response = await axios.get("http://localhost:8080/voucher");
+  //     console.log(response);
 
-      setVoucherData(response.data)
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  //     setVoucherData(response.data);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
-  useEffect(() => {
-    getAllVoucher()
-  },[])
+  // useEffect(() => {
+  //   getAllVoucher();
+  // }, []);
 
   return (
     <div>
@@ -128,32 +183,15 @@ const ComponentUserVoucher: React.FC = () => {
       <div className="title text-left m-4 border-b">
         <div className="text-lg font-normal pb-1">Tất cả voucher</div>
       </div>
-      <div  className="grid grid-cols-12 gap-4 m-4">
-      {voucherData !== null ? (
-        voucherData.map((item,index) => (
-          <div key={index} className=" col-span-6">
-          <div className="flex items-center border rounded-sm shadow ">
-            <div className=" mr-1 w-28 h-28 bg-primary flex flex-col items-center justify-center text-white border-dotted border-l-8">
-              <FontAwesomeIcon className="text-3xl" icon={faTicket} />
-              <div className="mt-2">TechTribe</div>
-            </div>
-            <div className="  mr-1 flex-1 text-left ps-4">
-              <div className=" font-normal">Giảm {item.percent}% Giảm tối đa {item.maximum_reduction}₫</div>
-              <div className=" text-sm font-normal pb-2">
-                Đơn Tối Thiểu  {item.minimum_order_value}₫
-              </div>
-              <div className=" text-xs font-light">
-                <FontAwesomeIcon className="pe-2" icon={faClock} />
-                Có hiệu lực đến ngày: {new Date(item.time_end).toLocaleString()}
-              </div>
-            </div>
-            <div className=" mr-1 text-right text-xs p-2 border rounded border-primary text-primary">
-              Dùng ngay
-            </div>
-          </div>
-        </div>
-      ))) : ""}
+      <div className="grid grid-cols-12 gap-4 m-4">
       </div>
+      {voucherWallet?.wallet_warehouse ? (
+        <DetailAdminVoucherComponent
+          voucherIds={voucherWallet?.wallet_warehouse}
+        />
+      ) : (
+        ""
+      )}
     </div>
   );
 };
