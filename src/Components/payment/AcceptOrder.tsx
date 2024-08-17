@@ -22,6 +22,7 @@ const AcceptOrder: React.FC<Props> = ({ subOrder, items }) => {
     const handleBackToCart = () => {
         setModal(false);
         history('/checkout/cart');
+        removeIdOrderNotComplete();
     }
     const handleCreateOrder = async () => {
         setLoading(true);

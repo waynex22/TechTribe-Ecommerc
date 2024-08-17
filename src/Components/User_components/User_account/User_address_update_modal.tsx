@@ -140,7 +140,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
     }));
   };
 
-  console.log(addressDataToUpdate);
+  // console.log(addressDataToUpdate);
 
   const handleAddressTypeChange = (
     event: React.MouseEvent<HTMLElement>,

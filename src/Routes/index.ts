@@ -14,6 +14,7 @@ import ComponentUserChangePassword from "../Components/User_components/User_acco
 import CartPage from "../Page/Cart";
 import PaymentPage from "../Page/Payment";
 import QueryProductPage from "../Page/QueryProduct";
+import ShopPage from "src/Page/Shop";
 const publicRoutes: Route[]  = [
     {
         path: '/',
@@ -24,6 +25,12 @@ const publicRoutes: Route[]  = [
         path: "/checkout/cart",
         component: CartPage,
         layout: DefaultLayout,
+    },
+    {
+        path: "/shop/:id",
+        component: ShopPage,
+        layout: DefaultLayout,
+        needChat: true
     },
     {
         path: "/checkout/payment",
@@ -88,6 +95,7 @@ const publicRoutes: Route[]  = [
         path: '/product/:slug',
         component: ProductDetail,
         layout: DefaultLayout,
+        needChat: true
     },
 ]
 export { publicRoutes };

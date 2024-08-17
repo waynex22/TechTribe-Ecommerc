@@ -31,7 +31,7 @@ const ItemDetail: React.FC<Props> = ({ item }) => {
                     {item?.items?.map((item: any, index: number) => (
                         <div key={index} className='flex items-center justify-between w-full my-2 '>
                             <div className='flex items-center gap-2'>
-                                <img src={item?.productPriceId?.id_product[0]?.thumbnails[0]} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
                                 <div>
                                     <p className='font-normal text-[14px]'>{item?.productPriceId?.id_product[0]?.name}</p>
                                     <p className='text-[12px] text-gray-400'>Phân loại hàng : {item?.productPriceId?.id_color?.length > 0 && item?.productPriceId?.id_size?.length > 0 ? item?.productPriceId?.id_color[0]?.value + ' , ' + item?.productPriceId?.id_size[0]?.value : item?.productPriceId?.id_size[0]?.value || item?.productPriceId?.id_color[0]?.value}</p>
@@ -39,7 +39,16 @@ const ItemDetail: React.FC<Props> = ({ item }) => {
                                 </div>
                             </div>
                             <div className='flex items-center gap-4'>
-                                <p className='font-normal text-[14px] text-red-400'>{item?.productPriceId?.price ? formatNumberVnd(item?.productPriceId?.price * item?.quantity) : 0}đ</p>
+                                {item?.discountDetailId ? (
+                                    <>
+                                      <del className='font-normal text-[14px] text-gray-400'>{formatNumberVnd(item?.productPriceId?.price * item?.quantity)}đ</del>
+                                      <p className="font-normal text-[14px] text-red-400">{formatNumberVnd(item?.productPriceId?.price * item?.quantity * (100 - item?.discountDetailId?.percent) / 100)}đ</p>
+                                    </>
+                                ):(
+                                    <>
+                                    <p className='font-normal text-[14px] text-red-400'>{item?.productPriceId?.price ? formatNumberVnd(item?.productPriceId?.price * item?.quantity) : 0}đ</p>
+                                    </>
+                                )}
                             </div>
                         </div>
                     ))}

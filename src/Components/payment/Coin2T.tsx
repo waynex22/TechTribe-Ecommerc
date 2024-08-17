@@ -46,7 +46,7 @@ const Coin2T: React.FC<Props> = ({ subOrder, refecth }) => {
                     <div className="flex items-start gap-2">
                         <img src="https://salt.tikicdn.com/ts/upload/2e/d0/67/6ea978a46f650dcd267445000840659a.png" className="w-6" alt="" />
                         <div className="relative">
-                            <p className="text-gray-900 font-nomal text-sm">Sử dụng số coin tích điểm</p>
+                            <p className="text-gray-900 font-nomal text-sm">Sử dụng số xu tích điểm</p>
                             <div className="flex items-center gap-2">
                                 <p className="text-[12px] text-gray-400">Bạn đang có</p>
                                 <p className="text-[12px] text-green-400">{formatNumberVnd(subOrder?.customerReward?.coin)} xu</p>

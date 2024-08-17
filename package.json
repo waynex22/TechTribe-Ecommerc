@@ -39,6 +39,8 @@
     "react-spinners": "^0.14.1",
     "react-tailwindcss-select": "^1.8.5",
     "react-toastify": "^10.0.5",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
     "stream": "^0.0.3",
     "util": "^0.12.5",
     "web-vitals": "^2.1.4"

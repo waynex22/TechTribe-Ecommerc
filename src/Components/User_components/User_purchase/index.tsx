@@ -15,8 +15,8 @@ const ComponentUserPurchase: React.FC = () => {
   useEffect(() => {
     const filterOrder = tab === 'all' ? orders : orders?.filter((item: any) => item.status === tab);
     setFilter(filterOrder);
+
   }, [tab, orders]);
-  
   return (
     <>
       <h2>Đơn hàng của tôi</h2>

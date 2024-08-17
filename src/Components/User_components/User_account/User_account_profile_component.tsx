@@ -141,7 +141,7 @@ const ComponentUserAccountProfile: React.FC = () => {
   console.log(userInfo);
 
   return (
-    <div className="p-6">
+    <div className="p-4 bg-white rounded-lg min-h-[600px]">
       <div className="title text-left pb-4">
         <div className="text-lg font-normal pb-1">Hồ Sơ Của Tôi</div>
         <div className=" font-light text-sm">

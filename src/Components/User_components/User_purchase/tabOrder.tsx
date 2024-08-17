@@ -27,8 +27,8 @@ const TabOrder: React.FC<Props> = ({ handleSetTab, tab }) => {
             Đang vận chuyển
           </button>
           <button
-            className={`pb-2 text-sm font-normal ${tab === 'Đã nhận hàng' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
-            onClick={() => handleSetTab('Đã nhận hàng')}
+            className={`pb-2 text-sm font-normal ${tab === 'Hoàn thành' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+            onClick={() => handleSetTab('Hoàn thành')}
           >
             Hoàn thành
           </button>

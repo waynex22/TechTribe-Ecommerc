@@ -4,35 +4,34 @@ import ComponentUserAccountProfile from "../Components/User_components/User_acco
 import ComponentUserAddress from "../Components/User_components/User_account/User_address";
 import ComponentUserChangePassword from "../Components/User_components/User_account/User_changepassword";
 import ComponentUserCoin from "../Components/User_components/User_coin/User_coin";
-import ComponentUserAccountNotify from "../Components/User_components/User_notification/user_account_notify_component";
 import ComponentUserPurchase from "../Components/User_components/User_purchase";
 import ComponentUserVoucher from "../Components/User_components/User_voucher";
 import { DefaultLayout } from "../Layouts";
 import { Route } from "../Type";
 
-const userProfileRouter : Route[]= [
+const userProfileRouter: Route[] = [
     {
-        path: "/profile",
+        path: "/me",
         component: LayoutUserComponent,
         layout: DefaultLayout,
-        children:[
+        children: [
             {
                 path: "",
                 component: ComponentUserAccountProfile,
                 layout: null,
             },
             {
-                path: "account",
+                path: "info",
                 component: ComponentUserAccountProfile,
                 layout: null,
             },
             {
-                path: "account/address",
+                path: "address",
                 component: ComponentUserAddress,
                 layout: null,
             },
             {
-                path: "account/password",
+                path: "password",
                 component: ComponentUserChangePassword,
                 layout: null,
             },
@@ -47,12 +46,7 @@ const userProfileRouter : Route[]= [
                 layout: null,
             },
             {
-                path: "notification/order",
-                component: ComponentUserAccountNotify,
-                layout: null,
-            },
-            {
-                path: "voucher-wallet",
+                path: "voucher",
                 component: ComponentUserVoucher,
                 layout: null,
             },
@@ -61,9 +55,8 @@ const userProfileRouter : Route[]= [
                 component: ComponentUserCoin,
                 layout: null,
             },
-
-        ]    
+        ]
     }
 ]
 
-export {userProfileRouter}
+export { userProfileRouter }

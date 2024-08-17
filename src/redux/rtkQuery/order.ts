@@ -116,8 +116,15 @@ export const orderApi = createApi({
                 method: 'PATCH',
                 body: payload
             })
+        }),
+        updateItemsOrder: builder.mutation<any, any>({
+            query: (payload) => ({
+                url: `items-order/${payload._id}`,
+                method: 'PATCH',
+                body: payload
+            })
         })
     }),
 });
 
-export const { useGetSubOrderQuery, useCreateSubOrderMutation, useDeleteSubOrderMutation , useUpdateSubOrderDtoMutation, useUpdateItemsSubOrderMutation, useCreateOrderMutation, useGetOrderByUserIdQuery, useGetOrderByIdQuery } = orderApi;
+export const { useGetSubOrderQuery, useCreateSubOrderMutation, useDeleteSubOrderMutation , useUpdateSubOrderDtoMutation, useUpdateItemsSubOrderMutation, useCreateOrderMutation, useGetOrderByUserIdQuery, useGetOrderByIdQuery , useUpdateItemsOrderMutation } = orderApi;

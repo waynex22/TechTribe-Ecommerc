@@ -15,7 +15,7 @@ interface CartItemProps {
 }
 const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
   const { user } = useSelector((state: any) => state.auth);
-  const { productPriceId, quantity } = itemCart;
+  const { productPriceId, quantity ,discountDetailId } = itemCart;
   const { refetch } = useGetCartMeQuery(user?.sub);
   const [updateCart] = useUpdateCartMutation();
   const { data: cartSelect, refetch: refetchCartSelect } = useGetCartSelectQuery(user?.sub);
@@ -26,7 +26,6 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
   const [modalAction, setModalAction] = useState<(() => void) | null>(null);
   const [isDiscount, setIsDiscount] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { discountDetailId } = itemCart;
   useEffect(() => {
     if (user) {
       refetchCartSelect();
@@ -99,10 +98,11 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  const handleSelectdProduct = async (productPriceId: string) => {
+  const handleSelectdProduct = async (productPriceId: any) => {
+    if(productPriceId.stock === 0 ) return;
     const payload: any = {
       customerId: user?.sub,
-      productPriceId: productPriceId,
+      productPriceId: productPriceId._id,
     }
     if (payload) {
       try {
@@ -119,9 +119,6 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
       setIsDiscount(checkDiscount(itemCart?.discountDetailId?.id_discount?.time_start, itemCart?.discountDetailId?.id_discount?.time_end));
     }
   }, [discountDetailId]);
- 
-  // console.log(itemCart);
-  
   return (
     <>
       <Spinner loading={loading} />
@@ -134,13 +131,12 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
         />
         {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
         <div className="w-full">
-          <div className="h-[120px] w-full flex items-center justify-start">
+          <div className={`h-[120px] w-full flex items-center justify-start ${productPriceId.stock === 0 || productPriceId.stock < itemCart?.quantity ? 'opacity-50' : ''}`}>
             <div className="w-[50%] flex items-center justify-start p-2 gap-x-2">
               <input
-                onChange={() => handleSelectdProduct(productPriceId?._id)}
+                onChange={() => handleSelectdProduct(productPriceId)}
                 checked={cartSelect?.listProductSelect?.some((item: any) => (item._id == productPriceId?._id)) ? true : false}
                 type="checkbox"
-
                 className="w-5 h-5 focus:ring-0 rounded-md border-solid border-[1px] border-gray-300 checked:bg-secondary transition-all duration-300"
               />
               <div className="flex items-center justify-start p-2 gap-x-2">
@@ -222,7 +218,7 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
                 </button>
               </div>
               <div className="absolute left-2 bottom-0">
-                <p className="text-red-400 font-light text-[12px]">Còn lại : {productPriceId?.stock}</p>
+                <p className="text-gray-800 font-light text-[12px]">{productPriceId.stock === 0 ? 'Hết hàng' : `Còn ${productPriceId.stock}`}</p>
               </div>
             </div>
             <div className="w-[20%] flex items-center justify-start p-2 gap-x-2">

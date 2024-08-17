@@ -11,6 +11,9 @@ import { ToastProps } from "../../Type";
 import { discountPrice, getMinMaxPriceInArr } from "../../utils/getMinMax/getMinMaxPrice";
 import ProductItem from "./ProductItem";
 import { product } from "src/utils/types/product";
+import { useDispatch } from "react-redux";
+import { setOpen, setShopSelected } from "src/redux/slices/chatSlice";
+import Review from "../Review";
 const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [updateCart] = useUpdateCartMutation();
@@ -114,7 +117,15 @@ const ProductDetail: React.FC = () => {
       }
     }
   }
-
+  const dispatch = useDispatch();
+  const handleChatClick = (shopId: string, shopName: string) => {
+    if (!user) {
+      handleSetToast({ message: 'Bạn cần đăng nhập để chat', type: "error" });
+    } else {
+      dispatch(setShopSelected({ shopId, shopName }));
+      dispatch(setOpen(true));
+    }
+  };
 
   if (isLoading) return <ProductDetailLoading />;
   const minMaxPrice = getMinMaxPriceInArr(product?.product_price);
@@ -159,7 +170,6 @@ const ProductDetail: React.FC = () => {
   );
 
   const discountedPrice: any = isDiscount ? discountPrice(ProductPriceSelected.price, isDiscount.percent) : null;
-  console.log(product);
 
   return (
     <>
@@ -296,7 +306,7 @@ const ProductDetail: React.FC = () => {
                         className={`p-1 border rounded-lg cursor-pointer relative w-[100px] flex items-center justify-around ${selectedColor === color._id
                           ? "border-blue-600 border-2"
                           : "border-gray-200"
-                          } ${!isOnStock(color._id, selectedSize) ? "opacity-10" : ""}`}
+                          } ${!isOnStock(color._id, selectedSize) ? "opacity-30" : ""}`}
                       >
                         {selectedColor === color._id && (
                           <div className="absolute top-[-1px] right-0">
@@ -329,7 +339,7 @@ const ProductDetail: React.FC = () => {
                         className={` border rounded-lg cursor-pointer relative py-2 px-3  ${selectedSize === size._id
                           ? "border-blue-600 border-2"
                           : "border-gray-200"
-                          } ${isOnStock(size._id, selectedColor) ? "opacity-10" : ""}`}
+                          } ${isOnStock(size._id, selectedColor) ? "opacity-30" : ""}`}
                       >
                         {selectedSize === size._id && (
                           <div className="absolute top-[-1px] right-0">
@@ -427,7 +437,7 @@ const ProductDetail: React.FC = () => {
             </div>
             <div className="p-4 mt-4 bg-white rounded-xl">
               <h3>Mô tả sản phẩm</h3>
-              <div dangerouslySetInnerHTML={{ __html: product?.description ?? '' }} />
+              <div className="text-sm font-light text-gray-600" dangerouslySetInnerHTML={{ __html: product?.description ?? '' }} />
             </div>
             <div className="p-4 mt-4 bg-white rounded-xl">
               <h3>Sản phẩm tương tự</h3>
@@ -437,12 +447,13 @@ const ProductDetail: React.FC = () => {
                 ))}
               </div>
             </div>
+           
           </div>
           <div className="col-span-2 bg-white h-fit rounded-xl">
             <div className="p-4">
               <div className="flex gap-4 ">
                 <img
-                  src={`http://localhost:8080/uploads/${product?.id_shop[0]?.thumbnail}`}
+                  src={product?.id_shop[0]?.thumbnail}
                   alt=""
                   className="rounded-full w-12 h-12 object-cover"
                 />
@@ -479,7 +490,7 @@ const ProductDetail: React.FC = () => {
                   </div>
                   <div className="my-2">
                     <div className="flex items-center justify-start gap-4">
-                      <div className="w-[100px] cursor-pointer h-[30px] bg-transparent border-2 flex items-center border-primary rounded-lg">
+                      <div onClick={() => handleChatClick(product?.id_shop[0]?._id, product?.id_shop[0]?.name)} className="w-[100px] cursor-pointer h-[30px] bg-transparent border-2 flex items-center border-primary rounded-lg">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
@@ -499,7 +510,7 @@ const ProductDetail: React.FC = () => {
                         </p>
                       </div>
                       <Link
-                        to="/"
+                        to={`/shop/${product?.id_shop[0]?._id}`}
                         className="w-[100px] h-[30px] bg-transparent border-2 flex items-center border-gray-400 rounded-lg"
                       >
                         <svg
@@ -533,11 +544,13 @@ const ProductDetail: React.FC = () => {
                     src={product?.thumbnails[0]}
                     alt=""
                   />
-                  <div className="flex items-center gap-2">
-                    <span className="text-md font-light-bold">{ProductPriceSelected?.id_color[0]?.value}</span>
-                    ,
-                    <span className="text-md font-light-bold">{ProductPriceSelected?.id_size[0]?.value}</span>
-                  </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-md font-light-bold">{ProductPriceSelected?.id_color[0]?.value}</span>
+                      {selectedSize && selectedColor && (
+                        <>,</>
+                      )}
+                      <span className="text-md font-light-bold">{ProductPriceSelected?.id_size[0]?.value}</span>
+                    </div>
 
                   <div className="flex items-start justify-normal gap-2">
 
@@ -589,6 +602,9 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="w-[71%]">
+        <Review  product={product}/>
         </div>
       </div>
     </>

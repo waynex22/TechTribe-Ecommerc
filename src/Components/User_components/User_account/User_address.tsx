@@ -296,7 +296,7 @@ const ComponentUserAddress: React.FC = () => {
     }
   };
 
-  console.log("dataAddressToAdd", addressData);
+  // console.log("dataAddressToAdd", addressData);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
@@ -367,7 +367,8 @@ const ComponentUserAddress: React.FC = () => {
   };
   return (
     <>
-      <div className=" flex items-center justify-between p-6 border-b">
+    <div className="p-4 bg-white rounded-lg min-h-[600px]">
+    <div className="flex items-center justify-between border-b">
         <div className="text-lg font-normal">Địa chỉ của tôi</div>
         <div>
           <button
@@ -659,6 +660,7 @@ const ComponentUserAddress: React.FC = () => {
           </Fade>
         </Modal>
       </div>
+    </div>
     </>
   );
 };

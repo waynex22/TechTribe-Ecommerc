@@ -7,7 +7,7 @@ interface Props {
     subOrder?: Order | any;
     refecth: () => void
 }
-const Address: React.FC<Props> = ({ subOrder , refecth }) => {
+const Address: React.FC<Props> = ({ subOrder, refecth }) => {
     const { data: addressUser } = useGetAddressByUserIdQuery(subOrder?.customerId._id, {
         skip: !subOrder
     });
@@ -28,13 +28,13 @@ const Address: React.FC<Props> = ({ subOrder , refecth }) => {
             refecth();
         } catch (error) {
             console.error(error);
-        }finally {
+        } finally {
             setLoading(false);
         }
     }
     return (
         <>
-        <Spinner loading={loading} />
+            <Spinner loading={loading} />
             <div className="bg-white rounded-lg">
                 <div className="flex items-start justify-between font-light-bold text-sm">
                     <p className="text-gray-400">Giao tới</p>
@@ -73,27 +73,36 @@ const Address: React.FC<Props> = ({ subOrder , refecth }) => {
                                         <div className='flex items-center gap-2'>
                                             {item.isDefault ? <div className="bg-green-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
                                                 <p className="text-[12px] text-green-400/50">Nhà</p>
-                                            </div> : 
-                                            <div className="bg-yellow-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
-                                            <p className="text-[12px] text-yellow-400/50">Khác</p>
-                                        </div>}
+                                            </div> :
+                                                <div className="bg-yellow-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
+                                                    <p className="text-[12px] text-yellow-400/50">Khác</p>
+                                                </div>}
                                             <div>
                                                 <div className='flex items-center gap-2'>
-                                                <p className='text-[12px] text-gray-500 font-light'>{item.fullName}</p>
-                                                <div className='w-[1px] h-[12px] bg-gray-500'></div>
-                                                <p className='text-[12px] text-gray-500 font-light'>{item.phoneNumber}</p>
+                                                    <p className='text-[12px] text-gray-500 font-light'>{item.fullName}</p>
+                                                    <div className='w-[1px] h-[12px] bg-gray-500'></div>
+                                                    <p className='text-[12px] text-gray-500 font-light'>{item.phoneNumber}</p>
                                                 </div>
                                                 <p className='text-[12px] text-gray-500 font-light'>Địa chỉ : {item.address + ', ' + item.ward + ', ' + item.district + ', ' + item.province}</p>
                                             </div>
                                         </div>
                                         <div className='w-2/5 flex items-center justify-end'>
                                             {item._id !== subOrder?.address?._id ? <input onClick={() => handleSelectAddress(item._id)} type="radio" name="address" className='w-4 h-4 cursor-pointer' /> :
-                                               <input type="radio" name="address" className='w-4 h-4' defaultChecked />
+                                                <input type="radio" name="address" className='w-4 h-4' defaultChecked />
                                             }
                                         </div>
                                     </div>
                                 </>
                             ))}
+                            <div className='mt-4 '>
+                                <button className=' cursor-pointer border border-solid border-gray-200 flex items-center gap-1 text-[12px] font-normal p-1 rounded-md hover:bg-gray-200'>
+                                <svg className='size-4' xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                                <p>Thêm mới</p>
+                                </button>
+                                
+                            </div>
                         </div>
                     </div>
                 </>

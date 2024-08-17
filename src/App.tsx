@@ -9,12 +9,24 @@ import PrivateRoute from "./Routes/PrivateRoute";
 import ScrollToTop from "./Components/scroll/autoScrollTop";
 import { userProfileRouter } from "./Routes/UserProfileRoute";
 import CheckSubOrder from "./Components/payment/checkSubOrder";
+import ChatWidget from "./Components/Chat/ChatWidget";
+import { useSelector } from "react-redux";
+import ChatIcon from "./Components/Chat/ChatIcon";
+import { useDispatch } from "react-redux";
+import { setOpen } from "./redux/slices/chatSlice";
 
 
 const App: React.FC = () => {
+  const {chat} = useSelector((state: any) => state.chat);
+  const dispatch = useDispatch();
+  const handleOpen = () => {
+    dispatch(setOpen(true));
+  }
   return (
     <Router>
       <div className="App">
+        <ChatIcon onClick={handleOpen} />
+        {chat && <ChatWidget />}
       <ScrollToTop />
       <CheckSubOrder />
         <Routes>
