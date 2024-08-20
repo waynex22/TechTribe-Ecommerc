@@ -1,36 +1,72 @@
 import { Link, useParams } from "react-router-dom";
-import { useGetOrderByIdQuery, useUpdateItemsOrderMutation } from "src/redux/rtkQuery/order";
+import { useCancelOrderMutation, useGetOrderByIdQuery, useUpdateItemsOrderMutation } from "src/redux/rtkQuery/order";
 import { formatDate, formatDateAndTime } from "src/utils/formartDate";
 import ItemDetail from "./itemDetail";
 import Toast from "src/Components/toast/Toast";
 import { ToastProps } from "src/Type";
 import { useState } from "react";
 import ModalRating from "./ModalRating";
+import { useUpdateStatusTimeMutation } from "src/redux/rtkQuery/product-review";
+import ModalAccept from "src/Components/modal/ModalAccept";
+import OrderCancel from "./OrderCancel";
 
 const OrderDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const [updateOrder] = useUpdateItemsOrderMutation();
+    const [updateTime] = useUpdateStatusTimeMutation();
+    const [cancelOrder] = useCancelOrderMutation();
     const [openModal, setOpenModal] = useState(false);
+    const [modalAccept , setModalAccept] = useState(false);
+    const [modalAction , setModalAction] = useState<(() => void) | null>(null);
     const [toast, setToast] = useState<ToastProps | null>(null);
     const { data: order, isLoading, refetch } = useGetOrderByIdQuery(slug ? slug : '', { skip: !slug });
     const handleUpdate = async (key: string) => {
-        await updateOrder({ _id: order?._id, status: key});
+        await updateOrder({ _id: order?._id, status: key });
+        await updateTime({ id: order?._id, key: key, value: new Date() });
         setToast({ message: 'Cập nhật thành công', type: 'success', onClose: () => setToast(null) });
         refetch();
     }
     // console.log(order);
+    const handleCancelOrder = async () => {
+        await cancelOrder({ _id: order?._id });
+        await updateTime({ id: order?._id, key: 'user_cancel', value: new Date() });
+        setToast({ message: 'Huỷ đơn hàng thành công', type: 'success', onClose: () => setToast(null) });
+        refetch();
+    }
+
+    const openModalAccept = () => {
+        setModalAccept(true);
+        setModalAction(() => handleCancelOrder);
+    }
+    const handleConfirm = async () => {
+        if (modalAction) {
+          await modalAction();
+        }
+        setModalAccept(false);
+      };
+    
+      const handleCancel = () => {
+        setModalAccept(false);
+      };
     const getKeyUpdateItem = (key: string) => {
         return order?.statusUpdate?.filter((item: any) => item.key === key).map((item: any) => item.value);
     }
-        const checkRefuntOrder = (endDate: string) => {
-            const now = new Date();
-            const dateRefund = new Date(endDate);
-            return now.getTime() < dateRefund.getTime();
-        }
+    const checkRefuntOrder = (endDate: string) => {
+        const now = new Date();
+        const dateRefund = new Date(endDate);
+        return now.getTime() < dateRefund.getTime();
+    }
+    const checkAutoCancel = order?.statusUpdate?.every((item: any) => item.key === 'auto_cancel');
     if (isLoading) return <div className="w-full h-screen flex items-center justify-center">isLoading</div>
     return (
         <>
-        {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
+        <ModalAccept
+          isOpen={modalAccept}
+          message="Bạn có chắc muốn huỷ đơn hàng này"
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+            {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
             <div className="flex items-center justify-between border-b border-dashed p-4 bg-white rounded-lg">
                 <Link to="/me/purchase" className="flex items-center gap-1 text-sm text-gray-500 cursor-pointer uppercase">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
@@ -45,7 +81,14 @@ const OrderDetail: React.FC = () => {
                 </div>
             </div>
             <div className="border-b border-dashed p-4 flex items-center justify-center bg-white rounded-lg">
-                <div className="flex items-center justify-start">
+                {order?.status === 'Đã huỷ' ?  (
+                    <>
+                    <OrderCancel />
+                    </>
+                ):
+                (
+                    <>
+                    <div className="flex items-center justify-start">
                     <div className="flex flex-col items-start justify-start">
                         <div className="flex items-center ">
                             <div className="border p-4 border-green-400 rounded-full">
@@ -78,13 +121,13 @@ const OrderDetail: React.FC = () => {
                 <div className="flex items-center justify-start">
                     <div className="flex flex-col items-start justify-start">
                         <div className="flex items-center">
-                            <div className={`border  p-4 rounded-full ${order?.status !== 'Chờ xác nhận' ? 'border-green-400' : 'border-gray-200'}`}>
+                            <div className={`border  p-4 rounded-full ${order?.status !== 'Chờ xác nhận' && order?.status !== 'Đã huỷ' ? 'border-green-400' : 'border-gray-200'}`}>
                                 <svg className="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="favorite-store"><rect width="21.5" height="15.5" x="1.25" y="7.25" fill="#aff9f7" rx="2.75"></rect><circle cx="17" cy="7" r="5.75" fill="#13e4ea"></circle><path fill="#13e4ea" d="M18.7,10.186a.748.748,0,0,1-.379-.1L17,9.311l-1.319.772a.751.751,0,0,1-1.1-.842l.408-1.512L13.934,6.712a.75.75,0,0,1,.521-1.289H15.7l.641-1.21a.781.781,0,0,1,1.326,0l.641,1.21h1.241a.75.75,0,0,1,.521,1.289L19.015,7.729l.408,1.512a.751.751,0,0,1-.725.945ZM17,7.692a.754.754,0,0,1,.379.1l.119.07-.047-.172a.752.752,0,0,1,.2-.734l.052-.05a.752.752,0,0,1-.517-.384L17,6.166l-.189.358a.752.752,0,0,1-.517.384l.052.05a.752.752,0,0,1,.2.734l-.047.172.119-.07A.754.754,0,0,1,17,7.692Z"></path><path fill="#aff9f7" d="M9 12.75H6a.75.75 0 010-1.5H9a.75.75 0 010 1.5zM12 15.75H6a.75.75 0 010-1.5h6a.75.75 0 010 1.5z"></path><rect width="21.5" height="15.5" x="1.25" y="7.25" fill="#13e4ea" rx="2.75"></rect><circle cx="17" cy="7" r="5" fill="#13e4ea"></circle><path fill="#fff" d="M19.95,5.992a.683.683,0,0,0-.633-.427h-1.13l-.583-1.1a.711.711,0,0,0-1.208,0l-.583,1.1h-1.13a.683.683,0,0,0-.475,1.174l.958.926-.372,1.377a.683.683,0,0,0,1,.767l1.2-.7,1.2.7a.683.683,0,0,0,1-.767l-.372-1.377.958-.926A.683.683,0,0,0,19.95,5.992Z"></path><path fill="#aff9f7" d="M9 12.75H6a.75.75 0 010-1.5H9a.75.75 0 010 1.5zM12 15.75H6a.75.75 0 010-1.5h6a.75.75 0 010 1.5z"></path><line x1="9" x2="10.1" y1="8" y2="8" fill="none" stroke="#007da1" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></line><path fill="none" stroke="#007da1" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.64,8.86A1.979,1.979,0,0,1,22,10V20a2.006,2.006,0,0,1-2,2H4a2.006,2.006,0,0,1-2-2V10A2.006,2.006,0,0,1,4,8H7"></path><circle cx="17" cy="7" r="5" fill="none" stroke="#007da1" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></circle><circle cx="6" cy="19" r="1" fill="#aff9f7"></circle><circle cx="9" cy="19" r="1" fill="#aff9f7"></circle><circle cx="12" cy="19" r="1" fill="#aff9f7"></circle><circle cx="15" cy="19" r="1" fill="#aff9f7"></circle><circle cx="18" cy="19" r="1" fill="#aff9f7"></circle></svg>
                             </div>
-                            <div className={`w-[150px] h-[1px] ${order?.status !== 'Chờ xác nhận' ? 'bg-green-400' : 'bg-gray-200'}`}></div>
+                            <div className={`w-[150px] h-[1px] ${order?.status !== 'Chờ xác nhận' && order?.status !== 'Đã huỷ' ? 'bg-green-400' : 'bg-gray-200'}`}></div>
                         </div>
                         <div className="min-h-[100px]">
-                            {order?.status !== 'Chờ xác nhận' && (
+                            {order?.status !== 'Chờ xác nhận' && order?.status !== 'Đã huỷ' && (
                                 <>
                                     <p className="text-gray-800 text-sm font-normal">Đã xác nhận</p>
                                     <p className="text-[12px] text-gray-400 font-normal">{formatDateAndTime(getKeyUpdateItem('Xác nhận')[0])}</p>
@@ -153,31 +196,50 @@ const OrderDetail: React.FC = () => {
                         </div>
                     </div>
                 </div>
+                    </>
+                )}
             </div>
+            {!order?.statusShipping && order.status !== 'Đã huỷ' && (
+                <div className="bg-white p-4 rounded-lg border-b border-gray-200 border-dashed">
+                    <div className="flex items-start justify-between">
+                        <div className="flex flex-col gap-2">
+                            <p className="text-[12px] text-gray-400 font-normal">Nếu quá 3 ngày đơn hàng chưa được xác nhận và gửi đơn thì đơn hàng sẽ tự động huỷ</p>
+                        </div>
+                        <div className="flex flex-col gap-y-2">
+                                <div onClick={openModalAccept} className="flex items-center cursor-pointer justify-center px-4 py-2 bg-white rounded-md border border-primary/40 text-primary/70 hover:bg-primary/50 hover:text-white">
+                                    <p className="font-normal text-sm">Huỷ đơn</p>
+                                </div>
+                        </div>
+                    </div>
+
+                </div>
+            )}
             {order?.statusShipping === 'Đã giao hàng' && (
                 <div className="bg-white p-4 rounded-lg border-b border-gray-200 border-dashed">
                     <div className="flex items-start justify-between">
-                    {order?.statusShipping === 'Đã giao hàng' && (
-                        <p className="text-[12px] text-gray-400 font-normal">Nếu hàng nhận được có vấn đề, bạn có thể gửi yêu cầu Trả hàng/Hoàn tiền trước {formatDate(order?.DeliveryTime)}</p>
-                    )}
-                    {order?.statusShipping === 'Đã giao hàng' && order?.rateDate === false && (
-                         <p className="text-[12px] text-gray-400 font-normal">Đánh giá sản phẩm để có trải nghiệm tốt hơn và nhận được 200 xu</p>
-                    )}
+                        <div className="flex flex-col gap-2">
+                            {order?.statusShipping === 'Đã giao hàng' && order?.status !== 'Hoàn thành' && (
+                                <p className="text-[12px] text-gray-400 font-normal">Nếu hàng nhận được có vấn đề, bạn có thể gửi yêu cầu Trả hàng/Hoàn tiền trước {formatDate(order?.DeliveryTime)}</p>
+                            )}
+                            {order?.statusShipping === 'Đã giao hàng' && order?.rateDate === false && (
+                                <p className="text-[12px] text-gray-400 font-normal">Đánh giá sản phẩm để có trải nghiệm tốt hơn và nhận được 200 xu</p>
+                            )}
+                        </div>
                         <div className="flex flex-col gap-y-2">
-                            {order?.statusShipping === 'Đã giao hàng' &&  order?.status === 'Đang vận chuyển' && (
-                                 <div onClick={() => handleUpdate('Hoàn thành')} className="flex items-center cursor-pointer justify-center px-4 py-2 bg-red-500 rounded-md border border-red-600">
-                                 <p className="text-white font-normal text-sm">Xác nhận hoàn thành đơn hàng</p>
-                             </div>
+                            {order?.statusShipping === 'Đã giao hàng' && order?.status === 'Đang vận chuyển' && (
+                                <div onClick={() => handleUpdate('Hoàn thành')} className="flex items-center cursor-pointer justify-center px-4 py-2 bg-red-500 rounded-md border border-red-600">
+                                    <p className="text-white font-normal text-sm">Xác nhận hoàn thành đơn hàng</p>
+                                </div>
                             )}
                             {order?.rateDate === false && (
-                                 <div onClick={() => setOpenModal(true)} className="flex items-center cursor-pointer justify-center px-4 py-2 bg-primary/80 rounded-md border border-primary">
-                                 <p className="text-white font-normal text-sm">Đánh Giá</p>
-                             </div>
+                                <div onClick={() => setOpenModal(true)} className="flex items-center cursor-pointer justify-center px-4 py-2 bg-primary/80 rounded-md border border-primary">
+                                    <p className="text-white font-normal text-sm">Đánh Giá</p>
+                                </div>
                             )}
-                           
-                            {order?.statusShipping === 'Đã giao hàng' && checkRefuntOrder(order?.DeliveryTime) &&  (
+
+                            {order?.statusShipping === 'Đã giao hàng' && checkRefuntOrder(order?.DeliveryTime) && (
                                 <div className="flex items-center cursor-pointer justify-center px-4 py-2 rounded-md border border-gray-400">
-                                <p className="font-normal text-sm"> Yêu Cầu Trả Hàng / Hoàn Tiền</p>
+                                    <p className="font-normal text-sm"> Yêu Cầu Trả Hàng / Hoàn Tiền</p>
                                 </div>
                             )}
                         </div>
@@ -196,6 +258,44 @@ const OrderDetail: React.FC = () => {
                     <div className="h-full w-[1px] bg-gray-200"></div>
                     <div className="w-[50%]">
                         <ol className="relative border-s border-gray-200">
+                            {order?.status === 'Đã huỷ' && (
+                                <>
+                                {checkAutoCancel ? (
+                                <>
+                                <li className="ms-5">
+                                    <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
+                                        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="delivery-box"><rect width="60" height="46" x="2" y="9" fill="#ffc239" rx="1"></rect><path fill="#ffd55d" d="M61,9H9V26.456A21.543,21.543,0,0,0,30.544,48H62V10A1,1,0,0,0,61,9Z"></path><rect width="14" height="18" x="25" y="9" fill="#e8e4d8"></rect><rect width="20" height="12" x="38" y="39" fill="#e8e4d8"></rect><rect width="2" height="8" x="53" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="50" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="47" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="44" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="41" y="41" fill="#7a7b7d"></rect><rect width="2" height="2" x="5" y="38" fill="#fff"></rect><rect width="10" height="2" x="9" y="38" fill="#fff"></rect><rect width="9" height="2" x="5" y="42" fill="#fff"></rect><rect width="3" height="2" x="16" y="42" fill="#fff"></rect><rect width="2" height="2" x="5" y="46" fill="#fff"></rect><rect width="10" height="2" x="9" y="46" fill="#fff"></rect><rect width="9" height="2" x="5" y="50" fill="#fff"></rect><rect width="3" height="2" x="16" y="50" fill="#fff"></rect></svg>
+                                    </div>
+                                    <time className="mb-1 text-[12px] font-normal leading-none text-gray-400 ">{formatDateAndTime(getKeyUpdateItem('auto_cancel')[0])}</time>
+                                    <p className="text-sm font-semibold text-gray-900 ">Đã huỷ</p>
+                                    <p className="text-sm font-normal text-gray-500 ">Đơn hàng đã huỷ vì không có phản hồi từ shop</p>
+                                </li>
+                                </>
+                            ): (
+                                <>
+                                 <li className="ms-5">
+                                    <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
+                                        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="delivery-box"><rect width="60" height="46" x="2" y="9" fill="#ffc239" rx="1"></rect><path fill="#ffd55d" d="M61,9H9V26.456A21.543,21.543,0,0,0,30.544,48H62V10A1,1,0,0,0,61,9Z"></path><rect width="14" height="18" x="25" y="9" fill="#e8e4d8"></rect><rect width="20" height="12" x="38" y="39" fill="#e8e4d8"></rect><rect width="2" height="8" x="53" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="50" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="47" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="44" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="41" y="41" fill="#7a7b7d"></rect><rect width="2" height="2" x="5" y="38" fill="#fff"></rect><rect width="10" height="2" x="9" y="38" fill="#fff"></rect><rect width="9" height="2" x="5" y="42" fill="#fff"></rect><rect width="3" height="2" x="16" y="42" fill="#fff"></rect><rect width="2" height="2" x="5" y="46" fill="#fff"></rect><rect width="10" height="2" x="9" y="46" fill="#fff"></rect><rect width="9" height="2" x="5" y="50" fill="#fff"></rect><rect width="3" height="2" x="16" y="50" fill="#fff"></rect></svg>
+                                    </div>
+                                    <time className="mb-1 text-[12px] font-normal leading-none text-gray-400 ">{formatDateAndTime(getKeyUpdateItem('user_cancel')[0])}</time>
+                                    <p className="text-sm font-semibold text-gray-900 ">Đã huỷ</p>
+                                    <p className="text-sm font-normal text-gray-500 ">Bạn đã huỷ đơn hàng này</p>
+                                </li>
+                                </>
+                            )}
+                                </>
+                            )}
+                            {order?.status === 'Hoàn thành' && (
+                                <li className="ms-5">
+                                    <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
+                                        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="delivery-box"><rect width="60" height="46" x="2" y="9" fill="#ffc239" rx="1"></rect><path fill="#ffd55d" d="M61,9H9V26.456A21.543,21.543,0,0,0,30.544,48H62V10A1,1,0,0,0,61,9Z"></path><rect width="14" height="18" x="25" y="9" fill="#e8e4d8"></rect><rect width="20" height="12" x="38" y="39" fill="#e8e4d8"></rect><rect width="2" height="8" x="53" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="50" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="47" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="44" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="41" y="41" fill="#7a7b7d"></rect><rect width="2" height="2" x="5" y="38" fill="#fff"></rect><rect width="10" height="2" x="9" y="38" fill="#fff"></rect><rect width="9" height="2" x="5" y="42" fill="#fff"></rect><rect width="3" height="2" x="16" y="42" fill="#fff"></rect><rect width="2" height="2" x="5" y="46" fill="#fff"></rect><rect width="10" height="2" x="9" y="46" fill="#fff"></rect><rect width="9" height="2" x="5" y="50" fill="#fff"></rect><rect width="3" height="2" x="16" y="50" fill="#fff"></rect></svg>
+                                    </div>
+                                    <time className="mb-1 text-[12px] font-normal leading-none text-gray-400 ">{formatDateAndTime(getKeyUpdateItem('Hoàn thành')[0])}</time>
+                                    <p className="text-sm font-semibold text-gray-900 ">Hoàn thành</p>
+                                    <p className="text-sm font-normal text-gray-500 ">Xác nhận đơn hàng thành công</p>
+                                </li>
+
+                            )}
                             {order?.statusShipping === 'Đã giao hàng' && (
                                 <li className="ms-5">
                                     <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
@@ -285,7 +385,7 @@ const OrderDetail: React.FC = () => {
                                     <p className="text-sm font-normal text-gray-500 ">Đã gửi hàng cho đơn vị vận chuyển</p>
                                 </li>
                             )}
-                            {order?.status !== 'Chờ xác nhận' && (
+                            {order?.status !== 'Chờ xác nhận' && order?.status !== 'Đã huỷ' && (
                                 <li className="ms-5">
                                     <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
                                         <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="delivery-box"><rect width="60" height="46" x="2" y="9" fill="#ffc239" rx="1"></rect><path fill="#ffd55d" d="M61,9H9V26.456A21.543,21.543,0,0,0,30.544,48H62V10A1,1,0,0,0,61,9Z"></path><rect width="14" height="18" x="25" y="9" fill="#e8e4d8"></rect><rect width="20" height="12" x="38" y="39" fill="#e8e4d8"></rect><rect width="2" height="8" x="53" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="50" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="47" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="44" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="41" y="41" fill="#7a7b7d"></rect><rect width="2" height="2" x="5" y="38" fill="#fff"></rect><rect width="10" height="2" x="9" y="38" fill="#fff"></rect><rect width="9" height="2" x="5" y="42" fill="#fff"></rect><rect width="3" height="2" x="16" y="42" fill="#fff"></rect><rect width="2" height="2" x="5" y="46" fill="#fff"></rect><rect width="10" height="2" x="9" y="46" fill="#fff"></rect><rect width="9" height="2" x="5" y="50" fill="#fff"></rect><rect width="3" height="2" x="16" y="50" fill="#fff"></rect></svg>

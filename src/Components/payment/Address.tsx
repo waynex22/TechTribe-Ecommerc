@@ -51,8 +51,8 @@ const Address: React.FC<Props> = ({ subOrder, refecth }) => {
                     <p className='text-gray-500 text-sm'>{subOrder?.address?.phoneNumber}</p>
                 </div>
                 <div className="mt-4 flex items-start  gap-2">
-                    <div className={`${subOrder?.address?.isDefault ? 'bg-green-400/20' : 'bg-yellow-400/20 '} backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center`}>
-                        <p className={`text-[12px] ${subOrder?.address?.isDefault ? 'text-green-400/50' : 'text-yellow-400/50'}`}>{subOrder?.address?.isDefault ? 'Nhà' : 'Khác'}</p>
+                    <div className={`${subOrder?.address?.addressType ? 'bg-green-400/20' : 'bg-yellow-400/20 '} backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center`}>
+                        <p className={`text-[12px] ${subOrder?.address?.addressType ? 'text-green-400/50' : 'text-yellow-400/50'}`}>{subOrder?.address?.addressType ? 'Nhà' : 'Khác'}</p>
                     </div>
                     <span className="text-[14px] text-gray-400">{subOrder?.address?.address + ', ' + subOrder?.address?.ward + ', ' + subOrder?.address?.district + ', ' + subOrder?.address?.province}</span>
                 </div>
@@ -71,11 +71,11 @@ const Address: React.FC<Props> = ({ subOrder, refecth }) => {
                                 <>
                                     <div key={item._id} className='mt-2 p-2 border border-solid border-gray-200 rounded-lg flex items-center justify-between'>
                                         <div className='flex items-center gap-2'>
-                                            {item.isDefault ? <div className="bg-green-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
+                                            {item.addressType ? <div className="bg-green-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
                                                 <p className="text-[12px] text-green-400/50">Nhà</p>
                                             </div> :
                                                 <div className="bg-yellow-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
-                                                    <p className="text-[12px] text-yellow-400/50">Khác</p>
+                                                    <p className="text-[12px] text-yellow-400/50">Cơ quan</p>
                                                 </div>}
                                             <div>
                                                 <div className='flex items-center gap-2'>
@@ -94,15 +94,6 @@ const Address: React.FC<Props> = ({ subOrder, refecth }) => {
                                     </div>
                                 </>
                             ))}
-                            <div className='mt-4 '>
-                                <button className=' cursor-pointer border border-solid border-gray-200 flex items-center gap-1 text-[12px] font-normal p-1 rounded-md hover:bg-gray-200'>
-                                <svg className='size-4' xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                                <p>Thêm mới</p>
-                                </button>
-                                
-                            </div>
                         </div>
                     </div>
                 </>

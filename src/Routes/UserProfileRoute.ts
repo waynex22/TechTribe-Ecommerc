@@ -8,6 +8,8 @@ import ComponentUserPurchase from "../Components/User_components/User_purchase";
 import ComponentUserVoucher from "../Components/User_components/User_voucher";
 import { DefaultLayout } from "../Layouts";
 import { Route } from "../Type";
+import NotificationOrder from "src/Components/User_components/Notification/NotificationOrder";
+import NotificationWallet from "src/Components/User_components/Notification/NotificationWallet";
 
 const userProfileRouter: Route[] = [
     {
@@ -43,6 +45,16 @@ const userProfileRouter: Route[] = [
             {
                 path: "purchase/order/:slug",
                 component: OrderDetail,
+                layout: null,
+            },
+            {
+                path:'notification/order',
+                component: NotificationOrder,
+                layout: null,
+            },
+            {
+                path: "notification/wallet",
+                component: NotificationWallet,
                 layout: null,
             },
             {

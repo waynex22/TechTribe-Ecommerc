@@ -3,7 +3,7 @@ import { useGetCartMeQuery, useGetCartSelectQuery, useSelectAllCartMutation } fr
 import CartItem from "./CartItem";
 import { useEffect, useState } from "react";
 import { formatNumberVnd } from "../../utils/fortmartNumberVnd";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCreateSubOrderMutation } from "../../redux/rtkQuery/order";
 import Spinner from "../spinner/Spinner";
 import { ToastProps } from "../../Type";
@@ -15,8 +15,10 @@ import { discountPrice } from "src/utils/getMinMax/getMinMaxPrice";
 
 const Cart: React.FC = () => {
   const { user } = useSelector((state: any) => state.auth);
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
-  const { data: cart, isLoading } = useGetCartMeQuery(user?.sub, {
+  const history = useNavigate();
+  const { data: cart, isLoading, refetch: cartRefecth } = useGetCartMeQuery(user?.sub, {
     skip: !user,
   });
   const { data: cartSelect , refetch: refetchCartSelect } = useGetCartSelectQuery(user?.sub, {
@@ -29,10 +31,16 @@ const Cart: React.FC = () => {
   const [toast, setToast] = useState<ToastProps | null>(null);
   const [checkedAll, setCheckedAll] = useState(false);
   const [selectAll] = useSelectAllCartMutation();
-  const {data : addressUser } = useGetAddressByUserIdQuery(user?.sub, {
-    skip: !user
+  const {data : addressUser  , refetch } = useGetAddressByUserIdQuery(user?.sub, {
+    skip: !user ,
   });
-  
+  useEffect(() => {
+    if(!user?.sub){
+      return history('/')
+    }
+    cartRefecth();
+    refetch();
+  },[user?.sub, refetch, cartRefecth ,location.pathname ])
   const handleSetToast = (toast: any) => {
     setToast({ ...toast, message: toast.message, type: toast.type, onClose: () => setToast(null) });
   }
@@ -104,9 +112,17 @@ const Cart: React.FC = () => {
       return;
     }
     if(addressUser.length === 0) {
-      navigate('/checkout/address')
+      handleSetToast({ message: 'Thêm địa chỉ giao hàng', type: "error" });
+      navigate('/checkout/address');
+      return;
     }
-    const defaultAddress = addressUser?.find((item: any) => item.isDefault);
+    const defaultAddress = addressUser?.find((item: any) => {
+     if(addressUser.length === 1) {
+      return item
+     }else {
+      return item.isDefault
+     }
+    });
     const payload = {
       customerId: customerId,
       items: listProductSelect,
@@ -269,8 +285,8 @@ const Cart: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="bg-red-500 rounded-md mt-5 p-4 text-center cursor-pointer">
-                <div onClick={() => handlePayment(user?.sub)}><span className="text-white text-md font-light-bold">Đặt hàng</span></div>
+              <div onClick={() => handlePayment(user?.sub)} className="bg-red-500 rounded-md mt-5 p-4 text-center cursor-pointer">
+                <div><span className="text-white text-md font-light-bold">Đặt hàng</span></div>
               </div>
             </div>
           </div>

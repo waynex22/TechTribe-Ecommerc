@@ -1,55 +1,40 @@
 import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBell,
-  faClipboard,
-  faCoins,
-  faPen,
-  faTicket,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useGetUserMutation } from "src/redux/rtkQuery/user_customers";
 const LayoutUserComponent: React.FC = () => {
   const [getUser] = useGetUserMutation();
+  const location = useLocation();
   const [accessToken, setAccessToken] = useState<string>('');
   const [infoUserFormToken, setInfoUserFormToken] = useState<{ [key: string]: any } | null>(null);
-  const [infoUser, setInfoUser] = useState<{ [key: string]: any } | null>(null);
+  const [isOpenListNotification, setIsOpenListNotification] = useState<boolean>(false);
 
   useEffect(() => {
     const getAccessToken = localStorage.getItem('access_token');
-
-    // console.log(getAccessToken);
-
     if (getAccessToken !== null) {
       setAccessToken(getAccessToken);
     }
   }, [infoUserFormToken]);
 
-  // useEffect(() => {
-  //   const getUserWithtk = async () => {
-  //     if(accessToken) {
-  //       const response = await getUser(accessToken).unwrap()
-  //       console.log(response);
-  //       // setInfoUser(response.data)
-  //     }
-  //   }
-
-  //   getUserWithtk()
-  // },[])
-
+  const handleOpenListNotification = () => {
+    setIsOpenListNotification(!isOpenListNotification)
+  }
   const decodeToken = () => {
     if (accessToken !== '') {
       const decodeToken = jwtDecode(accessToken) as { [key: string]: any };
       setInfoUserFormToken(decodeToken)
-      // console.log(decodeToken);
     }
   }
 
   useEffect(() => {
     decodeToken()
   }, [accessToken]);
+
+  useEffect(() => {
+    if(location.pathname !== '/me/notification/order' && location.pathname !== '/me/notification/wallet') {
+      setIsOpenListNotification(false)
+    }
+  },[location.pathname])
   return (
     <div className="container mx-auto">
       <div className="grid grid-cols-12 gap-4 m-auto pt-5 pb-8">
@@ -103,6 +88,24 @@ const LayoutUserComponent: React.FC = () => {
                   Đơn mua
                 </span>
               </Link>
+            </div>
+            <div className="your-notifications mb-3">
+              <Link onClick={handleOpenListNotification} className="focus:bg-gray-200 flex items-center bg-slate-200/30 backdrop-blur-0 p-3 rounded-lg" to="notification/order">
+                <svg className="size-6" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 512 512" viewBox="0 0 512 512" id="bell"><linearGradient id="a" x1="88.892" x2="424.31" y1="64.654" y2="400.071" gradientTransform="matrix(1 0 0 -1 0 512)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ff984c"></stop><stop offset="1" stop-color="#ffd746"></stop></linearGradient><path fill="url(#a)" d="M444.153,425.252c3.421-6.108,3.246-13.394-0.489-19.456c-33.862-55.598-51.759-119.343-51.759-184.355v-85.529c0-36.258-14.127-70.411-39.785-96.174C326.392,14.127,292.251,0,255.991,0C182.321,0,120.09,64.268,120.09,140.336v81.108c0,42.682-7.575,84.467-22.517,124.184c-7.82,20.933-17.664,41.17-29.23,60.149c-3.736,6.098-3.922,13.358-0.512,19.468c3.374,6.028,9.32,9.496,16.303,9.496h343.74C434.844,434.736,440.779,431.28,444.153,425.252 M386.554,398.767c-1.571,0.722-3.212,1.06-4.83,1.06c-4.422,0-8.634-2.515-10.589-6.796c-24.82-54.226-37.4-111.954-37.4-171.591v-85.529c0-20.77-8.042-40.273-22.656-54.936c-14.755-14.685-34.338-22.795-55.087-22.795c-6.424,0-11.637-5.213-11.637-11.637s5.213-11.637,11.637-11.637c26.962,0,52.353,10.518,71.541,29.602c19.013,19.095,29.475,44.44,29.475,71.401v85.529c0,56.273,11.868,110.743,35.282,161.909C394.967,389.191,392.395,396.103,386.554,398.767 M255.997,512c-32.221,0-59.089-23.33-64.594-53.992H320.59C315.086,488.672,288.218,512,255.997,512"></path></svg>
+                <span className="text-gray-700 text-sm ps-2">
+                  Thông báo
+                </span>
+              </Link>
+              {isOpenListNotification && (
+                <div className="flex flex-col gap-y-4 ml-5 items-start justify-center duration-300 py-2 transition-all  ">
+                    <Link to='/me/notification/order' className={`hover:text-primary/60 ${location.pathname === '/me/notification/order' ? 'text-primary' : 'text-gray-700'}`}>
+                      <p className="text-sm font-normal">Cập Nhật Đơn Hàng</p>
+                    </Link>
+                    <Link to='/me/notification/wallet' className={`hover:text-primary/60 ${location.pathname === '/me/notification/wallet' ? 'text-primary' : 'text-gray-700'}`}>
+                      <p className="text-sm font-normal"> Cập Nhật Ví</p>
+                    </Link>
+                </div>
+              )}
             </div>
             <div className="your-purchase mb-3">
               <Link className="focus:bg-gray-200 flex items-center bg-slate-200/30 backdrop-blur-0 p-3 rounded-lg" to="voucher/">

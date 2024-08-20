@@ -193,6 +193,7 @@ const ModalRating: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
             {openModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg w-full max-w-lg p-4 overflow-y-auto max-h-[700px]">
+                    <h2>Đánh giá sản phẩm</h2>
                         {items?.items?.map((item: any, index: number) => (
                             <div key={index}>
                                 <div className="my-5">

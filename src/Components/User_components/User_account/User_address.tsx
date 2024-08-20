@@ -249,12 +249,12 @@ const ComponentUserAddress: React.FC = () => {
     }
   }, [idCustomer]);
 
-  // Debugging output
-  useEffect(() => {
-    console.log("Tỉnh:", selectedProvince);
-    console.log("Quận/Huyện:", selectedDistrict);
-    console.log("Phường/Xã:", selectedWard);
-  }, [selectedProvince, selectedDistrict, selectedWard]);
+  // // Debugging output
+  // useEffect(() => {
+  //   console.log("Tỉnh:", selectedProvince);
+  //   console.log("Quận/Huyện:", selectedDistrict);
+  //   console.log("Phường/Xã:", selectedWard);
+  // }, [selectedProvince, selectedDistrict, selectedWard]);
 
   const validate = () => {
     let tempErrors = { fullName: "", phoneNumber: "", address: "" };

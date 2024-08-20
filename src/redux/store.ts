@@ -16,6 +16,8 @@ import { voucherApi } from './rtkQuery/voucher';
 import { shopApi } from './rtkQuery/shop';
 import { chatApi } from './rtkQuery/chat';
 import { productReviewApi } from './rtkQuery/product-review';
+import { notificationApi } from './rtkQuery/notification';
+import { customerRewardApi } from './rtkQuery/customerReward';
 export const store = configureStore({
   reducer: {
     [authSlice.reducerPath]: authSlice.reducer,
@@ -31,6 +33,8 @@ export const store = configureStore({
     [shopApi.reducerPath]: shopApi.reducer,
     [chatApi.reducerPath]: chatApi.reducer,
     [productReviewApi.reducerPath]: productReviewApi.reducer,
+    [notificationApi.reducerPath]: notificationApi.reducer,
+    [customerRewardApi.reducerPath]: customerRewardApi.reducer,
     auth: authReducer,
     cart: cartReducer,
     chat: chatReducer
@@ -49,6 +53,8 @@ export const store = configureStore({
       .concat(shopApi.middleware)
       .concat(chatApi.middleware)
       .concat(productReviewApi.middleware)
+      .concat(notificationApi.middleware)
+      .concat(customerRewardApi.middleware)
       .concat(orderApi.middleware),
 });
 

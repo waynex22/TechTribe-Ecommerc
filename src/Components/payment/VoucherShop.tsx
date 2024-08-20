@@ -6,6 +6,7 @@ import { formatDate } from "../../utils/formartDate";
 import { useUpdateItemsSubOrderMutation } from "../../redux/rtkQuery/order";
 import Spinner from "../spinner/Spinner";
 import { sortByValidity } from "../../utils/sortVoucher";
+import EmptyVoucher from "./EmptyVoucher";
 interface Props {
     subOrder?: any,
     itemsSubOrder?: any,
@@ -101,7 +102,9 @@ const VoucherShop: React.FC<Props> = ({ subOrder, itemsSubOrder, refecth }) => {
                                 <h2 className="text-lg font-semibold">Mã Giảm Giá</h2>
                             </div>
                             <div className="space-y-4 min-h-[300px] max-h-[500px] overflow-y-auto">
-                                {sortedVouchers && sortedVouchers.map((item: Voucher, index: number) => {
+                                {sortedVouchers && sortedVouchers.length > 0 ? (
+                                    <>
+                                    {sortedVouchers && sortedVouchers.map((item: Voucher, index: number) => {
                                     const valid = isVoucherValid(item);
                                     return (
                                         <div
@@ -155,6 +158,13 @@ const VoucherShop: React.FC<Props> = ({ subOrder, itemsSubOrder, refecth }) => {
                                         </div>
                                     );
                                 })}
+                                    </>
+                                ): (
+                                    <>
+                                    <EmptyVoucher />
+                                    </>
+                                )}
+                                
                             </div>
                         </div>
                     </div>

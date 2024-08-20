@@ -22,10 +22,12 @@ const Search: React.FC = () => {
     setIsSearchFocused(false);
   };
   const handleChooseQuery = async (query: string) => {
-    const checkIsHave = historySearch?.find((item: any) => item.query == query);
-    if(!user || checkIsHave ){
-      history(`/search?q=${query}`);
-      return;
+    if(historySearch.length > 0) {
+      const checkIsHave = historySearch?.find((item: any) => item.query == query);
+      if(!user || checkIsHave ){
+        history(`/search?q=${query}`);
+        return;
+      }
     }
     const payload = {
       customerId: user?.sub,
@@ -37,6 +39,7 @@ const Search: React.FC = () => {
       console.log(error);
     } finally {
       refetch();
+      clear();
       history(`/search?q=${query}`);
     }
   }
@@ -128,7 +131,7 @@ const Search: React.FC = () => {
               </div>
             </div>
           ))}
-          {historySearch && searchQuery === "" && historySearch.map((item: any, index: number) => (
+          {historySearch &&historySearch.length > 0 && searchQuery === "" && historySearch.map((item: any, index: number) => (
             <div key={index} onClick={() => handleChooseQuery(item)} className="w-full">
             <div className="h-9 p-4 w-full hover:bg-gray-100 cursor-pointer flex items-center justify-start gap-2">
               <img

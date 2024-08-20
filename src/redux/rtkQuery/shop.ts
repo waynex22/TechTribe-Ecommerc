@@ -11,6 +11,10 @@ const customBaseQuery = async ({ url, method, body }: { url: string, method: str
     }
 };
 
+interface payloadFollow {
+    customerId: string,
+    shopId: string
+}
 export const shopApi = createApi({
     reducerPath: 'shopQuery',
     baseQuery: customBaseQuery,
@@ -21,7 +25,14 @@ export const shopApi = createApi({
                 method: 'GET'
             }),
         }),
+        follow: builder.mutation<any, payloadFollow>({
+            query: (payloadFollow) => ({
+                url: `customer-follow/follow/${payloadFollow.shopId}`,
+                method: 'POST',
+                body: payloadFollow
+            }),
+        })
     }),
 });
 
-export const { useGetShopQuery } = shopApi;
+export const { useGetShopQuery, useFollowMutation } = shopApi;

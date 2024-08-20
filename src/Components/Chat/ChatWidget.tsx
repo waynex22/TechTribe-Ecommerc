@@ -71,7 +71,7 @@ const ChatWidget: React.FC = () => {
         dispatch(setCloseChat());
     };
     return (
-        <div className="fixed bottom-5 right-5 z-[999] rounded-lg bg-white  w-[40%] h-[60%] shadow-xl border border-solid border-gray-200">
+        <div className="fixed bottom-5 transition-all duration-500 right-5 z-[999] rounded-lg bg-white  w-[40%] h-[60%] shadow-xl border border-solid border-gray-200">
             <div className='flex justify-between items-center p-2 bg-slate-100 shadow-md rounded-lg'>
                 <div className='flex items-center gap-2'>
                 <p className='text-md text-primary'>Chat </p>

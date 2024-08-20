@@ -170,23 +170,22 @@ const ProductDetail: React.FC = () => {
   );
 
   const discountedPrice: any = isDiscount ? discountPrice(ProductPriceSelected.price, isDiscount.percent) : null;
-
   return (
     <>
       <div className="container mx-auto">
         {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
         <div className="grid lg:grid-cols-7 md:grid-col-2 gap-6">
           <div className="col-span-2 ">
-            <div className=" bg-white h-fit rounded-xl">
+            <div className=" bg-white h-fit rounded-lg">
               <div className="p-4 ">
                 <img
                   src={product?.thumbnails[indexThumbnail]}
                   alt=""
-                  className="border-solid border-[1px] border-gray-200 rounded-xl w-[368px] h-[368px] object-cover"
+                  className="border-solid border-[1px] border-gray-200 rounded-lg w-[368px] h-[368px] object-cover"
                 />
                 <div className="flex space-x-2 mt-2">
                   {product?.thumbnails.map((item: string, index: number) => (
-                    <div key={index} className={`${indexThumbnail === index ? 'border-solid border-[1px] border-blue-500 rounded-xl' : ''}border-solid border-[1px] cursor-pointer border-gray-200 rounded-sm p-1`}>
+                    <div key={index} className={`${indexThumbnail === index ? 'border-solid border-[1px] border-blue-500 rounded-lg' : ''}border-solid border-[1px] cursor-pointer border-gray-200 rounded-sm p-1`}>
                       <img
                         onClick={() => setIndexThumbnail(index)}
                         src={item}
@@ -212,8 +211,8 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="col-span-3">
-            <div className="p-4  bg-white h-fit rounded-xl">
+          <div className="col-span-3 overflow-y-auto overflow-x-hidden">
+            <div className="p-4  bg-white h-fit rounded-lg">
               <div className="flex items-center justify-start gap-4">
                 <img
                   src="https://salt.tikicdn.com/ts/upload/94/36/e7/c5297f3fad0a83fb56f98be877904467.png"
@@ -357,7 +356,7 @@ const ProductDetail: React.FC = () => {
                 </div>
               ) : null}
             </div>
-            <div className="p-4 mt-4 bg-white rounded-xl">
+            <div className="p-4 mt-4 bg-white rounded-lg">
               <h3>Vận chuyển</h3>
               <div className="flex items-center gap-2 my-2">
                 <img
@@ -388,7 +387,7 @@ const ProductDetail: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="p-4 mt-4 bg-white rounded-xl">
+            <div className="p-4 mt-4 bg-white rounded-lg">
               <h3>Chính sách mua hàng</h3>
               <div className="flex items-center justify-start gap-4 my-2">
                 <img
@@ -422,7 +421,7 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
             <div>
-              <div className="p-4 mt-4 bg-white rounded-xl">
+              <div className="p-4 mt-4 bg-white rounded-lg">
                 <h3>Thông tin chi tiết</h3>
                 {product && product?.product_specifications?.map((specification: any, index: number) => (
                   <>
@@ -435,11 +434,11 @@ const ProductDetail: React.FC = () => {
                 ))}
               </div>
             </div>
-            <div className="p-4 mt-4 bg-white rounded-xl">
+            <div className="p-4 mt-4 bg-white rounded-lg">
               <h3>Mô tả sản phẩm</h3>
               <div className="text-sm font-light text-gray-600" dangerouslySetInnerHTML={{ __html: product?.description ?? '' }} />
             </div>
-            <div className="p-4 mt-4 bg-white rounded-xl">
+            <div className="p-4 mt-4 bg-white rounded-lg">
               <h3>Sản phẩm tương tự</h3>
               <div className="grid md:grid-cols-4 lg:grid-cols-3 gap-4 items-center mt-2">
                 {listProductLikeCategory?.slice(0, 6).map((item: any, index: number) => (
@@ -449,7 +448,7 @@ const ProductDetail: React.FC = () => {
             </div>
            
           </div>
-          <div className="col-span-2 bg-white h-fit rounded-xl">
+          <div className="col-span-2 bg-white h-fit rounded-lg">
             <div className="p-4">
               <div className="flex gap-4 ">
                 <img

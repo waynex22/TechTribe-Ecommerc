@@ -4,6 +4,7 @@ import { apiUrl } from '../config';
 
 interface ServerToClientEvents {
   messenger: (data: { id_sender: string, id_customer: string, id_shop: string, id_roomChat:string }) => void;
+  notification: (data: {customerId: string , type: string , title: string , content: string , orderItemsId?: string}) => void
 }
 
 interface ClientToServerEvents {
