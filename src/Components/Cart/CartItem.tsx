@@ -99,7 +99,7 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
     setIsModalOpen(false);
   };
   const handleSelectdProduct = async (productPriceId: any) => {
-    if(productPriceId.stock === 0 ) return;
+    if(productPriceId.stock === 0 || quantity > productPriceId.stock || quantity < 0 ) return;
     const payload: any = {
       customerId: user?.sub,
       productPriceId: productPriceId._id,

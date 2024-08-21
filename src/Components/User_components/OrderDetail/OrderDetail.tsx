@@ -9,11 +9,13 @@ import ModalRating from "./ModalRating";
 import { useUpdateStatusTimeMutation } from "src/redux/rtkQuery/product-review";
 import ModalAccept from "src/Components/modal/ModalAccept";
 import OrderCancel from "./OrderCancel";
+import { useAddCoinRefundMutation } from "src/redux/rtkQuery/customerReward";
 
 const OrderDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const [updateOrder] = useUpdateItemsOrderMutation();
     const [updateTime] = useUpdateStatusTimeMutation();
+    const [updateCoinRefunt] = useAddCoinRefundMutation();
     const [cancelOrder] = useCancelOrderMutation();
     const [openModal, setOpenModal] = useState(false);
     const [modalAccept , setModalAccept] = useState(false);
@@ -23,6 +25,9 @@ const OrderDetail: React.FC = () => {
     const handleUpdate = async (key: string) => {
         await updateOrder({ _id: order?._id, status: key });
         await updateTime({ id: order?._id, key: key, value: new Date() });
+        if(order?.coinRefunt > 0 && order.status === 'Hoàn thành') {
+            await  updateCoinRefunt({ customerId: order?.customerId, coin: order?.coinRefunt });
+        }
         setToast({ message: 'Cập nhật thành công', type: 'success', onClose: () => setToast(null) });
         refetch();
     }
@@ -203,7 +208,7 @@ const OrderDetail: React.FC = () => {
                 <div className="bg-white p-4 rounded-lg border-b border-gray-200 border-dashed">
                     <div className="flex items-start justify-between">
                         <div className="flex flex-col gap-2">
-                            <p className="text-[12px] text-gray-400 font-normal">Nếu quá 3 ngày đơn hàng chưa được xác nhận và gửi đơn thì đơn hàng sẽ tự động huỷ</p>
+                            <p className="text-[12px] text-gray-400 font-normal">Nếu quá 3 ngày đơn hàng chưa được xác nhận và gửi đi thì đơn hàng sẽ tự động huỷ</p>
                         </div>
                         <div className="flex flex-col gap-y-2">
                                 <div onClick={openModalAccept} className="flex items-center cursor-pointer justify-center px-4 py-2 bg-white rounded-md border border-primary/40 text-primary/70 hover:bg-primary/50 hover:text-white">

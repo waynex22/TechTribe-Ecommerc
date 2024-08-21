@@ -44,7 +44,7 @@ const CheckOutAddress: React.FC = () => {
         ward: '',
         address: '',
         addressType: true,
-        isDefautl: true,
+        isDefault: true,
     });
     const history = useNavigate();
     const handleSetToast = (toast: any) => {

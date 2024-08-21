@@ -11,24 +11,23 @@ const customBaseQuery = async ({ url, method, body }: { url: string, method: str
     }
 };
 
-export const customerRewardApi = createApi({
-    reducerPath: 'customerRewardQuery',
+export const walletApi = createApi({
+    reducerPath: 'walletQuery',
     baseQuery: customBaseQuery,
     endpoints: (builder) => ({
-        getcustomerReward: builder.query({
-            query: (customerId) => ({
-                url: `customer-reward/${customerId}`,
+        getWalletByCustomer: builder.query({
+            query: (walletId) => ({
+                url: `wallet/customer/${walletId}`,
                 method: 'GET',
             })
         }),
-        addCoinRefund: builder.mutation({
-            query: (payload: any) => ({
-                url: `refund/${payload.customerId}`,
-                method: 'PATCH',
-                body: payload.coin,
-            }),
-        }),
+        getTransactions: builder.query({
+            query: (walletId) => ({
+                url: `wallet-transactions/wallet/${walletId}`,
+                method: 'GET',
+            })
+        })
     }),
 });
 
-export const { useGetcustomerRewardQuery , useAddCoinRefundMutation} = customerRewardApi;
+export const { useGetWalletByCustomerQuery, useGetTransactionsQuery } = walletApi;

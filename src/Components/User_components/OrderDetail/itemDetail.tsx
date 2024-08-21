@@ -31,14 +31,14 @@ const ItemDetail: React.FC<Props> = ({ item }) => {
                 <div className='flex flex-col items-center cursor-pointer'>
                     {item?.items?.map((item: any, index: number) => (
                         <div key={index} className='flex items-center justify-between w-full my-2 '>
-                            <div className='flex items-center gap-2'>
+                            <Link to={`/product/${item?.productPriceId?.id_product[0]?._id}`} className='flex items-center gap-2'>
                                 <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
                                 <div>
                                     <p className='font-normal text-[14px]'>{item?.productPriceId?.id_product[0]?.name}</p>
                                     <p className='text-[12px] text-gray-400'>Phân loại hàng : {item?.productPriceId?.id_color?.length > 0 && item?.productPriceId?.id_size?.length > 0 ? item?.productPriceId?.id_color[0]?.value + ' , ' + item?.productPriceId?.id_size[0]?.value : item?.productPriceId?.id_size[0]?.value || item?.productPriceId?.id_color[0]?.value}</p>
                                     <p className='text-[12px]'>x{item?.quantity}</p>
                                 </div>
-                            </div>
+                            </Link>
                             <div className='flex items-center gap-4'>
                                 {item?.discountDetailId ? (
                                     <>
@@ -71,6 +71,12 @@ const ItemDetail: React.FC<Props> = ({ item }) => {
                         <p className="w-[80%] border-r border-gray-200 border-dashed py-2 px-1 text-[14px] text-gray-400 text-end font-normal">Voucher của shop</p>
                         <p className="w-[20%] py-2 px-1 text-[14px] text-gray-800 text-end font-normal">-{formatNumberVnd(item?.discount)}đ</p>
                     </div>
+                    {item?.discount2t > 0 && (
+                         <div className="flex items-end justify-end gap-2 border-b border-gray-200 border-dashed">
+                         <p className="w-[80%] border-r border-gray-200 border-dashed py-2 px-1 text-[14px] text-gray-400 text-end font-normal">Voucher của Techtribe</p>
+                         <p className="w-[20%] py-2 px-1 text-[14px] text-gray-800 text-end font-normal">-{formatNumberVnd(item?.discount2t)}đ</p>
+                     </div>
+                    )}
                     {item?.coin > 0 && (
                         <div className="flex items-end justify-end gap-2 border-b border-gray-200 border-dashed">
                         <p className="w-[80%] border-r border-gray-200 border-dashed py-2 px-1 text-[14px] text-gray-400 text-end font-normal">Xu</p>

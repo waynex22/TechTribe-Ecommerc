@@ -10,6 +10,7 @@ import { DefaultLayout } from "../Layouts";
 import { Route } from "../Type";
 import NotificationOrder from "src/Components/User_components/Notification/NotificationOrder";
 import NotificationWallet from "src/Components/User_components/Notification/NotificationWallet";
+import Wallet from "src/Components/User_components/Wallet";
 
 const userProfileRouter: Route[] = [
     {
@@ -40,6 +41,11 @@ const userProfileRouter: Route[] = [
             {
                 path: "purchase",
                 component: ComponentUserPurchase,
+                layout: null,
+            },
+            {
+                path: "wallet",
+                component: Wallet,
                 layout: null,
             },
             {

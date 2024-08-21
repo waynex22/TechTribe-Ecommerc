@@ -78,7 +78,7 @@ const Search: React.FC = () => {
         >
           Search
         </label>
-        <div className="flex items-center border border-gray-300 rounded-lg w-[900px] ">
+        <div className="flex items-center border border-gray-300 rounded-lg lg:w-[800px] md:w-[400px] sm:w-[300px]">
           <span className="pl-5 text-gray-400">
             <svg
               xmlns="http://www.w3.org/2000/svg"

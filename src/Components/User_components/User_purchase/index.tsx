@@ -5,6 +5,7 @@ import OrderItem from "./orderItem";
 import requestApi from "src/helper/api";
 import Spinner from "src/Components/spinner/Spinner";
 import { useGetOrderByUserIdQuery } from "src/redux/rtkQuery/order";
+import SpinLoading from "src/Components/spinner/spinLoading";
 
 const ComponentUserPurchase: React.FC = () => {
   const { user } = useSelector((state: any) => state.auth);
@@ -18,17 +19,22 @@ const ComponentUserPurchase: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     requestApi(`items-order/query/${user?.sub}/${tab}`, 'GET', {}, 'application/json').then ((res: any) => {
-      setFilter(res?.data)
+      setFilter(res?.data);
     })
-    setLoading(false);
+      setLoading(false);
   }, [tab , user?.sub]);
   return (
     <>
       <h2>Đơn hàng của tôi</h2>
-      <Spinner loading={loading} />
       <TabOrder handleSetTab={handleSetTab} tab={tab} />
       <div className="bg-white rounded-lg min-h-[400px]">
-        {filter && filter?.length === 0 ? (
+        {loading ? (
+          <>
+          <SpinLoading loading={loading} />
+          </>
+        ): (
+          <>
+          {filter && filter?.length === 0 ? (
           <>
             <div className="flex flex-col items-center justify-center ">
               <img src="https://frontend.tikicdn.com/_desktop-next/static/img/account/empty-order.png" className="w-1/4 rounded-full" alt="" />
@@ -40,6 +46,8 @@ const ComponentUserPurchase: React.FC = () => {
             <OrderItem key={item._id} order={item} />
           ))}
         </>}
+          </>
+        )}
       </div>
     </>
   );
