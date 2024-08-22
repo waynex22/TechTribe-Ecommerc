@@ -1,0 +1,15 @@
+export const  defaultValueVoucher = {
+    _id: '',
+    id_shop: '',
+    id_product: [],
+    type: '',
+    name: '',
+    code: '',
+    time_start: new Date(),
+    time_end: new Date(),
+    percent: 0,
+    maximum_reduction: 0,
+    minimum_order_value: 0,
+    maximum_total_usage: 0,
+    number_of_uses: 0,
+}

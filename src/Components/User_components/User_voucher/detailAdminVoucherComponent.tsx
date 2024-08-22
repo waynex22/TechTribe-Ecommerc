@@ -81,7 +81,7 @@ const DetailAdminVoucherComponent: React.FC<DetailAdminVoucherComponentProps> = 
             <div className=" mr-1 w-28 h-28 bg-primary flex flex-col items-center justify-center text-white border-dotted border-l-8">
               <FontAwesomeIcon className="text-3xl" icon={faTicket} />
               <div className="mt-2 text-xs text-center px-1">{voucher.name}</div>
-              <div className="mt-2 text-xs text-center px-1">{voucher.code}</div>
+              {/* <div className="mt-2 text-xs text-center px-1">{voucher.code}</div> */}
             </div>
             <div className="  mr-1 flex-1 text-left ps-4">
               <div className=" font-normal">Giảm {voucher.percent}% Giảm tối đa {voucher.maximum_reduction}₫</div>
@@ -105,7 +105,7 @@ const DetailAdminVoucherComponent: React.FC<DetailAdminVoucherComponentProps> = 
             <div className=" mr-1 w-28 h-28 bg-gray-200 flex flex-col items-center justify-center text-white border-dotted border-l-8">
               <FontAwesomeIcon className="text-3xl" icon={faTicket} />
               <div className="mt-2 text-xs text-center px-1">{voucher.name}</div>
-              <div className="mt-2 text-xs text-center px-1">{voucher.code}</div>
+              {/* <div className="mt-2 text-xs text-center px-1">{voucher.code}</div> */}
             </div>
             <div className="  mr-1 flex-1 text-left ps-4">
               <div className=" font-normal">Giảm {voucher.percent}% Giảm tối đa {voucher.maximum_reduction}₫</div>

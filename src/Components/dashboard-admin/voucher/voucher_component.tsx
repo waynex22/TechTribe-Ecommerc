@@ -206,30 +206,6 @@ const AdminVoucherComponent: React.FC = () => {
             handleRefetch={handleRefetch}
           />
         </tbody>
-        {/* <tbody>
-          {shops?.map(shop => (
-            <tr key={shop._id} className="border-b text-gray-700 text-left font-mono">
-              <td className="px-4 py-2 flex justify-start items-center">
-                <div className=" overflow-hidden me-2 ">
-                  <img className=" w-16 h-16 rounded-full object-cover border"
-                    src={shop.thumbnail}
-                    alt=""
-                  />
-                </div>
-                <p className="items-start font-bold">{shop.name}</p>
-              </td>
-              <td className="px-4 py-2 font-light"> {shop.countFollower}</td>
-              <td className="px-4 py-2 font-light"> {shop.description}</td>
-              <td className="px-4 py-2 font-light">{shop.start}</td>
-              <td className="px-4 py-2 text-center">
-                <button onClick={() => (handleOpen(), setIdShop(shop._id))} className="rounded min-w-16 text-amber-500 bg-amber-200 bg-opacity-80 hover:text-amber-600 hover:bg-amber-400 text-sm cursor-pointe duration-200 ms-2 py-1">
-                  Ban
-                </button>
-              </td>
-            </tr>
-          ))}
-          <AdminFormBanShopComponent openFormBanShop={openFormBanShop} id_shop= {idShop} handleClose={handleClose}   />
-        </tbody> */}
       </table>
     </div>
   );

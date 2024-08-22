@@ -2,6 +2,16 @@ export type specifications = {
     _id:string;
     name:string,
 }
+
+export type dataToCreateSpecification = {
+    name: string,
+}
+
+export type dataToCreateSpecificationDetail = {
+    name: string,
+    id_specification: string
+}
+
 export type specificationsDetail = {
     _id:string;
     id_specification: string,

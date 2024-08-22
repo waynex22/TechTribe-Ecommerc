@@ -5,7 +5,6 @@ import {
   useUpdateBanShopMutation,
 } from "src/redux/rtkQuery/admin";
 import "animate.css";
-import BanTimeDisplay from "./banTime";
 import { FaBan } from "react-icons/fa";
 import { toast } from "react-toastify";
 

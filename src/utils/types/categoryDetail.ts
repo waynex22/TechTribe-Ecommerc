@@ -15,3 +15,13 @@ export const defaultValueCategoryDetail: categoryDetail = {
     id_specification: [],
     slug: '',
 }
+
+export type createCategoryDetail = {
+    id_category: string,
+    name: string,
+}
+
+export type updateSpecifications = {
+    _id: string,
+    specifications: string[],
+}
