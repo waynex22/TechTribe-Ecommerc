@@ -71,8 +71,8 @@ const NotificationModal: React.FC<Props> = ({ user }) => {
                             </div>
                             <div className='w-[70%] flex flex-col items-start justify-start gap-y-2'>
                                 <h3 className="text-sm font-normal text-gray-900">{notif.title}</h3>
-                                <p className="text-xs text-gray-600 text-start font-light">{notif.content}</p>
-                                <p className='text-xs text-gray-600 font-light'>{formatDateAndTime(notif.createdAt)}</p>
+                                <p className="text-xs text-gray-800 text-start font-light">{notif.content}</p>
+                                <p className='text-xs text-gray-800 font-light'>{formatDateAndTime(notif.createdAt)}</p>
                             </div>
                         </div>
                     ))}

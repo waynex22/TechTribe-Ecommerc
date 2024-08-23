@@ -4,6 +4,7 @@ import SpinLoading from "src/Components/spinner/spinLoading";
 import { useGetWalletByCustomerQuery } from "src/redux/rtkQuery/wallet";
 import { formatNumberVnd } from "src/utils/fortmartNumberVnd";
 import BalanceFluctuation from "./BalanceFluctuation";
+import { Link } from "react-router-dom";
 
 const Wallet: React.FC = () => {
     const { user } = useSelector((state: any) => state.auth);
@@ -31,12 +32,12 @@ const Wallet: React.FC = () => {
                                 <p className="text-white text-sm font-normal">{wallet?.balance ? formatNumberVnd(wallet?.balance) : 0} VND</p>
                             </div>
                             <div className="flex items-center gap-2">
-                                    <div className="bg-primary/40 p-2 rounded-md backdrop-blur-sm flex items-center gap-2 cursor-pointer hover:bg-primary/70"> 
+                                    <Link to='deposit' className="bg-primary/40 p-2 rounded-md backdrop-blur-sm flex items-center gap-2 cursor-pointer hover:bg-primary/70"> 
                                         <p className="text-white text-sm font-normal">Nạp tiền</p>
-                                    </div>
-                                    <div className="bg-primary/40 p-2 rounded-md backdrop-blur-sm flex items-center gap-2 cursor-pointer hover:bg-primary/70"> 
+                                    </Link>
+                                    <Link to='addCard' className="bg-primary/40 p-2 rounded-md backdrop-blur-sm flex items-center gap-2 cursor-pointer hover:bg-primary/70"> 
                                         <p className="text-white text-sm font-normal">Liên kết thẻ</p>
-                                    </div>
+                                    </Link>
                             </div>
                         </div>
                     </>

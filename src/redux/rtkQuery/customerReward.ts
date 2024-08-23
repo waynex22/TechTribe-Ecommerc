@@ -23,7 +23,7 @@ export const customerRewardApi = createApi({
         }),
         addCoinRefund: builder.mutation({
             query: (payload: any) => ({
-                url: `refund/${payload.customerId}`,
+                url: `customer-reward/refund/${payload.customerId}`,
                 method: 'PATCH',
                 body: payload.coin,
             }),

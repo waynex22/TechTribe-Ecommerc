@@ -69,9 +69,9 @@ const Address: React.FC<Props> = ({ subOrder, refecth }) => {
                             </div>
                             {addressUser && addressUser.map((item: any) => (
                                 <>
-                                    <div key={item._id} className='mt-2 p-2 border border-solid border-gray-200 rounded-lg flex items-center justify-between'>
+                                    <div key={item._id} onClick={() => handleSelectAddress(item._id)} className='mt-2 cursor-pointer p-2 border border-solid border-gray-200 rounded-lg flex items-center justify-between'>
                                         <div className='flex items-center gap-2'>
-                                            {item.addressType ? <div className="bg-green-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
+                                            {item.addressType === true ? <div className="bg-green-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
                                                 <p className="text-[12px] text-green-400/50">Nhà</p>
                                             </div> :
                                                 <div className="bg-yellow-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
@@ -87,7 +87,7 @@ const Address: React.FC<Props> = ({ subOrder, refecth }) => {
                                             </div>
                                         </div>
                                         <div className='w-2/5 flex items-center justify-end'>
-                                            {item._id !== subOrder?.address?._id ? <input onClick={() => handleSelectAddress(item._id)} type="radio" name="address" className='w-4 h-4 cursor-pointer' /> :
+                                            {item._id !== subOrder?.address?._id ? <input type="radio" name="address" className='w-4 h-4 cursor-pointer' /> :
                                                 <input type="radio" name="address" className='w-4 h-4' defaultChecked />
                                             }
                                         </div>

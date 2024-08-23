@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useGetVoucherQuery } from "../../redux/rtkQuery/voucher";
-import { Voucher } from "../../utils/types/voucher";
+import { useGetVoucher2tQuery, useGetVoucherQuery } from "../../redux/rtkQuery/voucher";
+import { Voucher2t } from "../../utils/types/voucher";
 import { formatNumberVnd } from "../../utils/fortmartNumberVnd";
 import { formatDate } from "../../utils/formartDate";
 import { useUpdateSubOrderDtoMutation } from "../../redux/rtkQuery/order";
 import Spinner from "../spinner/Spinner";
 import { sortByValidity } from "../../utils/sortVoucher";
+import { checkTimeValidVoucher } from "src/utils/checkDiscount";
 
 interface Props {
     subOrder?: any,
@@ -18,20 +19,17 @@ const Voucher2T: React.FC<Props> = ({ subOrder, refecth }) => {
     const [loading, setLoading] = useState(false);
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
-    const { data: vouchers = [], isLoading } = useGetVoucherQuery('');
+    const { data: vouchers = [], isLoading } = useGetVoucher2tQuery('');
 
 
-    const isVoucherValid = (voucher: Voucher) => {
+    const isVoucherValid = (voucher: Voucher2t) => {
         const isOrderValueValid = subOrder?.subOrder?.total >= voucher.minimum_order_value;
-        if (voucher.id_product.length > 0) {
-            const isProductValid = voucher.id_product.some((id: any) => subOrder?.subOrder?.id_product?.includes(id));
-            return isOrderValueValid && isProductValid;
-        }
-        return isOrderValueValid;
+        const isdateValid = checkTimeValidVoucher(voucher.time_start, voucher.time_end);
+        return isOrderValueValid && isdateValid;
     };
     const listVoucherIsValid = vouchers?.filter(isVoucherValid);
     const sortedVouchers = vouchers ? sortByValidity(vouchers, isVoucherValid) : [];
-    const handleChooseVoucher = async (voucher: Voucher) => {
+    const handleChooseVoucher = async (voucher: Voucher2t) => {
         setLoading(true);
         try {
             const payload = {
@@ -49,6 +47,7 @@ const Voucher2T: React.FC<Props> = ({ subOrder, refecth }) => {
             setLoading(false);
         }
     }
+    console.log(vouchers);
     
     if (isLoading) return <></>
     return (
@@ -106,7 +105,7 @@ const Voucher2T: React.FC<Props> = ({ subOrder, refecth }) => {
                                 <h2 className="text-lg font-semibold">Mã Giảm Giá</h2>
                             </div>
                             <div className="space-y-4 min-h-[300px] max-h-[500px] overflow-y-auto">
-                                {sortedVouchers && sortedVouchers.map((item: Voucher, index: number) => {
+                                {sortedVouchers && sortedVouchers.map((item: Voucher2t, index: number) => {
                                     const valid = isVoucherValid(item);
                                     return (
                                         <div
@@ -115,7 +114,7 @@ const Voucher2T: React.FC<Props> = ({ subOrder, refecth }) => {
                                         >
                                             <svg className={`size-10 ${valid ? 'text-blue-400' : 'text-gray-400'}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="apply-coupon-code"><path fill="#8cd0ff" d="M481.95 251.137a3.38 3.38 0 0 0 .546-5.919l-23.91-15.962a9.295 9.295 0 0 1-3.807-10.178l5.814-21.295a9.295 9.295 0 0 0-4.58-10.642l-22.218-11.897a9.295 9.295 0 0 1-4.512-10.876l6.988-23.195a9.295 9.295 0 0 0-4.548-10.895l-19.525-10.345a9.295 9.295 0 0 1-4.805-9.815l4.985-28.507a3.38 3.38 0 0 0-4.662-3.69L28.05 240.575a3.38 3.38 0 0 0-.545 5.92l24.082 16.055a9.295 9.295 0 0 1 3.793 10.248l-5.977 21.27a9.295 9.295 0 0 0 4.752 10.808l21.617 10.94a9.295 9.295 0 0 1 4.763 10.768l-6.71 24.29a9.295 9.295 0 0 0 4.548 10.656l19.43 10.48a9.295 9.295 0 0 1 4.745 9.777l-4.934 28.32a3.38 3.38 0 0 0 4.662 3.686Z"></path><path fill="#66c1ff" d="m482.496 245.218-23.91-15.962a9.295 9.295 0 0 1-3.807-10.178l5.814-21.295a9.295 9.295 0 0 0-4.58-10.642l-22.218-11.897a9.295 9.295 0 0 1-4.512-10.876l6.988-23.195a9.295 9.295 0 0 0-4.548-10.895l-19.525-10.345a9.295 9.295 0 0 1-4.805-9.815l4.985-28.507a3.38 3.38 0 0 0-4.662-3.69l-26.693 11.436-3.63 20.761a9.295 9.295 0 0 0 4.805 9.815l19.525 10.345a9.295 9.295 0 0 1 4.548 10.895l-6.988 23.195a9.295 9.295 0 0 0 4.512 10.876l22.218 11.897a9.295 9.295 0 0 1 4.58 10.642l-5.814 21.295a9.295 9.295 0 0 0 3.807 10.178l23.91 15.962a3.38 3.38 0 0 1-.546 5.919L98.963 402.359l-1.35 7.746a3.38 3.38 0 0 0 4.663 3.687L481.95 251.137a3.38 3.38 0 0 0 .546-5.919Z"></path><path fill="#66c1ff" d="M500.36 434.357a4 4 0 0 0 3.352-6.183l-18.565-28.504a11 11 0 0 1 .605-12.845l16.246-20.453a11 11 0 0 0-.02-13.71l-18.618-23.294a11 11 0 0 1 .16-13.933l18.412-21.972a11 11 0 0 0 .13-13.97L485.65 259.14a11 11 0 0 1-.651-12.914l18.707-28.685a4 4 0 0 0-3.35-6.185h-152.94a6 6 0 0 0-2.683.634l-26.05 13.025a6 6 0 0 1-5.366 0l-26.05-13.025a6 6 0 0 0-2.683-.634H11.645a4 4 0 0 0-3.35 6.185l18.707 28.685a11 11 0 0 1-.652 12.914L9.938 279.493a11 11 0 0 0 .13 13.97l18.411 21.972a11 11 0 0 1 .161 13.933l-18.618 23.294a11 11 0 0 0-.02 13.71l16.246 20.453a11 11 0 0 1 .605 12.845L8.288 428.174a4 4 0 0 0 3.352 6.183h272.944a6 6 0 0 0 2.683-.633l26.05-13.025a6 6 0 0 1 5.366 0l26.05 13.025a6 6 0 0 0 2.683.633Z"></path><path fill="#4eb7ff" d="M501.998 366.372a11 11 0 0 0-.02-13.71l-18.618-23.294a11 11 0 0 1 .16-13.933l18.412-21.972a11 11 0 0 0 .13-13.97L485.65 259.14a11 11 0 0 1-.651-12.914l18.707-28.685a4 4 0 0 0-3.351-6.185h-30a4 4 0 0 1 3.35 6.185L455 246.227a11 11 0 0 0 .65 12.914l16.414 20.352a11 11 0 0 1-.131 13.97l-18.411 21.972a11 11 0 0 0-.161 13.933l18.618 23.294a11 11 0 0 1 .02 13.71l-16.247 20.453a11 11 0 0 0-.604 12.845l18.565 28.504a4 4 0 0 1-3.352 6.183h30a4 4 0 0 0 3.352-6.183l-18.565-28.504a11 11 0 0 1 .604-12.845Z"></path><path fill="#fff" d="M366.903 314.059a22.5 22.5 0 1 1 15.91-6.591 22.349 22.349 0 0 1-15.91 6.59zm0-29.997a7.498 7.498 0 1 0 5.303 12.8h.001a7.497 7.497 0 0 0-5.304-12.8zm62.597 92.593a22.5 22.5 0 1 1 15.91-6.59 22.349 22.349 0 0 1-15.91 6.59zm0-29.999a7.5 7.5 0 1 0 5.303 12.803v-.001a7.499 7.499 0 0 0-5.303-12.802zm-67.518 18.877a7.5 7.5 0 0 1-5.303-12.804l71.395-71.395a7.5 7.5 0 0 1 10.608 10.607l-71.396 71.396a7.481 7.481 0 0 1-5.304 2.196zM316 403.19a7.5 7.5 0 0 1-7.5-7.5v-12.667a7.5 7.5 0 1 1 15 0v12.667a7.5 7.5 0 0 1-7.5 7.5zm0-44.334a7.5 7.5 0 0 1-7.5-7.5V338.69a7.5 7.5 0 0 1 15 0v12.666a7.5 7.5 0 0 1-7.5 7.5zm0-44.333a7.5 7.5 0 0 1-7.5-7.5v-12.667a7.5 7.5 0 0 1 15 0v12.667a7.5 7.5 0 0 1-7.5 7.5zm0-44.333a7.5 7.5 0 0 1-7.5-7.5v-12.667a7.5 7.5 0 1 1 15 0v12.667a7.5 7.5 0 0 1-7.5 7.5z"></path><rect width="193.478" height="64.507" x="77.522" y="290.604" fill="#fff" rx="10"></rect><path fill="#eee" d="M261 290.604h-30a10 10 0 0 1 10 10v44.506a10 10 0 0 1-10 10h30a10 10 0 0 0 10-10v-44.506a10 10 0 0 0-10-10Z"></path></svg>
                                             <div className="ml-4 flex-1">
-                                                {item.type === 'price' ? (
+                                                {item.type === 'Hoàn tiền' ? (
                                                     <>
                                                         <h3 className={`text-gray-900 text-sm font-medium ${valid ? '' : 'text-gray-500'}`}>
                                                             Mã giảm {item.percent}% giảm tối đa {formatNumberVnd(item.maximum_reduction)}
@@ -132,9 +131,6 @@ const Voucher2T: React.FC<Props> = ({ subOrder, refecth }) => {
                                                 <p className={`text-gray-600 text-sm ${valid ? '' : 'text-gray-400'}`}>
                                                     Đơn tối thiểu {formatNumberVnd(item.minimum_order_value)}
                                                 </p>
-                                                {item.id_product.length > 0 && (
-                                                    <p className="text-[12px] text-red-400">Áp dụng cho sản phẩm nhất định</p>
-                                                )}
                                                 <p className={`text-gray-400 text-sm ${valid ? '' : 'text-gray-300'}`}>
                                                     HSD: {formatDate(item.time_end)}
                                                 </p>

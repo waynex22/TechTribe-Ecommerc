@@ -26,8 +26,28 @@ export const walletApi = createApi({
                 url: `wallet-transactions/wallet/${walletId}`,
                 method: 'GET',
             })
-        })
+        }),
+        getCard: builder.query({
+            query: (walletId) => ({
+                url: `card-link/wallet/${walletId}`,
+                method: 'GET',
+            })
+        }),
+        addCard: builder.mutation({
+            query: (payload) => ({
+                url: `card-link`,
+                method: 'POST',
+                body: payload
+            })
+        }),
+        deposit: builder.mutation({
+            query: (payload) => ({
+                url: `wallet/deposit`,
+                method: 'POST',
+                body: payload
+            })
+        }),
     }),
 });
 
-export const { useGetWalletByCustomerQuery, useGetTransactionsQuery } = walletApi;
+export const { useGetWalletByCustomerQuery, useGetTransactionsQuery, useGetCardQuery, useAddCardMutation, useDepositMutation } = walletApi;

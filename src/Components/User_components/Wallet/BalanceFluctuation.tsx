@@ -2,6 +2,7 @@ import SpinLoading from "src/Components/spinner/spinLoading";
 import { useGetTransactionsQuery } from "src/redux/rtkQuery/wallet";
 import EmptyFluctuation from "./EmptyFluctuation";
 import ItemBalanceFluctuation from "./ItemBalanceFluctuation";
+import { useEffect } from "react";
 
 interface Props {
     id: string
@@ -10,6 +11,10 @@ const BalanceFluctuation: React.FC<Props> = ({ id }) => {
     const { data: transactions, isLoading, refetch } = useGetTransactionsQuery(id, {
         skip: !id
     });
+    useEffect(() => {
+        if(!id) return
+        refetch();
+    }, [id, refetch])
     return (
         <>
             <div className="p-4 border-b border-dashed border-gray-200 mt-2">

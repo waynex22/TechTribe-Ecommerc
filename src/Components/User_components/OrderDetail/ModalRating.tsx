@@ -111,6 +111,7 @@ const ModalRating: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
             if (item && response.data.filenames) {
                 const newPayload = {
                     customerId: item.customerId,
+                    itemsOrderId: item.itemsOrderId,
                     productId: item.productId,
                     productPriceId: item.productPriceId,
                     rating: item.rating,

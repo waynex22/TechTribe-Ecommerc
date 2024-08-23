@@ -81,7 +81,7 @@ const HomePage: React.FC = () => {
           alt="" className="w-[70%] h-[70%] mx-auto"
         />
       </Modal>
-      <FlastSale />
+      {/* <FlastSale /> */}
       <div className="my-5 h-fit bg-white p-4 rounded-lg mx-auto">
         <div className="flex gap-2 items-center justify-start">
           <img

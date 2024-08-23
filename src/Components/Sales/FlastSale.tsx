@@ -1,7 +1,6 @@
 import React from "react";
-import CountDown from "../Clock/CountDown";
 
-const FlastSale = () => {
+const FlastSale: React.FC = () => {
   
   
   return (
@@ -25,7 +24,6 @@ const FlastSale = () => {
               <span className="">SALE</span>
             </div>
           </div>
-          <CountDown endTime="2024-18-7 24:00:00" />
         </div>
         <div className="flex">
           {Array.from({ length: 8 }).map((_, index) => (

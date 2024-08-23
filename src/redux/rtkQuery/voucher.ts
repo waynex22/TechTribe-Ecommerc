@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { apiUrl } from '../../config';
-import { Voucher } from '../../utils/types/voucher';
+import { Voucher, Voucher2t } from '../../utils/types/voucher';
 
 export const voucherApi = createApi({
     reducerPath: 'voucherQuery',
@@ -17,7 +17,13 @@ export const voucherApi = createApi({
                 url: `voucher/shop/${id}`,
                 method: 'GET'
             })
-        })
+        }),
+        getVoucher2t: builder.query<Voucher2t[], string>({
+            query: () => ({
+                url: `admin-voucher`,
+                method: 'GET'
+            })
+        }),
     })
 })
-export const { useGetVoucherQuery, useGetVoucherByShopQuery } = voucherApi;
+export const { useGetVoucherQuery, useGetVoucherByShopQuery, useGetVoucher2tQuery } = voucherApi;

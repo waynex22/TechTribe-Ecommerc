@@ -149,14 +149,8 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
                   {isDiscount && itemCart?.discountDetailId ? (
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-light text-red-600">
-                        Flash Sale
+                        Sản phẩm khuyến mãi
                       </span>
-                      <div className="flex items-center gap-1">
-                        <span className="text-[10px] font-light text-red-600">
-                          kết thúc sau
-                        </span>
-                        <CountDown endTime={discountDetailId?.id_discount?.time_end} />
-                      </div>
                     </div>
                   ) : (
                     <>

@@ -11,6 +11,9 @@ import { Route } from "../Type";
 import NotificationOrder from "src/Components/User_components/Notification/NotificationOrder";
 import NotificationWallet from "src/Components/User_components/Notification/NotificationWallet";
 import Wallet from "src/Components/User_components/Wallet";
+import DepositWallet from "src/Components/User_components/Wallet/DepositWallet";
+import AddCard from "src/Components/User_components/Wallet/AddCard";
+import ReturnOrder from "src/Components/User_components/ReturnOrder";
 
 const userProfileRouter: Route[] = [
     {
@@ -49,8 +52,28 @@ const userProfileRouter: Route[] = [
                 layout: null,
             },
             {
+                path: "wallet/deposit",
+                component: DepositWallet,
+                layout: null,
+            },
+            {
+                path: "wallet/addCard",
+                component: AddCard,
+                layout: null,
+            },
+            {
                 path: "purchase/order/:slug",
                 component: OrderDetail,
+                layout: null,
+            },
+            {
+                path: "purchase/return/:slug",
+                component: ReturnOrder,
+                layout: null,
+            },
+            {
+                path:'notification',
+                component: NotificationOrder,
                 layout: null,
             },
             {

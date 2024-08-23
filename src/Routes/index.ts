@@ -17,6 +17,8 @@ import QueryProductPage from "../Page/QueryProduct";
 import ShopPage from "src/Page/Shop";
 import OrderSuccessPage from "src/Page/OrderSuccess";
 import CheckOutAddress from "src/Page/Address";
+import Logistics from "src/Components/Logistics";
+import LogisticsLayout from "src/Layouts/LogisticsLayout";
 const publicRoutes: Route[]  = [
     {
         path: '/',
@@ -109,5 +111,10 @@ const publicRoutes: Route[]  = [
         layout: DefaultLayout,
         needChat: true
     },
+    {
+        path: '/logistics',
+        component: Logistics,
+        layout: LogisticsLayout
+    }
 ]
 export { publicRoutes };

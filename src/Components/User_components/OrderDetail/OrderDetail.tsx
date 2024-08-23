@@ -10,6 +10,8 @@ import { useUpdateStatusTimeMutation } from "src/redux/rtkQuery/product-review";
 import ModalAccept from "src/Components/modal/ModalAccept";
 import OrderCancel from "./OrderCancel";
 import { useAddCoinRefundMutation } from "src/redux/rtkQuery/customerReward";
+import SpinLoading from "src/Components/spinner/spinLoading";
+import ModalReturn from "./ModalReturn";
 
 const OrderDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -18,6 +20,7 @@ const OrderDetail: React.FC = () => {
     const [updateCoinRefunt] = useAddCoinRefundMutation();
     const [cancelOrder] = useCancelOrderMutation();
     const [openModal, setOpenModal] = useState(false);
+    const [openModalReturn, setOpenModalReturn] = useState(false);
     const [modalAccept , setModalAccept] = useState(false);
     const [modalAction , setModalAction] = useState<(() => void) | null>(null);
     const [toast, setToast] = useState<ToastProps | null>(null);
@@ -31,7 +34,6 @@ const OrderDetail: React.FC = () => {
         setToast({ message: 'Cập nhật thành công', type: 'success', onClose: () => setToast(null) });
         refetch();
     }
-    // console.log(order);
     const handleCancelOrder = async () => {
         await cancelOrder({ _id: order?._id });
         await updateTime({ id: order?._id, key: 'user_cancel', value: new Date() });
@@ -62,7 +64,7 @@ const OrderDetail: React.FC = () => {
         return now.getTime() < dateRefund.getTime();
     }
     const checkAutoCancel = order?.statusUpdate?.every((item: any) => item.key === 'auto_cancel');
-    if (isLoading) return <div className="w-full h-screen flex items-center justify-center">isLoading</div>
+    if (isLoading) return <div className="w-full h-screen flex items-center justify-center"><SpinLoading loading={isLoading} /></div>
     return (
         <>
         <ModalAccept
@@ -80,7 +82,7 @@ const OrderDetail: React.FC = () => {
                     <p>Trở lại</p>
                 </Link>
                 <div className="flex items-center justify-between uppercase text-sm gap-2">
-                    <p>Mã đơn hàng. {order?._id}</p>
+                    <p>Mã đơn hàng. 2TEX{order?._id.slice(0,6)}</p>
                     <div className="w-[1px] h-4 bg-gray-600"></div>
                     <p className="text-sm text-primary">{order?.status}</p>
                 </div>
@@ -223,7 +225,7 @@ const OrderDetail: React.FC = () => {
                 <div className="bg-white p-4 rounded-lg border-b border-gray-200 border-dashed">
                     <div className="flex items-start justify-between">
                         <div className="flex flex-col gap-2">
-                            {order?.statusShipping === 'Đã giao hàng' && order?.status !== 'Hoàn thành' && (
+                            {order?.statusShipping === 'Đã giao hàng' && checkRefuntOrder(order?.DeliveryTime) && order?.status !== 'Hoàn thành' && order?.status !== 'Hoàn hàng' && (
                                 <p className="text-[12px] text-gray-400 font-normal">Nếu hàng nhận được có vấn đề, bạn có thể gửi yêu cầu Trả hàng/Hoàn tiền trước {formatDate(order?.DeliveryTime)}</p>
                             )}
                             {order?.statusShipping === 'Đã giao hàng' && order?.rateDate === false && (
@@ -241,15 +243,18 @@ const OrderDetail: React.FC = () => {
                                     <p className="text-white font-normal text-sm">Đánh Giá</p>
                                 </div>
                             )}
-
-                            {order?.statusShipping === 'Đã giao hàng' && checkRefuntOrder(order?.DeliveryTime) && (
-                                <div className="flex items-center cursor-pointer justify-center px-4 py-2 rounded-md border border-gray-400">
+                            {order?.statusShipping === 'Đã giao hàng' && checkRefuntOrder(order?.DeliveryTime) && order?.status !== 'Hoàn hàng' && (
+                                <div onClick={() => setOpenModalReturn(true)} className="flex items-center cursor-pointer justify-center px-4 py-2 rounded-md border border-gray-400">
                                     <p className="font-normal text-sm"> Yêu Cầu Trả Hàng / Hoàn Tiền</p>
                                 </div>
                             )}
+                            {order?.status === 'Hoàn hàng' && (
+                                <Link to={`/me/purchase/return/${order?._id}`} className="flex w-fit my-2 items-center cursor-pointer justify-center px-4 py-2 rounded-md border border-gray-400">
+                                    <p className="font-normal text-sm">Xem chi tiết yêu cầu hoàn hàng</p>
+                                </Link>
+                            )}
                         </div>
                     </div>
-
                 </div>
             )}
             <div className="bg-white p-4 rounded-lg border-b border-gray-200 border-dashed">
@@ -257,13 +262,13 @@ const OrderDetail: React.FC = () => {
                     <div className="w-[29%] font-normal flex flex-col space-y-1">
                         <h3>Địa chỉ nhận hàng</h3>
                         <p className="text-sm">{order?.customerId?.name}</p>
-                        <p className="text-[12px] text-gray-400">(84+) {order?.customerId?.phone}</p>
+                        <p className="text-[12px] text-gray-400">(84+) {order?.orderId?.address?.phoneNumber}</p>
                         <p className="text-[12px] text-gray-400">{order?.orderId?.address?.address}, {order?.orderId?.address?.ward}, {order?.orderId?.address?.district}, {order?.orderId?.address?.province}</p>
                     </div>
                     <div className="h-full w-[1px] bg-gray-200"></div>
                     <div className="w-[50%]">
                         <ol className="relative border-s border-gray-200">
-                            {order?.status === 'Đã huỷ' && (
+                            {order?.status === 'Đã huỷ' && order.statusShipping !== 'Giao không thành công' && (
                                 <>
                                 {checkAutoCancel ? (
                                 <>
@@ -290,6 +295,21 @@ const OrderDetail: React.FC = () => {
                             )}
                                 </>
                             )}
+                            {order?.statusShipping === 'Giao không thành công' ? (
+                                 <li className="ms-5">
+                                 <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
+                                     <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="delivery-box"><rect width="60" height="46" x="2" y="9" fill="#ffc239" rx="1"></rect><path fill="#ffd55d" d="M61,9H9V26.456A21.543,21.543,0,0,0,30.544,48H62V10A1,1,0,0,0,61,9Z"></path><rect width="14" height="18" x="25" y="9" fill="#e8e4d8"></rect><rect width="20" height="12" x="38" y="39" fill="#e8e4d8"></rect><rect width="2" height="8" x="53" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="50" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="47" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="44" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="41" y="41" fill="#7a7b7d"></rect><rect width="2" height="2" x="5" y="38" fill="#fff"></rect><rect width="10" height="2" x="9" y="38" fill="#fff"></rect><rect width="9" height="2" x="5" y="42" fill="#fff"></rect><rect width="3" height="2" x="16" y="42" fill="#fff"></rect><rect width="2" height="2" x="5" y="46" fill="#fff"></rect><rect width="10" height="2" x="9" y="46" fill="#fff"></rect><rect width="9" height="2" x="5" y="50" fill="#fff"></rect><rect width="3" height="2" x="16" y="50" fill="#fff"></rect></svg>
+                                 </div>
+                                 <time className="mb-1 text-[12px] font-normal leading-none text-gray-400 ">{formatDateAndTime(getKeyUpdateItem('Giao hàng không thành công')[0])}</time>
+                                 <p className="text-sm font-semibold text-gray-900 ">Đã huỷ</p>
+                                 <p className="text-sm font-normal text-gray-500 ">Đơn hàng đã huỷ vì đơn vị vận chuyển không thể liên lạc với bạn</p>
+                             </li>
+                            ):(
+                                <>
+                                
+                                </>
+                            )
+                                }
                             {order?.status === 'Hoàn thành' && (
                                 <li className="ms-5">
                                     <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
@@ -298,6 +318,17 @@ const OrderDetail: React.FC = () => {
                                     <time className="mb-1 text-[12px] font-normal leading-none text-gray-400 ">{formatDateAndTime(getKeyUpdateItem('Hoàn thành')[0])}</time>
                                     <p className="text-sm font-semibold text-gray-900 ">Hoàn thành</p>
                                     <p className="text-sm font-normal text-gray-500 ">Xác nhận đơn hàng thành công</p>
+                                </li>
+
+                            )}
+                            {order?.status === 'Hoàn hàng' && (
+                                <li className="ms-5">
+                                    <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
+                                        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="delivery-box"><rect width="60" height="46" x="2" y="9" fill="#ffc239" rx="1"></rect><path fill="#ffd55d" d="M61,9H9V26.456A21.543,21.543,0,0,0,30.544,48H62V10A1,1,0,0,0,61,9Z"></path><rect width="14" height="18" x="25" y="9" fill="#e8e4d8"></rect><rect width="20" height="12" x="38" y="39" fill="#e8e4d8"></rect><rect width="2" height="8" x="53" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="50" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="47" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="44" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="41" y="41" fill="#7a7b7d"></rect><rect width="2" height="2" x="5" y="38" fill="#fff"></rect><rect width="10" height="2" x="9" y="38" fill="#fff"></rect><rect width="9" height="2" x="5" y="42" fill="#fff"></rect><rect width="3" height="2" x="16" y="42" fill="#fff"></rect><rect width="2" height="2" x="5" y="46" fill="#fff"></rect><rect width="10" height="2" x="9" y="46" fill="#fff"></rect><rect width="9" height="2" x="5" y="50" fill="#fff"></rect><rect width="3" height="2" x="16" y="50" fill="#fff"></rect></svg>
+                                    </div>
+                                    <time className="mb-1 text-[12px] font-normal leading-none text-gray-400 ">{formatDateAndTime(getKeyUpdateItem('Hoàn hàng')[0])}</time>
+                                    <p className="text-sm font-semibold text-gray-900 ">Trả hàng</p>
+                                    <p className="text-sm font-normal text-gray-500 ">Bạn đã gửi yêu cầu trả hàng hoàn tiền</p>
                                 </li>
 
                             )}
@@ -414,6 +445,7 @@ const OrderDetail: React.FC = () => {
             </div>
             <ItemDetail item={order} />
             <ModalRating openModal={openModal} onClose={() => setOpenModal(false)} items={order} refecth={refetch} setToast={setToast} />
+            <ModalReturn openModal={openModalReturn} onClose={() => setOpenModalReturn(false)} items={order} refecth={refetch} setToast={setToast} />
         </>
     )
 }

@@ -22,12 +22,10 @@ const Search: React.FC = () => {
     setIsSearchFocused(false);
   };
   const handleChooseQuery = async (query: string) => {
-    if(historySearch.length > 0) {
-      const checkIsHave = historySearch?.find((item: any) => item.query == query);
-      if(!user || checkIsHave ){
-        history(`/search?q=${query}`);
-        return;
-      }
+    if(!user) {
+      history(`/search?q=${query}`);
+      clear();
+      return
     }
     const payload = {
       customerId: user?.sub,

@@ -129,8 +129,33 @@ export const orderApi = createApi({
                 url: `items-order/cancel/${payload._id}`,
                 method: 'POST',
             })
+        }),
+        getAllOrder: builder.query<any, void>({
+            query: () => ({
+                url: 'items-order',
+                method: 'GET'
+            })
+        }),
+        returnOrder: builder.mutation<any, any>({
+            query: (payload) => ({
+                url: `return-order`,
+                method: 'POST',
+                body: payload
+            })
+        }),
+        getReturnOrderByItemOrderId: builder.query<any, string>({
+            query: (id: string) => ({
+                url: `return-order/items-order/${id}`,
+                method: 'GET'
+            })
+        }),
+        deliveryFailed: builder.mutation<any, any>({
+            query: (id) => ({
+                url: `items-order/deliveryFailed/${id}`,
+                method: 'POST',
+            })
         })
     }),
 });
 
-export const { useGetSubOrderQuery, useCreateSubOrderMutation, useDeleteSubOrderMutation , useUpdateSubOrderDtoMutation, useUpdateItemsSubOrderMutation, useCreateOrderMutation, useGetOrderByUserIdQuery, useGetOrderByIdQuery , useUpdateItemsOrderMutation, useCancelOrderMutation } = orderApi;
+export const { useGetSubOrderQuery, useCreateSubOrderMutation, useDeleteSubOrderMutation , useUpdateSubOrderDtoMutation, useUpdateItemsSubOrderMutation, useCreateOrderMutation, useGetOrderByUserIdQuery, useGetOrderByIdQuery , useUpdateItemsOrderMutation, useCancelOrderMutation, useGetAllOrderQuery, useReturnOrderMutation, useGetReturnOrderByItemOrderIdQuery, useDeliveryFailedMutation } = orderApi;

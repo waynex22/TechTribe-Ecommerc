@@ -14,14 +14,17 @@ import { product } from "src/utils/types/product";
 import { useDispatch } from "react-redux";
 import { setOpen, setShopSelected } from "src/redux/slices/chatSlice";
 import Review from "../Review";
+import { useGetShopQuery } from "src/redux/rtkQuery/shop";
 const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const dispatch = useDispatch();
   const [updateCart] = useUpdateCartMutation();
   const { cart } = useSelector((state: any) => state.cart);
   const { user } = useSelector((state: any) => state.auth);
   const { refetch } = useGetCartMeQuery(user?.sub);
   const { data: products } = useGetProductQuery();
   const { data: product, isLoading } = useGetProductByIdQuery(`${slug}`);
+  const { data: shop , isLoading: isLoadingShop} = useGetShopQuery(product?.id_shop[0]?._id);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [indexThumbnail, setIndexThumbnail] = useState(0);
@@ -117,7 +120,6 @@ const ProductDetail: React.FC = () => {
       }
     }
   }
-  const dispatch = useDispatch();
   const handleChatClick = (shopId: string, shopName: string) => {
     if (!user) {
       handleSetToast({ message: 'Bạn cần đăng nhập để chat', type: "error" });
@@ -126,7 +128,6 @@ const ProductDetail: React.FC = () => {
       dispatch(setOpen(true));
     }
   };
-
   if (isLoading) return <ProductDetailLoading />;
   const minMaxPrice = getMinMaxPriceInArr(product?.product_price);
   const renderPrice = (price: number, discountedPrice: number) => (
@@ -168,8 +169,9 @@ const ProductDetail: React.FC = () => {
       )}
     </div>
   );
-
   const discountedPrice: any = isDiscount ? discountPrice(ProductPriceSelected.price, isDiscount.percent) : null;
+  console.log(shop);
+  
   return (
     <>
       <div className="container mx-auto">
@@ -302,7 +304,7 @@ const ProductDetail: React.FC = () => {
                       <div
                         key={index}
                         onClick={() => setSelectedColor(color._id)}
-                        className={`p-1 border rounded-lg cursor-pointer relative w-[100px] flex items-center justify-around ${selectedColor === color._id
+                        className={`px-1 border rounded-lg cursor-pointer relative w-[100px] py-2 flex items-center justify-around ${selectedColor === color._id
                           ? "border-blue-600 border-2"
                           : "border-gray-200"
                           } ${!isOnStock(color._id, selectedSize) ? "opacity-30" : ""}`}
@@ -316,11 +318,6 @@ const ProductDetail: React.FC = () => {
                             />
                           </div>
                         )}
-                        <img
-                          src={color.image}
-                          alt=""
-                          className="w-8 h-8 mb-1"
-                        />
                         <p className="text-sm">{color.value}</p>
                       </div>
                     ))}
@@ -335,7 +332,7 @@ const ProductDetail: React.FC = () => {
                       <div
                         key={index}
                         onClick={() => setSelectedSize(size._id)}
-                        className={` border rounded-lg cursor-pointer relative py-2 px-3  ${selectedSize === size._id
+                        className={` border rounded-lg cursor-pointer relative py-2 px-3 w-[50px] flex items-center justify-center  ${selectedSize === size._id
                           ? "border-blue-600 border-2"
                           : "border-gray-200"
                           } ${isOnStock(size._id, selectedColor) ? "opacity-30" : ""}`}
@@ -483,7 +480,7 @@ const ProductDetail: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-light">Người theo dõi : </span>
                       <span className="text-sm font-light-bold text-primary">
-                        {product?.id_shop[0]?.count_follower}
+                        {shop?.follows?.length || 0}
                       </span>
                     </div>
                   </div>

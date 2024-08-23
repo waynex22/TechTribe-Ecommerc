@@ -15,7 +15,7 @@ export type typeDiscount = {
     limit_customer: number,
     limit_product: number,
     _id_productPrice: string,
-    _id_discount: any
+    id_discount: any
 }
 export type product = {
     _id: any,
