@@ -15,6 +15,12 @@ const ManageProfileShop: React.FC = () => {
     dispatch(fetchIdentification())
   }, [dispatch])
   console.log(identification);
+  useEffect(() => {
+    if (type === 'identity-information')
+      setActiveFilter(type)
+    else
+      setActiveFilter('profile')
+  },[type])
   
   return (
     <div className='font-normal'>

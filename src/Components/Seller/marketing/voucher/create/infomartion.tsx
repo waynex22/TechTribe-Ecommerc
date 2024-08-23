@@ -5,6 +5,7 @@ import { fetchShop, SelectShop } from '../../../../../redux/features/shop'
 import { formartDateYYYY_MM_DDTHH_MM } from '../../../../../utils/fortmartNumberVnd/formartDate'
 import { checkTimeStatus } from '../../discount/list/listDiscout'
 import { FormErrorsVoucher } from '../../../../../utils/validatetor/createVoucher'
+import { transNameShopForVoucher } from '../../../../../utils/fortmartNumberVnd/string'
 
 const InfomartionVoucher = ({ caseNumber, formCreateVoucher, onHandleFormCrate, isExpired, errForm }: {
     caseNumber: string,
@@ -108,7 +109,7 @@ const InfomartionVoucher = ({ caseNumber, formCreateVoucher, onHandleFormCrate, 
                     <div className=' w-[600px] '>
                         <div className={`relative border  w-full rounded flex gap-1 items-center px-2 ${isExpired === 'finished' && ' bg-gray-100 cursor-not-allowed'} ${errForm.code && 'border-red-500'}`}>
                             <div className=' px-4 border-r'>
-                                <p className=' uppercase'> {shop.name.slice(0, 4)} </p>
+                                <p className=' uppercase'> {transNameShopForVoucher(shop.name)} </p>
                             </div>
                             <input
                                 onChange={(e) => onHandleFormCrate(e.target.name, e.target.value)}
@@ -122,7 +123,7 @@ const InfomartionVoucher = ({ caseNumber, formCreateVoucher, onHandleFormCrate, 
                         </div>
                         <p className=' text-red-600 pt-1 text-xs'> {errForm.code} </p>
                         <p className=' pt-1 text-gray-500 text-xs'>Vui lòng chỉ nhập các kí tự chữ cái (A-Z), số (0-9); tối đa 5 kí tự.</p>
-                        <p className=' pt-1 text-gray-500 text-xs uppercase'>Mã giảm giá đầy đủ là: {shop.name.slice(0, 4)}{formCreateVoucher.code} </p>
+                        <p className=' pt-1 text-gray-500 text-xs uppercase'>Mã giảm giá đầy đủ là: {transNameShopForVoucher(shop.name)}{formCreateVoucher.code} </p>
                     </div>
                 </div>
                 <div className=' flex gap-2'>

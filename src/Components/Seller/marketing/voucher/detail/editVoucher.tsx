@@ -13,6 +13,7 @@ import InfomartionVoucher from "../create/infomartion";
 import SetUpVoucher from "../create/setUpVoucher";
 import ApplicableVoucherProduct from "../create/applicableProduct";
 import { FormErrorsVoucher, validateFormVoucher } from "../../../../../utils/validatetor/createVoucher";
+import { transNameShopForVoucher } from "../../../../../utils/fortmartNumberVnd/string";
 
 const EditVoucher = ({ idVoucher }: { idVoucher: string }) => {
   const dispatch = useAppDispatch();
@@ -41,7 +42,7 @@ const EditVoucher = ({ idVoucher }: { idVoucher: string }) => {
     if (voucher._id) {
       setFormCreateVoucher({
         ...voucher,
-        code: removePrefixCODE(voucher.code, shop.name.slice(0, 4)),
+        code: removePrefixCODE(voucher.code, transNameShopForVoucher(shop.name)),
         time_start: new Date(voucher.time_start),
         time_end: new Date(voucher.time_end),
       });
@@ -81,7 +82,7 @@ const EditVoucher = ({ idVoucher }: { idVoucher: string }) => {
 
     const formData = { ...formCreateVoucher };
     formData.code = (
-      shop.name.slice(0, 4) + formCreateVoucher.code
+      transNameShopForVoucher(shop.name) + formCreateVoucher.code
     ).toUpperCase();
     requestApi(`voucher/${voucher._id}`, "PATCH", formData, "application/json")
       .then((data) => {
@@ -98,7 +99,7 @@ const EditVoucher = ({ idVoucher }: { idVoucher: string }) => {
         toast.error("Có lỗi khi sửa");
       });
   };
-  const leaveCreateDiscount = () => {};
+  const leaveCreateDiscount = () => { };
   return (
     <>
       {voucher._id && formCreateVoucher && (

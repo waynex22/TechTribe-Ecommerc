@@ -17,27 +17,6 @@ const ListVoucherComponent = ({ id_shop }: { id_shop: string }) => {
     <>
       <div className=' bg-white shadow-md my-6 py-6 rounded px-4 flex flex-col gap-6'>
         <div className=''>
-          <h4 className=' text-base py-1'>Hiệu quả</h4>
-          <div className=' border p-4 grid grid-cols-4 gap-4 rounded my-4'>
-            <div className=' border-r'>
-              <p>Danh số</p>
-              <p>0</p>
-            </div>
-            <div className=' border-r'>
-              <p>Danh số</p>
-              <p>0</p>
-            </div>
-            <div className=' border-r'>
-              <p>Danh số</p>
-              <p>0</p>
-            </div>
-            <div className=''>
-              <p>Danh số</p>
-              <p>0</p>
-            </div>
-          </div>
-        </div>
-        <div className=''>
           <h4 className=' text-base py-1 '>Danh sách mã giảm giá</h4>
         </div>
 

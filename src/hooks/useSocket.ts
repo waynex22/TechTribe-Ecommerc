@@ -5,10 +5,12 @@ import { apiUrl } from '../config';
 
 interface ServerToClientEvents {
   messenger: (data: { id_sender: string, id_customer: string, id_shop: string, id_roomChat:string }) => void;
+  notification: (data: {customerId: string}) => void;
 }
 
 interface ClientToServerEvents {
   messenger: (message: string) => void;
+  notification: (data: {customerId : string}) => void;
 }
 
 const useSocket = () => {

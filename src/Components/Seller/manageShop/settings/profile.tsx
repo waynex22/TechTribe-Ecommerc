@@ -1,15 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { TypeShop } from '../../../../utils/types/shop'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { typeAddressShop, TypeShop } from '../../../../utils/types/shop'
 import { toast } from 'react-toastify'
 import requestApi from '../../../../helper/api'
 import { useAppDispatch } from '../../../../redux/hook'
 import { fetchShop } from '../../../../redux/features/shop'
+import Popup from '../../../../Page/popup/popup'
+import SelectAddress from './selectAddress'
+import { LoaderContex } from '../../loadingProvider'
 
 type typeFormProfile = { name: string, description: string | undefined, thumbnail: string }
 const ProfileShop = ({ profileShop }: { profileShop: TypeShop }) => {
     const disPatch = useAppDispatch()
     const [isEdit, setIsEdit] = useState(false)
     const [formEditProfile, setFormEditProfile] = useState({} as typeFormProfile)
+    const [isShowPopup, setIsShowPopup] = useState(false)
+    const [formAddress, setFormAddress] = useState({} as typeAddressShop)
+    const {setLoader} = useContext(LoaderContex)
 
     const inputRef = useRef<HTMLInputElement>(null);
     const [preview, setPreview] = useState('')
@@ -31,7 +37,17 @@ const ProfileShop = ({ profileShop }: { profileShop: TypeShop }) => {
             thumbnail: profileShop.thumbnail,
         }
         setFormEditProfile(form)
-    }, [profileShop.description, profileShop.name])
+        if (profileShop.AddressShop.length >0)
+            setFormAddress(profileShop.AddressShop[0])
+    }, [profileShop.AddressShop, profileShop.description, profileShop.name, profileShop.thumbnail])
+
+    const handeShowPopup = () => {
+        setIsShowPopup(!isShowPopup)
+    }
+    const handleFormAddress = (address: typeAddressShop) => {
+        setFormAddress(address)
+        handeShowPopup()
+    }
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
@@ -48,8 +64,6 @@ const ProfileShop = ({ profileShop }: { profileShop: TypeShop }) => {
         }
     };
     const submitForm = () => {
-        console.log(formEditProfile);
-        console.log(file);
 
         if (file.length > 0) {
             const formData = new FormData();
@@ -65,19 +79,18 @@ const ProfileShop = ({ profileShop }: { profileShop: TypeShop }) => {
                 .catch(error => {
                     console.error('Error uploading files:', error);
                 });
-        }else {
+        } else {
             updateProfile(formEditProfile)
         }
     };
     const updateProfile = (form: typeFormProfile) => {
-        console.log(form);
+        setLoader(true)
         requestApi('shop', 'PATCH', form, 'application/json')
             .then(response => {
-                toast.success('Cập nhật thành công')
-                disPatch(fetchShop())
-                setIsEdit(false)
+                updateAddress()
             })
             .catch(error => {
+                setLoader(false)
                 console.error('Error uploading files:', error);
             });
     }
@@ -85,6 +98,25 @@ const ProfileShop = ({ profileShop }: { profileShop: TypeShop }) => {
         const filesToDelete = []
         filesToDelete.push(profileShop.thumbnail)
         requestApi('upload/files', 'DELETE', { filesToDelete }, 'application/json')
+    }
+    const updateAddress = () => {
+        if (!formAddress.ward) {
+            showSuccess()
+        } else
+            requestApi('address-shop', 'POST', formAddress, 'application/json')
+                .then(response => {
+                    showSuccess()
+                })
+                .catch(error => {
+                    setLoader(false)
+                    console.error('Error uploading files:', error);
+                });
+    }
+    const showSuccess = () => {
+        setLoader(false)
+        toast.success('Cập nhật thành công')
+        disPatch(fetchShop())
+        setIsEdit(false)
     }
 
     return (
@@ -95,8 +127,8 @@ const ProfileShop = ({ profileShop }: { profileShop: TypeShop }) => {
                     {!isEdit && <button onClick={() => setIsEdit(true)} className=' px-4 py-2 rounded border hover:shadow hover:bg-gray-100'> Chỉnh sửa </button>}
                 </div>
                 <div className=' py-4'>
-                    <div className=' flex gap-4 items-center'>
-                        <div className=' w-60 text-right'>
+                    <div className=' flex gap-4'>
+                        <div className=' w-60 text-right py-1'>
                             <p>Tên Shop:</p>
                         </div>
                         <div className=' flex-1'>
@@ -164,6 +196,26 @@ const ProfileShop = ({ profileShop }: { profileShop: TypeShop }) => {
                         </div>
                     </div>
                 </div>
+
+                <div className=' py-4'>
+                    <div className=' flex gap-4'>
+                        <div className=' w-60 text-right'>
+                            <p>Địa chỉ:</p>
+                        </div>
+                        <div className=' flex-1'>
+                            {!isEdit ?
+                                <p className=' text-wrap break-words max-w-[800px] '>
+                                    {profileShop.AddressShop.length > 0 && handleShowAddress(profileShop.AddressShop[0])}
+                                </p> :
+                                <>
+                                    <div onClick={handeShowPopup} className=' cursor-pointer px-4 py-2 rounded border'>
+                                        {formAddress.address && handleShowAddress(formAddress)}
+                                    </div>
+                                </>
+                            }
+                        </div>
+                    </div>
+                </div>
                 {isEdit &&
                     <div className=' py-4'>
                         <div className=' flex gap-6 items-center'>
@@ -179,8 +231,23 @@ const ProfileShop = ({ profileShop }: { profileShop: TypeShop }) => {
                     </div>}
 
             </div>
+            {isShowPopup &&
+                <Popup onHandlePopup={handeShowPopup} >
+                    <div className=' rounded shadow-md px-6 py-4 bg-white w-[500px]'>
+                        <SelectAddress
+                            onHandlePopup={handeShowPopup}
+                            addressProfile={formAddress}
+                            onHandleFormAddress={handleFormAddress}
+                        />
+                    </div>
+                </Popup>
+            }
         </div>
     )
+}
+
+export const handleShowAddress = (address: typeAddressShop) => {
+    return `${address.address}, ${address.ward}, ${address.district}, ${address.province}`
 }
 
 export default ProfileShop

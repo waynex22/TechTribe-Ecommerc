@@ -65,6 +65,7 @@ const noMessengerRoutes = [
   "/seller/product/new",
   "/seller/product/edit/:idProduct",
   "/seller/marketing/vouchers/new",
+  "/seller/marketing/vouchers/:id",
   "/seller/marketing/flash-sale/new",
   "/seller/marketing/discount/create-program",
   "/seller/settings/profile/identity-information",

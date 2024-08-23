@@ -12,6 +12,7 @@ import {
   FormErrorsVoucher,
   validateFormVoucher,
 } from "../../../../../utils/validatetor/createVoucher";
+import { transNameShopForVoucher } from "../../../../../utils/fortmartNumberVnd/string";
 
 const CreateVoucherComponent: React.FC = () => {
   const location = useLocation();
@@ -73,7 +74,7 @@ const CreateVoucherComponent: React.FC = () => {
 
     const formData = { ...formCreateVoucher };
     formData.code = (
-      shop.name.slice(0, 4) + formCreateVoucher.code
+     transNameShopForVoucher(shop.name) + formCreateVoucher.code
     ).toUpperCase();
     requestApi("voucher", "POST", formData, "application/json")
       .then((data) => {
