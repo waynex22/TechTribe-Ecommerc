@@ -26,9 +26,10 @@ export type typeSpecifications = {
 export type TypeVariation = {
     [key:string] : detail_variation[];
 }
-type detail_variation = {
+export type detail_variation = {
     name:string,
     thumbnail?: string,
+    _id?: string,
 }
   
 export type typeProductSpecification = {
@@ -59,14 +60,16 @@ export type typeProduct = {
     variation_color?: typeVariationProduct[]
     variation_size?: typeVariationProduct[]
     product_price: typeProductPriceResult[]
+    variation?:TypeVariation[]
     banned: boolean,
-    unlisted: boolean
+    unlisted: boolean,
 }
 
 export type typeVariationProduct= {
     _id: string,
     id_product: string[],
     value:string
+    thumbnail?: string,
 }
 
 export type typeProductPriceResult = {

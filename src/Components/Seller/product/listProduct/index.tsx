@@ -106,8 +106,8 @@ const ListProduct: React.FC = () => {
   };
 
   return (
-    <>
-      <div className=' flex justify-between'>
+    <div className='  bg-white rounded-md shadow'>
+      <div className=' flex justify-between px-6 pt-6'>
         <h2 className=' text-xl font-semibold'>Sản phẩm</h2>
         <Link to={`/seller/product/new`} className=' items-center flex gap-2 px-4 py-2 rounded text-white bg-primary'> <IoMdAdd /> Thêm sản phẩm mới</Link>
       </div>
@@ -115,7 +115,7 @@ const ListProduct: React.FC = () => {
       <SelectActiveFilter products={products} activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
 
       <div className=' py-4 font-normal text-sm'>
-        <div className=' px-6 py-4 bg-white rounded-md shadow'>
+        <div className=' px-6 py-4'>
           <div className=' flex gap-4 py-4'>
             <div>
               <input onChange={(e) => setValueFindName(e.target.value)} type="text" placeholder='Tìm tên sản phẩm' className=' w-full rounded border border-gray-400 py-1' />
@@ -198,7 +198,7 @@ const ListProduct: React.FC = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 const findMinPriceProduct = (product: typeProduct) => {

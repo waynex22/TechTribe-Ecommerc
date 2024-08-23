@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Outlet } from 'react-router-dom'
 import { ScaleLoader } from 'react-spinners'
 import './style.css'
-import { LoaderContex } from './loading'
+import { LoaderContex } from './loadingProvider'
 
 const SellerComponent: React.FC = () => {
   const { isLoader } = useContext(LoaderContex)

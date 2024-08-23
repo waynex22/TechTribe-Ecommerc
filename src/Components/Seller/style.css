@@ -2,7 +2,7 @@ input {
     padding: 5px 10px !important;
 }
 
-input:focus {
+input:focus, .ck-editor__editable_inline:focus {
     border-color: #ccc !important;
     /* Đặt lại border để không thay đổi khi focus */
     box-shadow: none;

@@ -1,4 +1,5 @@
 import { typeCustomer } from "./customer"
+import { typeItemOrder } from "./orderSeller"
 import { typeProduct } from "./product"
 import { TypeShop } from "./shop"
 
@@ -21,5 +22,5 @@ export type typeMessage = {
     thumbnail?: string,
     video?: string,
     id_product?: typeProduct,
-    id_order?: string,
+    id_order?: typeItemOrder,
 }

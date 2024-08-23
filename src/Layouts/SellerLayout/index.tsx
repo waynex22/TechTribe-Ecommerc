@@ -3,10 +3,11 @@ import HeaderSeller from './headerSeller';
 import AsideLayout from './aside';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import LoaderProvider from '../../Components/Seller/loading';
+import LoaderProvider from '../../Components/Seller/loadingProvider';
 import MessengerSellerComponent from '../../Components/Seller/messenger';
 import { matchPath, useLocation } from 'react-router-dom';
 import { noMessengerRoutes } from '../../Routes/seller';
+import MessageProvider from '../../Components/Seller/messageProvider';
 
 const SellerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -17,6 +18,7 @@ const SellerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   );
   return (
     <LoaderProvider>
+      <MessageProvider >
       <div className=' bg-gray-100 min-w-[1200px] min-h-screen '>
         <ToastContainer />
         <HeaderSeller />
@@ -31,8 +33,8 @@ const SellerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         </div>
       </div>
       {!shouldHideMessenger && <MessengerSellerComponent />}
+      </MessageProvider>
     </LoaderProvider>
-
   );
 };
 

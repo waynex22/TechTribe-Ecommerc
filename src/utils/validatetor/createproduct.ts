@@ -70,15 +70,25 @@ export const validateFormProduct = (FormData: typeFormCreateProduct): FormErrors
                 break;
             }
         }
+    } else {
+        errors.variation = `Bạn phải điền các biến thể.`;
     }
 
     if (!FormData.productPrice || !FormData.productPrice.length) {
         errors.price = validationConfig.price.required;
     }
+    const keys = Object.keys(FormData.variation);
+    if (keys.length > 0 && FormData.productPrice)
+        if (keys.length === 1) {
+            if (FormData.variation[keys[0]].length !== FormData.productPrice.length)
+                errors.price = validationConfig.price.required;
+        } else if (keys.length === 2)
+            if ((FormData.variation[keys[0]].length * FormData.variation[keys[1]].length) !== FormData.productPrice.length)
+                errors.price = validationConfig.price.required;
     return errors;
 };
 
-export const validateFormProductVariation = (FormData: typeFormCreateProduct): FormErrorsProduct => {
+export const validateFormEditProduct = (FormData: typeFormCreateProduct): FormErrorsProduct => {
     let errors: FormErrorsProduct = {};
 
     if (FormData.variation) {
@@ -99,6 +109,19 @@ export const validateFormProductVariation = (FormData: typeFormCreateProduct): F
                 break;
             }
         }
+    } else {
+        errors.variation = `Bạn phải điền các biến thể.`;
     }
+    if (!FormData.productPrice || !FormData.productPrice.length) {
+        errors.price = validationConfig.price.required;
+    }
+    const keys = Object.keys(FormData.variation);
+    if (keys.length > 0 && FormData.productPrice)
+        if (keys.length === 1) {
+            if (FormData.variation[keys[0]].length !== FormData.productPrice.length)
+                errors.price = validationConfig.price.required;
+        } else if (keys.length === 2)
+            if ((FormData.variation[keys[0]].length * FormData.variation[keys[1]].length) !== FormData.productPrice.length)
+                errors.price = validationConfig.price.required;
     return errors;
 };

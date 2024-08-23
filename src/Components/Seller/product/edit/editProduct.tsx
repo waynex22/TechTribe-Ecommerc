@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { typeFormCreateProduct, typeProductPrice, typeSpecifications, TypeVariation } from '../../../../utils/types/product'
 import requestApi from '../../../../helper/api'
 import { toast } from 'react-toastify';
@@ -10,7 +10,8 @@ import VariationsProduct from '../add/variations';
 import DefaultInfoAddProduct from '../add/defaultInfo';
 import { useAppDispatch, useAppSelector } from '../../../../redux/hook';
 import { fetchProductById, SelectProduct } from '../../../../redux/features/product';
-import { FormErrorsProduct, validateFormProductVariation } from '../../../../utils/validatetor/createproduct';
+import { FormErrorsProduct, validateFormEditProduct } from '../../../../utils/validatetor/createproduct';
+import { LoaderContex } from '../../loadingProvider';
 
 const defaultSpecifications: typeSpecifications[] = [];
 const defaultVariation: TypeVariation = {}
@@ -26,17 +27,13 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
   const [prevImages, setPrevImages] = useState([] as { preview: string }[])
   const [isSubmit, setIsSubmit] = useState(false)
   const [errForm, setErrForm] = useState({} as FormErrorsProduct)
+  const { setLoader } = useContext(LoaderContex)
+
   useEffect(() => {
     if (isSubmit === true)
-      setErrForm(validateFormProductVariation(formAddProduct))
+      setErrForm(validateFormEditProduct(formAddProduct))
   }, [formAddProduct, isSubmit])
 
-  const handleFormAddproduct = (
-    key: string,
-    value: string | typeSpecifications[] | TypeVariation | typeProductPrice[] | File[]
-  ) => {
-    setFormAddProduct({ ...formAddProduct, [key]: value });
-  }
   useEffect(() => {
     if (formAddProduct.id_categoryDetail !== '') {
       setFormAddProduct((prevUser: any) => ({
@@ -46,11 +43,45 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
     }
   }, [formAddProduct.id_categoryDetail]);
 
-  const updateProduct = (e: React.FormEvent) => {
+  const handleFormAddproduct = (
+    key: string,
+    value: string | typeSpecifications[] | TypeVariation | typeProductPrice[] | File[]
+  ) => {
+    setFormAddProduct({
+      ...formAddProduct,
+      [key]: value
+    });
+  }
+  const handleVaritaion = (value: TypeVariation) => {
+    let newPrice: typeProductPrice[] = []
+    let sizeNames: string[] = [];
+    let colorNames: string[] = [];
+
+    if (value['Size']) {
+      sizeNames = value['Size'].map(size => size.name);
+    }
+
+    if (value['Màu sắc']) {
+      colorNames = value['Màu sắc'].map(color => color.name);
+    }
+
+    if (formAddProduct.productPrice) {
+      newPrice = formAddProduct.productPrice.filter(p => {
+        const matchSize = p.name_size ? sizeNames.includes(p.name_size) : true;
+        const matchColor = p.name_color ? colorNames.includes(p.name_color) : true;
+        return matchSize && matchColor;
+      });
+      setFormAddProduct({
+        ...formAddProduct,
+        variation: value,
+      });
+    }
+  }
+
+  const updateProduct = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log(formAddProduct);
     setIsSubmit(true)
-    const errors = validateFormProductVariation(formAddProduct)
+    const errors = validateFormEditProduct(formAddProduct)
     if (Object.keys(errors).length > 0) {
       setErrForm(errForm)
       if (errors.variation)
@@ -59,15 +90,18 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
     }
     uploadFiles(product._id)
     updateSpecification()
+    setLoader(true)
+
     requestApi(`product/${product._id}`, 'PATCH', formAddProduct, 'application/json')
-      .then(data => {
+      .then(async (data) => {
         const newData = { ...formAddProduct, id_product: product._id }
-        createProductPrice(newData)
+        await createVariation(newData)
         toast.success('sửa thành công')
       })
       .catch(err => {
         toast.error('Có lỗi khi sửa')
         console.log(err);
+        setLoader(false)
       })
   }
 
@@ -84,12 +118,26 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
         })
     }
   }
-  const createProductPrice = (newData: typeFormCreateProduct) => {
-    requestApi('product-price', 'POST', newData)
+  const createVariation = async (dataFormNew: typeFormCreateProduct) => {
+    await requestApi('product-price/variation', 'PATCH', dataFormNew, 'application/json')
+      .then(async () => {
+        await createProductPrice(dataFormNew)
+      })
+      .catch(errPrice => {
+        setLoader(false)
+        toast.error('Có lỗi khi thêm tiền')
+        console.log(errPrice);
+      })
+  }
+
+  const createProductPrice = async (newData: typeFormCreateProduct) => {
+    await requestApi('product-price', 'PATCH', newData, 'application/json')
       .then(() => {
+        setLoader(false)
         navigate('/seller/product/list')
       })
       .catch(errPrice => {
+        setLoader(false)
         toast.error('Có lỗi khi thêm tiền')
         console.log(errPrice);
       })
@@ -122,7 +170,6 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
         .then(file => {
           const thumbnails = [...files, ...file.data.filenames]
           updateThumbnailProduct(idProduct, thumbnails)
-          toast.success('them anh thanh cong')
         })
         .catch(errFile => {
           toast.error('Có lỗi khi thêm ảnh')
@@ -137,7 +184,6 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
             const thumbnails = files.filter(file => file !== undefined) as string[];
             updateThumbnailProduct(idProduct, thumbnails);
           }
-          toast.success('xoa thanh cong')
         })
         .catch(errFile => {
           toast.error('xoa ảnh that bai')
@@ -164,11 +210,13 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
           {formAddProduct.id_categoryDetail ?
             <>
               <DetailInformation product={product} formAddProduct={formAddProduct} handleFormAddproduct={handleFormAddproduct} />
-              <VariationsProduct             
-              errForm={errForm} 
-              product={product} 
-              formAddProduct={formAddProduct} 
-              handleFormAddproduct={handleFormAddproduct} />
+              <VariationsProduct
+                errForm={errForm}
+                product={product}
+                formAddProduct={formAddProduct}
+                handleFormAddproduct={handleFormAddproduct}
+                onHandleVaritaion={handleVaritaion}
+              />
             </>
             :
             <>
@@ -176,18 +224,18 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
               <DefaultInfoAddProduct title='Thông tin khác' />
             </>
           }
-<div className=' flex flex-row-reverse py-4 gap-5'>
-        <button
-          className=' px-4 py-2 rounded shadow-md text-white font-semibold border bg-primary hover:border-primary hover:bg-white hover:text-primary'
-          onClick={(e) => updateProduct(e)}>
-          Xác nhận
-        </button>
-        <Link 
-        className=' px-4 py-2 rounded shadow-md hover:bg-gray-200 hover:border'
-        to={'/seller/product/list'}>
-          Hủy
-        </Link>
-      </div>
+          <div className=' flex flex-row-reverse py-4 gap-5'>
+            <button
+              className=' px-4 py-2 rounded shadow-md text-white font-semibold border bg-primary hover:border-primary hover:bg-white hover:text-primary'
+              onClick={(e) => updateProduct(e)}>
+              Xác nhận
+            </button>
+            <Link
+              className=' px-4 py-2 rounded shadow-md hover:bg-gray-200 hover:border'
+              to={'/seller/product/list'}>
+              Hủy
+            </Link>
+          </div>
         </div>
       }
     </>

@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { validateFormFlashSale } from "../../../../../utils/validatetor/createFlashSale"
 import Popup from "../../../../../Page/popup/popup"
 import { IoMdClose } from "react-icons/io"
-import { LoaderContex } from "../../../loading"
+import { LoaderContex } from "../../../loadingProvider"
 import requestApi from "../../../../../helper/api"
 import { toast } from "react-toastify"
 

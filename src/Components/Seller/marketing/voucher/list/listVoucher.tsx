@@ -44,7 +44,7 @@ const ListVoucherComponent = ({ id_shop }: { id_shop: string }) => {
                 </div>
               </div>
             </div>
-            {listVoucher[0]._id && listVoucher.length > 0 ? listVoucher.map(item => {
+            {listVoucher[0] && listVoucher[0]._id && listVoucher.length > 0 ? listVoucher.map(item => {
               return (
                 <div key={item._id} className=' flex gap-4 items-center p-2 border-b text-xs font-normal'>
                   <div className=' w-3/12 px-6'>

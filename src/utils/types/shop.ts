@@ -6,7 +6,7 @@ export type TypeShop = {
     count_follower: number,
     star: number,
     description?: string,
-    address?: string,
+    AddressShop: typeAddressShop[]
 }
 
 export type TypeIdentification = {
@@ -15,4 +15,13 @@ export type TypeIdentification = {
     full_name: string,
     CCCD_number: string,
     CCCD_photo: string,
+}
+
+export type typeAddressShop = {
+    _id: string,
+    id_shop: string,
+    province: string,
+    district: string,
+    ward: string,
+    address: string,
 }

@@ -13,7 +13,7 @@ const IdentityInformation = ({ identification }: { identification: TypeIdentific
             <div className=' px-6 py-4 bg-white rounded-md shadow'>
                 <div className=' flex justify-between items-center'>
                     <p>Thông tin Định Danh</p>
-                    <Link to={'/seller/settings/profile/identity-information'}  className=' px-4 py-2 rounded border hover:shadow hover:bg-gray-100'> Chỉnh sửa </Link>
+                    <Link to={'/seller/settings/profile/identity-information/form'}  className=' px-4 py-2 rounded border hover:shadow hover:bg-gray-100'> Chỉnh sửa </Link>
                 </div>
                 <div className=' py-4'>
                     <div className=' flex gap-4 items-center'>

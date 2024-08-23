@@ -95,8 +95,8 @@ const EditIdentityInformation: React.FC = () => {
   const submitForm = (identification: TypeIdentification) => {
     requestApi('identification', 'POST', identification, 'application/json')
     .then(response => {
-      navigate('/seller/settings')
         toast.success('Cập nhật thông tin thành công')
+        navigate('/seller/settings?type=identity-information')
     })
     .catch(error => {
       toast.success('Có lỗi khi cập nhật')

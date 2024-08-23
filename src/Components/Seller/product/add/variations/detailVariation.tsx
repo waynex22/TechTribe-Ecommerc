@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { typeProduct, typeProductPrice, TypeVariation } from '../../../../../utils/types/product'
 import { FormErrorsProduct } from '../../../../../utils/validatetor/createproduct'
 
+type typeItemPrice = {key: string, value: string, _id?: string}
 const DetailVariation = ({ variation, productPrice, setProductPrice, product, errForm }: {
     variation: TypeVariation
     productPrice: typeProductPrice[]
@@ -13,6 +14,7 @@ const DetailVariation = ({ variation, productPrice, setProductPrice, product, er
         if (product && product.product_price) {
             const newProductPrice = product.product_price.map(item => {
                 return {
+                    _id: item._id,
                     price: item.price,
                     stock: item.stock,
                     name_color: item.id_color.length > 0 ? item.id_color[0].value : '',
@@ -26,18 +28,27 @@ const DetailVariation = ({ variation, productPrice, setProductPrice, product, er
     const keys = Object.keys(variation);
     const [valueAllPrice, setValueAllPrice] = useState(0)
     const [valueAllStock, setValueAllStock] = useState(0)
+    const [errValue, setErrValue] = useState('')
+    useEffect(()=>{
+        if(valueAllPrice && valueAllStock) {
+            setErrValue('')
+        }
+    },[valueAllPrice, valueAllStock])
     const handleProductPrice = (
         value1: { key: string, value: string },
         value2: { key: string, value: string },
         name: string,
         value: number,
     ) => {
-        
         const index = findIndexProductPrice(value1, value2)
-
         if (index < 0) {
-            const product = createProductPrice(value1, value2, name, value)
-            setProductPrice([...productPrice, product]);
+            const newPrice = createProductPrice(value1, value2, name, value)
+            setProductPrice((prev) => {
+                return [
+                    ...prev,
+                    newPrice
+                ]
+            });
         } else {
             const updatedProductPrice = productPrice.map((item, i) =>
                 i === index ? { ...item, [name]: value } : item
@@ -49,13 +60,60 @@ const DetailVariation = ({ variation, productPrice, setProductPrice, product, er
         value1: { key: string, value: string },
         value2: { key: string, value: string }
     ): number => {
+        if (!productPrice)
+            return -1;
         const index = productPrice.findIndex((item) =>
             (item.name_size === value1.value && item.name_color === value2.value) ||
             (item.name_size === value2.value && item.name_color === value1.value))
         return index
     }
+
+    const setAllPrice = () => {
+        const updatedProductPrices: typeProductPrice[] = [];
+        if (!valueAllPrice || !valueAllStock) {
+            setErrValue('Không được để trống')
+            return;
+        }
+        
+        variation[keys[0]].forEach((itemKey1) => {
+            const value1: typeItemPrice = { key: keys[0], value: itemKey1.name };
+            if (keys[1] && variation[keys[1]].length > 0) {
+                variation[keys[1]].forEach((itemKey2) => {
+                    const value2 = { key: keys[1], value: itemKey2.name };
+                    updateAllProductPrice(updatedProductPrices, value1, value2)
+                });
+            } else {
+                
+                const value2 = { key: 'Size', value: '' };
+                
+                if (keys[0] === 'Size') {
+                    value2.key = 'Màu sắc';
+                }
+                updateAllProductPrice(updatedProductPrices, value1, value2)
+            }
+        });
+    };
+
+    const updateAllProductPrice = (
+        arrPrices: typeProductPrice[], 
+        value1:typeItemPrice, 
+        value2:{key: string;value: string;}
+    ) =>{
+        const newProductPrice = createProductPrice(value1, value2, 'price', valueAllPrice);
+        newProductPrice.stock = valueAllStock
+        if(productPrice) {
+            newProductPrice._id = productPrice.find((item)=>{
+                if(value1.key === 'Size') {
+                    return item.name_size === value1.value && item.name_color === value2.value
+                }
+                return item.name_color === value1.value && item.name_size === value2.value
+            })?._id || ''
+        }
+        arrPrices.push(newProductPrice);
+        setProductPrice(arrPrices);
+    }
     const createProductPrice = (
-        value1: { key: string, value: string },
+        value1: typeItemPrice,
         value2: { key: string, value: string },
         name: string,
         value: number,
@@ -71,35 +129,6 @@ const DetailVariation = ({ variation, productPrice, setProductPrice, product, er
         }
         return product
     }
-    const setAllPrice = () => {
-        const updatedProductPrices: typeProductPrice[] = [];
-        variation[keys[0]].forEach((itemKey1) => {
-            const value1 = { key: keys[0], value: itemKey1.name };
-            if (keys[1]) {
-                variation[keys[1]].forEach((itemKey2) => {
-                    const value2 = { key: keys[1], value: itemKey2.name };
-                    updateAllProductPrice(updatedProductPrices, value1, value2)
-                });
-            } else {
-                const value2 = { key: 'Size', value: '' };
-                if (keys[0] === 'Size') {
-                    value2.key = 'Màu sắc';
-                }
-                updateAllProductPrice(updatedProductPrices, value1, value2)
-            }
-        });
-    };
-
-    const updateAllProductPrice = (
-        productPrices: typeProductPrice[], 
-        value1:{key: string;value: string;}, 
-        value2:{key: string;value: string;}
-    ) =>{
-        const product = createProductPrice(value1, value2, 'price', valueAllPrice);
-        product.stock = valueAllStock
-        productPrices.push(product);
-        setProductPrice(productPrices);
-    }
 
     return (
         <>
@@ -109,6 +138,7 @@ const DetailVariation = ({ variation, productPrice, setProductPrice, product, er
                     <input type="number" onChange={(e) => setValueAllStock(Number(e.target.value))} className=' w-full rounded border border-gray-400 py-1' placeholder='Số lượng sản phẩm' />
                     <button onClick={() => setAllPrice()} className=' border w-44 py-2 font-semibold border-primary rounded text-primary hover:bg-primary hover:text-white'>Áp dụng</button>
                 </div>
+                <p className=' text-red-500 text-right'> {errValue} </p>
             </div>
             <div className=' flex gap-4'>
                 <div className=' w-32 text-right pt-1'>
@@ -143,7 +173,12 @@ const DetailVariation = ({ variation, productPrice, setProductPrice, product, er
                         <tbody>
                             {!keys[1] || variation[keys[1]].length === 0 ?
                                 variation[keys[0]].map((item, index) => {
-                                    let product = productPrice.find((i) => i.name_color === item.name || i.name_size === item.name)
+                                    let product: typeProductPrice = {}
+                                    if (productPrice){
+                                        const newPrice = productPrice.find((i) => i.name_color === item.name || i.name_size === item.name)
+                                        if(newPrice) 
+                                            product = newPrice
+                                    }
                                     return (
                                         <tr key={index} className="bg-white dark:bg-gray-800">
                                             <td className="px-6 py-4 border border-gray-200 font-medium   dark:text-white">
@@ -155,16 +190,19 @@ const DetailVariation = ({ variation, productPrice, setProductPrice, product, er
                                                         handleProductPrice(
                                                             { key: keys[0], value: item.name },
                                                             { key: keys[0] === 'Size' ? 'Màu sắc' : 'Size', value: '' }, 'price', Number(e.target.value))}
-                                                    value={product?.price}
+                                                    value={product?.price || 0}
                                                     type="number" min={0} className=' w-full rounded border border-gray-400 py-1' />
                                             </td>
                                             <td className="px-6 py-4 border border-gray-200">
                                                 <input
-                                                    value={product?.stock}
+                                                    value={product?.stock || 0}
                                                     onChange={(e) =>
                                                         handleProductPrice(
                                                             { key: keys[0], value: item.name },
-                                                            { key: keys[0] === 'Size' ? 'Màu sắc' : 'Size', value: '' }, 'Size', Number(e.target.value))}
+                                                            { key: keys[0] === 'Size' ? 'Màu sắc' : 'Size', value: '' }, 
+                                                            'stock', 
+                                                            Number(e.target.value)
+                                                        )}
                                                     type="number" min={0} className=' w-full rounded border border-gray-400 py-1' />
                                             </td>
                                         </tr>
@@ -179,9 +217,13 @@ const DetailVariation = ({ variation, productPrice, setProductPrice, product, er
                                         </tr>
                                         {
                                             variation[keys[1]].map((itemKey2, index) => {
-                                                let item = productPrice.find((i) =>
-                                                    (i.name_color === itemKey1.name && i.name_size === itemKey2.name) || (i.name_color === itemKey2.name && i.name_size === itemKey1.name))
-
+                                                let product: typeProductPrice = {}
+                                                if (productPrice){
+                                                    const newPrice = productPrice.find((i) =>
+                                                        (i.name_color === itemKey1.name && i.name_size === itemKey2.name) || (i.name_color === itemKey2.name && i.name_size === itemKey1.name))
+                                                    if(newPrice) 
+                                                        product = newPrice
+                                                }
                                                 return (
                                                     <tr key={index} className="bg-white dark:bg-gray-800">
                                                         <td className="px-6 py-4 border border-gray-200 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -189,7 +231,7 @@ const DetailVariation = ({ variation, productPrice, setProductPrice, product, er
                                                         </td>
                                                         <td className="px-6 py-4 border border-gray-200">
                                                             <input
-                                                                value={item?.price}
+                                                                value={product?.price || 0}
                                                                 onChange={(e) =>
                                                                     handleProductPrice(
                                                                         { key: keys[0], value: itemKey1.name },
@@ -202,7 +244,7 @@ const DetailVariation = ({ variation, productPrice, setProductPrice, product, er
                                                                 handleProductPrice(
                                                                     { key: keys[0], value: itemKey1.name },
                                                                     { key: keys[1], value: itemKey2.name }, 'stock', Number(e.target.value))}
-                                                                    value={item?.stock}
+                                                                    value={product?.stock || 0}
                                                                 name='stock' type="number" defaultValue={0} min={0} className=' w-full rounded border border-gray-400 py-1' />
                                                         </td>
                                                     </tr>)

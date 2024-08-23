@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import BasicInformation from './basicInformation/index'
 import DetailInformation from './detailInformation/index'
 import { typeFormCreateProduct, typeProductPrice, typeSpecifications, TypeVariation } from '../../../../utils/types/product'
@@ -8,6 +8,7 @@ import requestApi from '../../../../helper/api'
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom'
 import { FormErrorsProduct, validateFormProduct } from '../../../../utils/validatetor/createproduct'
+import { LoaderContex } from '../../loadingProvider'
 
 const defaultSpecifications: typeSpecifications[] = [];
 const defaultVariation: TypeVariation = {}
@@ -17,11 +18,15 @@ const AddProduct: React.FC = () => {
   const [prevImages, setPrevImages] = useState([] as { preview: string }[])
   const [isSubmit, setIsSubmit] = useState(false)
   const [errForm, setErrForm] = useState({} as FormErrorsProduct)
+  const { setLoader } = useContext(LoaderContex)
   const handleFormAddproduct = (
     key: string,
     value: string | typeSpecifications[] | TypeVariation | typeProductPrice[] | File[]
   ) => {
     setFormAddProduct({ ...formAddProduct, [key]: value });
+  }
+  const handleVaritaion = (value: TypeVariation) => {
+    handleFormAddproduct('variation', value)
   }
   useEffect(() => {
     if (formAddProduct.id_categoryDetail !== '') {
@@ -39,35 +44,52 @@ const AddProduct: React.FC = () => {
   }, [formAddProduct, isSubmit])
 
   const createProduct = (e: React.FormEvent) => {
-    console.log(formAddProduct);
     e.preventDefault()
     setIsSubmit(true)
     const errors = validateFormProduct(formAddProduct)
     if (Object.keys(errors).length > 0) {
       setErrForm(errForm)
     } else {
+      setLoader(true)
       requestApi('product', 'POST', formAddProduct, 'application/json')
-        .then(data => {
+        .then( async (data) => {
           const idProductr = data.data._id
           const newData = { ...formAddProduct, id_product: idProductr }
-          createProductPrice(newData)
 
-          uploadFiles(idProductr)
-
+          await uploadFiles(idProductr)
+          await createVariation(newData)
+          setLoader(false)
           toast.success('thêm thành công')
-          navigate('/seller/product/list')
         })
         .catch(err => {
           toast.error('Có lỗi khi tạo')
+          setLoader(false)
           console.log(err);
         })
     }
   }
 
-  const createProductPrice = (newData: typeFormCreateProduct) => {
-    requestApi('product-price', 'POST', newData)
+  const createVariation = async (dataFormNew: typeFormCreateProduct) => {
+    await requestApi('product-price/variation', 'POST', dataFormNew, 'application/json')
+      .then( async () => {
+        await createProductPrice(dataFormNew)
+      })
       .catch(errPrice => {
-        toast.error('Có lỗi khi thêm tiền')
+          setLoader(false)
+          toast.error('Có lỗi khi thêm tiền')
+        console.log(errPrice);
+      })
+  }
+
+  const createProductPrice = async (newData: typeFormCreateProduct) => {
+    await requestApi('product-price', 'POST', newData, 'application/json')
+      .then(() => {
+          setLoader(false)
+          navigate('/seller/product/list')
+      })
+      .catch(errPrice => {
+          setLoader(false)
+          toast.error('Có lỗi khi thêm tiền')
         console.log(errPrice);
       })
   }
@@ -77,21 +99,23 @@ const AddProduct: React.FC = () => {
     formAddProduct.files.forEach((file: File) => {
       formData.append('files', file);
     });
-    requestApi('upload/files', 'POST', formData, 'multipart/form-data')
-      .then(file => {
+    await requestApi('upload/files', 'POST', formData, 'multipart/form-data')
+      .then( async (file) => {
         const thumbnails = file.data.filenames
-        updateThumbnailProduct(idProduct, thumbnails)
+        await updateThumbnailProduct(idProduct, thumbnails)
       })
       .catch(errFile => {
-        toast.error('Có lỗi khi thêm ảnh')
+          setLoader(false)
+          toast.error('Có lỗi khi thêm ảnh')
         console.log(errFile);
       })
   };
 
-  const updateThumbnailProduct = (idProduct: string, thumbnails: string[]) => {
-    requestApi(`product/updateThumbnails/${idProduct}`, 'PATCH', { thumbnails }, 'application/json')
+  const updateThumbnailProduct = async (idProduct: string, thumbnails: string[]) => {
+    await requestApi(`product/updateThumbnails/${idProduct}`, 'PATCH', { thumbnails }, 'application/json')
       .catch(err => {
-        toast.error('Có lỗi khi thêm ảnh vào product')
+          setLoader(false)
+          toast.error('Có lỗi khi thêm ảnh vào product')
         console.log(err);
       })
   }
@@ -110,7 +134,9 @@ const AddProduct: React.FC = () => {
           <VariationsProduct
             errForm={errForm}
             formAddProduct={formAddProduct}
-            handleFormAddproduct={handleFormAddproduct} />
+            handleFormAddproduct={handleFormAddproduct}
+            onHandleVaritaion={handleVaritaion}
+          />
         </>
         :
         <>
@@ -124,9 +150,9 @@ const AddProduct: React.FC = () => {
           onClick={(e) => createProduct(e)}>
           Xác nhận
         </button>
-        <Link 
-        className=' px-4 py-2 rounded shadow-md hover:bg-gray-200 hover:border'
-        to={'/seller/product/list'}>
+        <Link
+          className=' px-4 py-2 rounded shadow-md hover:bg-gray-200 hover:border'
+          to={'/seller/product/list'}>
           Hủy
         </Link>
       </div>

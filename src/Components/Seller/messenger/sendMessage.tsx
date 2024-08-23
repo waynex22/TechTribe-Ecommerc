@@ -10,6 +10,7 @@ import { SelectShop } from '../../../redux/features/shop';
 import ItemSendMessageProduct from './itemSendMessage/product';
 import ItemSendMessageThumbnail from './itemSendMessage/thumbnail';
 import ItemSendMessageVideo from './itemSendMessage/video';
+import ItemSendMessageOrder from './itemSendMessage/order';
 
 const SendMessageComponent = ({ id_customer, idRoomChat }: { id_customer: string, idRoomChat: string }) => {
     const [content, setContent] = useState('');
@@ -18,6 +19,7 @@ const SendMessageComponent = ({ id_customer, idRoomChat }: { id_customer: string
     const shop = useAppSelector(SelectShop)
     const [listFile, setListFile] = useState([] as File[])
     const [prevMedia, setPrevMedia] = useState<{ preview: string, type: string }[]>([]);
+    const [showList, setShowList] = useState('')
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     useEffect(()=>{
@@ -78,7 +80,7 @@ const SendMessageComponent = ({ id_customer, idRoomChat }: { id_customer: string
         }
     };
 
-    const sendMess = (data: { id_customer: string, content?: string, thumbnail?: string, video?: string }) => {
+    const sendMess = (data: { id_customer: string, content?: string, thumbnail?: string, video?: string, id_product?: string, id_order?: string }) => {
         setLoadSend(true);
         setContent('');
         requestApi('messenger', 'POST', data, 'application/json')
@@ -116,6 +118,12 @@ const SendMessageComponent = ({ id_customer, idRoomChat }: { id_customer: string
                 setLoadSend(false);
             })
     };
+    const handleListShow = (value: string) =>{
+        if(value === showList) 
+            setShowList('')
+        else 
+            setShowList(value)
+    }
     return (
         <div className='p-2 bg-white flex-none  border-t'>
             {prevMedia &&
@@ -168,13 +176,10 @@ const SendMessageComponent = ({ id_customer, idRoomChat }: { id_customer: string
 
                     <ItemSendMessageVideo onHandleFileChange={handleFileChange} />
 
-                    <div className='group relative'>
-                        <img className='w-5 cursor-pointer' src="https://img.icons8.com/parakeet-line/48/purchase-order.png" alt="purchase-order" />
-                        <p className='hidden group-hover:block text-xs absolute bottom-full w-20 text-center bg-black rounded text-white left-1/2 -translate-x-1/2 py-1'>Order</p>
 
-                    </div>
+                    <ItemSendMessageOrder onSendMess={sendMess} id_customer={id_customer} showList={showList} onHandleListShow={handleListShow} />
 
-                    <ItemSendMessageProduct onHandleSubmit={handleSubmit} />
+                    <ItemSendMessageProduct onHandleSubmit={handleSubmit} showList={showList} onHandleListShow={handleListShow} />
 
                 </div>
                 <button

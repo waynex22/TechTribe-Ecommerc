@@ -6,7 +6,7 @@ import Popup from "../../../../../Page/popup/popup";
 import { Link, useNavigate } from "react-router-dom";
 import { IoMdClose } from "react-icons/io";
 import { FormErrorsDiscount, validateFormDiscount } from '../../../../../utils/validatetor/validateCreateDiscount';
-import { LoaderContex } from "../../../loading";
+import { LoaderContex } from "../../../loadingProvider";
 import requestApi from '../../../../../helper/api';
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../../../../redux/hook";

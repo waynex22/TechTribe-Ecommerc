@@ -1,8 +1,9 @@
-import React from 'react'
 import { typeRoomChat } from '../../../utils/types/roomChat';
 import { TypeShop } from '../../../utils/types/shop';
 import { formatPriceProduct } from '../product/listProduct/itemProductListCols';
 import { formatShowDate } from '../../../utils/fortmartNumberVnd/formartDate';
+import { formatNumberVnd } from '../../../utils/fortmartNumberVnd';
+import { useState } from 'react';
 
 function formatDate(date: string): string {
     const options: Intl.DateTimeFormatOptions = {
@@ -15,11 +16,23 @@ function formatDate(date: string): string {
     return new Date(date).toLocaleString(undefined, options);
 }
 
-const ItemDetailMess = ({message, shop, onHandleShowImgae}: {
+const ItemDetailMess = ({ message, shop, onHandleShowImgae }: {
     message: typeRoomChat
     shop: TypeShop
-    onHandleShowImgae: (item: string| undefined) => void
+    onHandleShowImgae: (item: string | undefined) => void
 }) => {
+    const [showAlertCoppy, setShowAlertCoppy] = useState('')
+    const handleCopy = (textToCopy: string | undefined, idMess: string) => {
+        if (textToCopy) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                setShowAlertCoppy(idMess)
+                setTimeout(() => {
+                    setShowAlertCoppy('')
+                }, 1000);
+            })
+        }
+    };
+    
     return (
         <>
             {message.messenger.map((item, index) => {
@@ -28,7 +41,7 @@ const ItemDetailMess = ({message, shop, onHandleShowImgae}: {
                 const timeDifference = prevTime ? Math.abs(currentTime.getTime() - prevTime.getTime()) / 36e5 : 0;
                 return (
                     (
-                        <div key={item._id} >
+                        <div key={item._id} className=' relative' >
                             {timeDifference > 1 && (
                                 <div className="timestamp text-center text-sm text-gray-500 my-6 flex gap-2 items-center">
                                     <span className=' flex-1 w-full border-2'></span>
@@ -62,7 +75,7 @@ const ItemDetailMess = ({message, shop, onHandleShowImgae}: {
                                         <div className=' flex gap-2 items-center text-sm py-1 font-normal'>
                                             <img className=' w-16 h-16 object-cover rounded' src={item.id_product.thumbnails[0]} alt="" />
                                             <div>
-                                                <p className=' font-semibold truncate'> {item.id_product.name} </p>
+                                                <p className=' font-semibold truncate w-[250px]'> {item.id_product.name} </p>
                                                 <p className=' text-red-600'> {formatPriceProduct(item.id_product)} </p>
                                                 <div className=' flex justify-between'>
                                                     <p></p>
@@ -77,20 +90,31 @@ const ItemDetailMess = ({message, shop, onHandleShowImgae}: {
                                         <p className=' text-center text-xs font-normal text-gray-600'>
                                             {shop._id === item.id_sender ? 'Bạn đang thảo luận với người mua về đơn hàng này' : 'Người bán đang trao đổi với bạn về đơn hàng này'}
                                         </p>
-                                        <div className=' flex gap-2 items-center text-sm py-1'>
-                                            <img className=' w-16 h-16 object-cover rounded' src="https://cf.shopee.vn/file/7d098d5904f2b1814e9f8a42680cee84_tn" alt="" />
+                                        <div className=' w-full flex gap-2 items-center text-sm py-1 font-normal'>
+                                            <img className=' w-16 h-16 object-cover rounded' src={item.id_order.items[0].productPriceId.id_product[0].thumbnails[0]} alt="" />
                                             <div>
-                                                <p>ID đơn hàng: 218937218738921 a</p>
-                                                <p>Tổng đơn hàng: 21382 đ</p>
-                                                <p>Hoàn tất</p>
+                                                <div className=' flex gap-1 text-xs'>
+                                                    <span className=' '>Id đơn hàng:</span>
+                                                    <span onClick={() => handleCopy(item.id_order?._id.toUpperCase(), item._id)} className=' uppercase font-bold cursor-pointer'>{item.id_order._id} </span>
+                                                </div>
+                                                <p>
+                                                    <span className=' text-xs'>Tổng đơn hàng:</span>
+                                                    <span className=' text-red-500'>{formatNumberVnd(item.id_order.subTotal - item.id_order.discount)}</span>
+                                                </p>
+                                                <p> {item.id_order.status} </p>
                                             </div>
                                         </div>
+                                        {showAlertCoppy && showAlertCoppy === item._id &&
+                                            <div className=' absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black px-6 py-1 text-white bg-opacity-60 rounded '>
+                                                Coppy thành công
+                                            </div>}
                                     </div>}
 
                                 <p className={`px-2 mt-1 text-gray-600 font-light text-xs group-hover:flex hidden ${shop._id === item.id_sender && 'ml-auto flex-row-reverse'}`}>
                                     {formatShowDate(item.created_at)}
                                 </p>
                             </div>
+
                         </div>
 
                     )

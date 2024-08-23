@@ -65,6 +65,7 @@ const DetailMessage = ({ idRoomChat, onHandleShowImgae }: { idRoomChat: string, 
                 setLoadMoreMess(false)
             }, 1000);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [endChat, idRoomChat, isVisible, loadMoreMess, moreMessage, skip]);
 
     const callApiMess = () => {

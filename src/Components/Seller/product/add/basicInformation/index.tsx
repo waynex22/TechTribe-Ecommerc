@@ -7,6 +7,7 @@ import SelectCategory from './selectCategory';
 import SelectImage from './selectImage';
 import { typeProduct } from '../../../../../utils/types/product';
 import { FormErrorsProduct } from '../../../../../utils/validatetor/createproduct';
+import CkEditorComponent from './ckEditorComponent';
 
 const BasicInformation = ({handleFormAddproduct, prevImages, setPrevImages, product, errForm}:{
     handleFormAddproduct: (key:string, value:string | File[]) => void
@@ -18,12 +19,12 @@ const BasicInformation = ({handleFormAddproduct, prevImages, setPrevImages, prod
     const [listFile, setListFile] = useState<File[]>([])
     const [nameProduct, setNameProduct] = useState('')
     const [valueCategory, setValueCategory] = useState({} as categoryDetail | category)
-    const [decription, setDecription] = useState('')
+    const [description, setDescription] = useState('')
 
     useEffect(() => {
         if(product && product.thumbnails) {
             setNameProduct(product.name)
-            setDecription(product.description)
+            setDescription(product.description)
             handleFormAddproduct('name',product.name)
             handleFormAddproduct('description',product.description)
             if(product.thumbnails) {
@@ -59,7 +60,7 @@ const BasicInformation = ({handleFormAddproduct, prevImages, setPrevImages, prod
         handleFormAddproduct('name',value)
     }
     const handleDescription = (value:string) =>{
-        setDecription(value)
+        setDescription(value)
         handleFormAddproduct('description',value)
     }
     return (
@@ -113,7 +114,7 @@ const BasicInformation = ({handleFormAddproduct, prevImages, setPrevImages, prod
                         {errForm.description && <p className=' text-red-600'> {errForm.description} </p>}
                     </div>
                     <div className=' flex-1'>
-                        <textarea value={decription} onChange={(e)=>handleDescription(e.target.value)} id="message" className="block p-2.5 w-full h-32 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 " placeholder=""></textarea>
+                        <CkEditorComponent onHandleDescription={handleDescription} description={description} />
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import useSocket from '../../../hooks/useSocket';
 import { IoCloseOutline } from 'react-icons/io5';
 import ListRoomChatComponent from './listRoom';
@@ -11,10 +11,12 @@ import { GetInfoUser } from '../../../services/authApi';
 import { defaultUser, TypePayload } from '../../../utils/types/customer';
 import { SelectShop } from '../../../redux/features/shop';
 import Popup from '../../../Page/popup/popup';
+import { MessageContex } from '../messageProvider';
 
 const MessengerSellerComponent = () => {
   const socket = useSocket();
   const dispatch = useAppDispatch()
+  const { idShowRoomChat, setShowRoomChat } = useContext(MessageContex)
   const listRoom = useAppSelector(SelectListRoomChatByShop)
   const shop = useAppSelector(SelectShop)
   const [idRoomChat, setIdRoomChat] = useState('')
@@ -23,6 +25,14 @@ const MessengerSellerComponent = () => {
   const [showImage, setShowImage] = useState('')
   const [showChat, setShowChat] = useState(false)
   const [countMessage, setCountMessage] = useState(0)
+
+  useEffect(()=>{
+    if (idShowRoomChat) {
+      setShowChat(true)
+      setIdRoomChat(idShowRoomChat)
+      setShowRoomChat('')
+    }
+  },[idShowRoomChat, setShowRoomChat])
 
   useEffect(() => {
     const getInfo = async () => {
@@ -53,8 +63,6 @@ const MessengerSellerComponent = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fecthNewMess = (id_room: string) => {
     dispatch(fetchListRoomByShop())
-    console.log(idRoomChat);
-    console.log(id_room);
     if (idRoomChat === id_room) {
       dispatch(fetchRoomChatByID(id_room))
       console.log('fecth rom');
