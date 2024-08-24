@@ -40,7 +40,7 @@ const ModalReturn: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
     );
     const handleGetPriceItem = (productPriceId: string) => {
         const item = items?.items?.find((item: any) => item.productPriceId?._id === productPriceId);
-         if(item.discountDetailId) {
+        if (item.discountDetailId) {
             const priceItem = item?.productPriceId?.price - (item?.productPriceId?.price * item?.discountDetailId?.percent) / 100
             return (priceItem * item?.quantity) - (items?.discount2t / items?.items?.length);
         } else {
@@ -115,7 +115,7 @@ const ModalReturn: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
                 if (item.productPriceId === productPriceId) {
                     const existingImages = item.images || [];
                     const newImages = Array.from(files).slice(0, 5 - existingImages.length);
-                    if(item.images.length > 0) {
+                    if (item.images.length > 0) {
                         setToast({
                             message: 'Tối đa 5 hình ảnh',
                             type: 'success',
@@ -172,7 +172,7 @@ const ModalReturn: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
             console.error(`Error uploading files for product ${productPriceId}:`, error);
         }
     };
-    
+
     const handleSubmit = async () => {
         // const checkContent = data.some((item: any) => item.content === '');
         // if (checkContent) {
@@ -226,11 +226,15 @@ const ModalReturn: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
                                         className="w-5 h-5 focus:ring-0 rounded-md border-solid border-[1px] border-gray-300 checked:bg-secondary transition-all duration-300"
                                     />
                                     <div className="flex items-center gap-2">
-                                        <img
-                                            src={`http://localhost:8080/uploads/${item?.productPriceId?.id_product[0]?.thumbnails[0]}`}
-                                            alt=""
-                                            className="w-[82px] h-[82px] rounded-lg"
-                                        />
+                                        {item?.productPriceId?.id_color[0]?.thumbnail ? (
+                                            <>
+                                                <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_color[0]?.thumbnail}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                            </>
+                                        )}
                                         <div>
                                             <p className="font-normal text-[14px]">
                                                 {item?.productPriceId?.id_product[0]?.name}
@@ -285,28 +289,28 @@ const ModalReturn: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
                                             <div className="flex space-x-2">
                                                 {data.itemsReturn?.find((review: any) => review.productPriceId === item.productPriceId._id)?.images?.map((image: any, index: number) => (
                                                     <>
-                                                    {image && (
-                                                         <div key={index} className="relative">
-                                                         <img
-                                                             src={image ? URL.createObjectURL(image) : ''}
-                                                             alt={`image-${index}`}
-                                                             className="w-10 h-10 object-cover rounded-md"
-                                                         />
-                                                         <button
-                                                             onClick={() =>
-                                                                 handleDeleteImage(
-                                                                     item.productPriceId._id,
-                                                                     index
-                                                                 )
-                                                             }
-                                                             className="absolute top-[-5px] right-0 text-xs bg-gray-700/10 backdrop-blur-lg text-white px-[3px]"
-                                                         >
-                                                             <p className="text-[8px]">X</p>
-                                                         </button>
-                                                     </div>
-                                                    )}
+                                                        {image && (
+                                                            <div key={index} className="relative">
+                                                                <img
+                                                                    src={image ? URL?.createObjectURL(image) : ''}
+                                                                    alt={`image-${index}`}
+                                                                    className="w-10 h-10 object-cover rounded-md"
+                                                                />
+                                                                <button
+                                                                    onClick={() =>
+                                                                        handleDeleteImage(
+                                                                            item.productPriceId._id,
+                                                                            index
+                                                                        )
+                                                                    }
+                                                                    className="absolute top-[-5px] right-0 text-xs bg-gray-700/10 backdrop-blur-lg text-white px-[3px]"
+                                                                >
+                                                                    <p className="text-[8px]">X</p>
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </>
-                                                   
+
                                                 ))}
                                             </div>
                                             <label className="flex items-center cursor-pointer border border-solid border-gray-200 rounded-lg">

@@ -140,11 +140,15 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
                 className="w-5 h-5 focus:ring-0 rounded-md border-solid border-[1px] border-gray-300 checked:bg-secondary transition-all duration-300"
               />
               <div className="flex items-center justify-start p-2 gap-x-2">
-                <img
-                  src={`http://localhost:8080/uploads/${productPriceId?.id_product[0]?.thumbnails[0]}`}
-                  className="object-cover w-[80px] h-[80px]"
-                  alt=""
-                />
+              {productPriceId?.id_color[0]?.thumbnail ? (
+                                    <>
+                                        <img src={`http://localhost:8080/uploads/${productPriceId?.id_color[0]?.thumbnail}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                    </>
+                                ) : (
+                                    <>
+                                        <img src={`http://localhost:8080/uploads/${productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                    </>
+                                )}
                 <div className="flex flex-col ">
                   {isDiscount && itemCart?.discountDetailId ? (
                     <div className="flex items-center gap-2">

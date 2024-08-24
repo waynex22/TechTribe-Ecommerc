@@ -11,6 +11,8 @@ const OrderItem: React.FC<Props> = ({ order }) => {
     const getKeyUpdateItem = (key: string) => {
         return order?.statusUpdate?.filter((item: any) => item.key === key).map((item: any) => item.value);
     }
+    console.log(order);
+
     return (
         <>
             <div className="p-4">
@@ -32,10 +34,17 @@ const OrderItem: React.FC<Props> = ({ order }) => {
                         </button>
                     </div>
                     <div className="flex items-center gap-4">
-                        <img src={shipping} alt="" className='w-[40px]' />
-                        <>
-                            <p className="text-primary font-normal text-[12px]">{order?.status}</p>
-                        </>
+                        {order?.returnOrderId ? (
+                            <>
+                            <svg className='size-6' xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" clip-rule="evenodd" viewBox="0 0 32 32" id="return"><path fill="url(#_Linear1)" d="M21,15c-4.415,-0 -8,3.585 -8,8c-0,4.415 3.585,8 8,8c4.415,0 8,-3.585 8,-8c-0,-4.415 -3.585,-8 -8,-8Zm0.894,7.052c0.637,0.173 1.106,0.756 1.106,1.448c0,0.828 -0.672,1.5 -1.5,1.5l-2.5,0c-0.552,-0 -1,0.448 -1,1c-0,0.552 0.448,1 1,1l2.5,0c1.933,-0 3.5,-1.567 3.5,-3.5c-0,-1.813 -1.378,-3.304 -3.144,-3.482c0.204,-0.339 0.196,-0.782 -0.056,-1.118c-0.331,-0.442 -0.958,-0.531 -1.4,-0.2l-2,1.5c-0.252,0.189 -0.4,0.485 -0.4,0.8c0,0.315 0.148,0.611 0.4,0.8l2,1.5c0.442,0.331 1.069,0.242 1.4,-0.2c0.235,-0.313 0.258,-0.72 0.094,-1.048Zm-9.381,3.948c-0.332,-0.939 -0.513,-1.948 -0.513,-3c-0,-4.967 4.033,-9 9,-9c0.254,-0 0.505,0.011 0.754,0.031l-0.771,-5.451c-0.209,-1.48 -1.476,-2.58 -2.97,-2.58l-1.013,0l-0,-0.992c0,-1.06 -0.421,-2.077 -1.171,-2.827c-0.75,-0.75 -1.767,-1.171 -2.827,-1.171c-0.001,0 -0.003,0 -0.004,0c-1.06,0 -2.077,0.421 -2.827,1.171c-0.75,0.75 -1.171,1.767 -1.171,2.827l0,0.992l-1.012,-0c-1.495,0 -2.762,1.1 -2.971,2.58c-0.463,3.275 -1.47,10.401 -1.984,14.042c-0.12,0.85 0.134,1.71 0.697,2.358c0.563,0.648 1.379,1.02 2.237,1.02l6.546,-0Zm-2.52,-18c0.547,-0 0.992,0.445 0.992,0.993c0,0.547 -0.445,0.992 -0.992,0.992c-0.548,0 -0.993,-0.445 -0.993,-0.992c-0,-0.548 0.445,-0.993 0.993,-0.993Zm6,-0c0.547,-0 0.992,0.445 0.992,0.993c0,0.547 -0.445,0.992 -0.992,0.992c-0.548,0 -0.993,-0.445 -0.993,-0.992c0,-0.548 0.445,-0.993 0.993,-0.993Zm-0.993,-2l-0,-0.992c0,-0.53 -0.21,-1.038 -0.585,-1.413c-0.375,-0.374 -0.883,-0.585 -1.413,-0.585c-0.001,0 -0.003,0 -0.004,0c-0.53,0 -1.038,0.211 -1.413,0.585c-0.375,0.375 -0.585,0.883 -0.585,1.413l-0,0.992l4,0Z"></path><defs><linearGradient id="_Linear1" x1="0" x2="1" y1="0" y2="0" gradientTransform="matrix(0 29.823 -25.8513 0 18.845 1.01)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffa691"></stop><stop offset="1" stop-color="#fd3a84"></stop></linearGradient></defs></svg>
+                                <p className="text-red-500 font-normal text-[12px]">{order?.returnOrderId?.status}</p>
+                            </>
+                        ) : (
+                            <>
+                                <img src={shipping} alt="" className='w-[40px]' />
+                                <p className="text-primary font-normal text-[12px]">{order?.status}</p>
+                            </>
+                        )}
                         <svg onMouseMove={() => setShowTimeUpdate(true)} onMouseLeave={() => setShowTimeUpdate(false)} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4 text-gray-500 relative cursor-pointer">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                         </svg>
@@ -51,7 +60,15 @@ const OrderItem: React.FC<Props> = ({ order }) => {
                         <>
                             <div key={index} className='flex items-center justify-between w-full my-2 '>
                                 <div className='flex items-center gap-2'>
-                                    <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                    {item?.productPriceId?.id_color[0]?.thumbnail ? (
+                                        <>
+                                            <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_color[0]?.thumbnail}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                        </>
+                                    )}
                                     <div>
                                         <p className='font-normal text-[14px]'>{item?.productPriceId?.id_product[0]?.name}</p>
                                         <p className='text-[12px] text-gray-400'>Phân loại hàng : {item?.productPriceId?.id_color?.length > 0 && item?.productPriceId?.id_size?.length > 0 ? item?.productPriceId?.id_color[0]?.value + ' , ' + item?.productPriceId?.id_size[0]?.value : item?.productPriceId?.id_size[0]?.value || item?.productPriceId?.id_color[0]?.value}</p>

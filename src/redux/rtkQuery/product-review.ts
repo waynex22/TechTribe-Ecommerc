@@ -49,8 +49,14 @@ export const productReviewApi = createApi({
                 url: `product-review/product/${id}`,
                 method: 'GET'
             }),
+        }),
+        getRatingByIdShop: builder.query<any, string>({
+            query: (id) => ({
+                url: `product-review/rating/shop/${id}`,
+                method: 'GET'
+            }),
         })
     }),
 });
 
-export const { useAddReviewMutation , useUpdateStatusTimeMutation, useGetProductReviewByProductQuery} = productReviewApi;
+export const { useAddReviewMutation , useUpdateStatusTimeMutation, useGetProductReviewByProductQuery, useGetRatingByIdShopQuery} = productReviewApi;

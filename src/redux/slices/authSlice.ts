@@ -17,6 +17,7 @@ const authSlice = createSlice({
       state.user = null;
       setLogout();
       setCart(null);
+      window.location.reload();
     },
   },
 });

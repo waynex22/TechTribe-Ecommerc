@@ -35,7 +35,15 @@ const ItemReturn: React.FC<Props> = ({ item }) => {
                         <>
                             <div key={index} className='flex items-center justify-between w-full my-4'>
                                 <Link to={`/product/${item?.productPriceId?.id_product[0]?._id}`} className='flex items-center gap-2'>
-                                    <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                {item?.productPriceId?.id_color[0]?.thumbnail ? (
+                                    <>
+                                        <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_color[0]?.thumbnail}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                    </>
+                                ) : (
+                                    <>
+                                        <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                    </>
+                                )}
                                     <div>
                                         <p className='font-normal text-[14px]'>{item?.productPriceId?.id_product[0]?.name}</p>
                                         <p className='text-[12px] text-gray-400'>Phân loại hàng : {item?.productPriceId?.id_color?.length > 0 && item?.productPriceId?.id_size?.length > 0 ? item?.productPriceId?.id_color[0]?.value + ' , ' + item?.productPriceId?.id_size[0]?.value : item?.productPriceId?.id_size[0]?.value || item?.productPriceId?.id_color[0]?.value}</p>

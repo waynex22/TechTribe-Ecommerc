@@ -175,15 +175,15 @@ const ModalRating: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
     };
     const previewRating = (productPriceId: string) => {
         const item = data?.find((item: any) => item.productPriceId === productPriceId);
-        if(item?.rating === 5){
+        if (item?.rating === 5) {
             return 'Rất hài lòng 😍'
-        }else if(item?.rating === 4){
+        } else if (item?.rating === 4) {
             return 'Hài lòng 😁'
-        }else if(item?.rating === 3){
+        } else if (item?.rating === 3) {
             return 'Trung bình 😀'
-        }else if(item?.rating === 2){
+        } else if (item?.rating === 2) {
             return 'Không thích 🙁'
-        }else if(item?.rating === 1){
+        } else if (item?.rating === 1) {
             return 'Tệ 😠'
         }
     }
@@ -194,16 +194,20 @@ const ModalRating: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
             {openModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="bg-white rounded-lg w-full max-w-lg p-4 overflow-y-auto max-h-[700px]">
-                    <h2>Đánh giá sản phẩm</h2>
+                        <h2>Đánh giá sản phẩm</h2>
                         {items?.items?.map((item: any, index: number) => (
                             <div key={index}>
                                 <div className="my-5">
                                     <div className="flex items-center gap-2">
-                                        <img
-                                            src={`http://localhost:8080/uploads/${item?.productPriceId?.id_product[0]?.thumbnails[0]}`}
-                                            alt=""
-                                            className="w-[82px] h-[82px] rounded-lg"
-                                        />
+                                        {item?.productPriceId?.id_color[0]?.thumbnail ? (
+                                            <>
+                                                <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_color[0]?.thumbnail}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                            </>
+                                        )}
                                         <div>
                                             <p className="font-normal text-[14px]">
                                                 {item?.productPriceId?.id_product[0]?.name}
@@ -251,7 +255,7 @@ const ModalRating: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
                                                 </label>
                                             );
                                         })}
-                                       <p className="text-sm font-normal text-gray-400 ml-3">{previewRating(item.productPriceId._id)}</p>
+                                        <p className="text-sm font-normal text-gray-400 ml-3">{previewRating(item.productPriceId._id)}</p>
                                     </div>
                                 </div>
                                 <div className="mb-4">
@@ -269,28 +273,28 @@ const ModalRating: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
                                     />
                                 </div>
                                 <div className="mb-4 flex space-x-2">
-                                <div className="flex space-x-2">
-                                    {data.find((review: any) => review.productPriceId === item.productPriceId._id)?.images?.map((image: any, index: number) => (
-                                        <div key={index} className="relative">
-                                            <img
-                                                src={URL.createObjectURL(image)}
-                                                alt={`image-${index}`}
-                                                className="w-10 h-10 object-cover rounded-md"
-                                            />
-                                            <button
-                                                onClick={() =>
-                                                    handleDeleteImage(
-                                                        item.productPriceId._id,
-                                                        index
-                                                    )
-                                                }
-                                                className="absolute top-[-5px] right-0 text-xs bg-gray-700/10 backdrop-blur-lg text-white px-[3px]"
-                                            >
-                                                <p className="text-[8px]">X</p>
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
+                                    <div className="flex space-x-2">
+                                        {data.find((review: any) => review.productPriceId === item.productPriceId._id)?.images?.map((image: any, index: number) => (
+                                            <div key={index} className="relative">
+                                                <img
+                                                    src={URL.createObjectURL(image)}
+                                                    alt={`image-${index}`}
+                                                    className="w-10 h-10 object-cover rounded-md"
+                                                />
+                                                <button
+                                                    onClick={() =>
+                                                        handleDeleteImage(
+                                                            item.productPriceId._id,
+                                                            index
+                                                        )
+                                                    }
+                                                    className="absolute top-[-5px] right-0 text-xs bg-gray-700/10 backdrop-blur-lg text-white px-[3px]"
+                                                >
+                                                    <p className="text-[8px]">X</p>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
                                     <label className="flex items-center cursor-pointer border border-solid border-gray-200 rounded-lg">
                                         <input
                                             type="file"
@@ -308,7 +312,7 @@ const ModalRating: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
                                         <p className="text-[10px] text-gray-800">{data.find((review: any) => review.productPriceId === item.productPriceId._id)?.images?.length ?? 0} / 5</p>
                                     </label>
                                 </div>
-                                
+
                             </div>
                         ))}
                         <div className="flex justify-end gap-2 items-center text-sm">

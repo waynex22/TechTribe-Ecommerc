@@ -16,8 +16,15 @@ const ItemNotification: React.FC<Props> = ({ notification }) => {
                     <div className="flex items-start justify-start gap-4">
                         {notification.type == 'order' ? (
                             <>
-                                <img src={`http://localhost:8080/uploads/${notification.orderItemsId.items[0].productPriceId.id_product[0].thumbnails[0]}`} className="w-16 h-16 rounded-sm" alt="" />
-
+                            {notification.orderItemsId?.items[0].productPriceId?.id_color[0]?.thumbnail ? (
+                                <>
+                                    <img src={`http://localhost:8080/uploads/${notification.orderItemsId?.items[0].productPriceId?.id_color[0]?.thumbnail}`} className="w-16 h-16 rounded-sm" alt="" />
+                                </>
+                            ):(
+                                <>
+                                <img src={`http://localhost:8080/uploads/${notification.orderItemsId?.items[0].productPriceId?.id_product[0]?.thumbnails[0]}`} className="w-16 h-16 rounded-sm" alt="" />
+                                </>
+                            )}
                             </>
                         ) : (
                             <>

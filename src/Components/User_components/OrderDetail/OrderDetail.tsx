@@ -28,9 +28,6 @@ const OrderDetail: React.FC = () => {
     const handleUpdate = async (key: string) => {
         await updateOrder({ _id: order?._id, status: key });
         await updateTime({ id: order?._id, key: key, value: new Date() });
-        if(order?.coinRefunt > 0 && order.status === 'Hoàn thành') {
-            await  updateCoinRefunt({ customerId: order?.customerId, coin: order?.coinRefunt });
-        }
         setToast({ message: 'Cập nhật thành công', type: 'success', onClose: () => setToast(null) });
         refetch();
     }
@@ -51,7 +48,6 @@ const OrderDetail: React.FC = () => {
         }
         setModalAccept(false);
       };
-    
       const handleCancel = () => {
         setModalAccept(false);
       };

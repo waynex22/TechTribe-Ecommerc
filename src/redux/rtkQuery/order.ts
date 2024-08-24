@@ -154,8 +154,14 @@ export const orderApi = createApi({
                 url: `items-order/deliveryFailed/${id}`,
                 method: 'POST',
             })
-        })
+        }),
+        getReturnOrder: builder.query<any, void>({
+            query: () => ({
+                url: `return-order`,
+                method: 'GET'
+            })
+        }),
     }),
 });
 
-export const { useGetSubOrderQuery, useCreateSubOrderMutation, useDeleteSubOrderMutation , useUpdateSubOrderDtoMutation, useUpdateItemsSubOrderMutation, useCreateOrderMutation, useGetOrderByUserIdQuery, useGetOrderByIdQuery , useUpdateItemsOrderMutation, useCancelOrderMutation, useGetAllOrderQuery, useReturnOrderMutation, useGetReturnOrderByItemOrderIdQuery, useDeliveryFailedMutation } = orderApi;
+export const { useGetSubOrderQuery, useCreateSubOrderMutation, useDeleteSubOrderMutation , useUpdateSubOrderDtoMutation, useUpdateItemsSubOrderMutation, useCreateOrderMutation, useGetOrderByUserIdQuery, useGetOrderByIdQuery , useUpdateItemsOrderMutation, useCancelOrderMutation, useGetAllOrderQuery, useReturnOrderMutation, useGetReturnOrderByItemOrderIdQuery, useDeliveryFailedMutation, useGetReturnOrderQuery } = orderApi;

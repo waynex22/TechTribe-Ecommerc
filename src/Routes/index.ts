@@ -19,6 +19,7 @@ import OrderSuccessPage from "src/Page/OrderSuccess";
 import CheckOutAddress from "src/Page/Address";
 import Logistics from "src/Components/Logistics";
 import LogisticsLayout from "src/Layouts/LogisticsLayout";
+import LogisticsReturn from "src/Components/Logistics/logisticsReturn";
 const publicRoutes: Route[]  = [
     {
         path: '/',
@@ -114,6 +115,11 @@ const publicRoutes: Route[]  = [
     {
         path: '/logistics',
         component: Logistics,
+        layout: LogisticsLayout
+    },
+    {
+        path: '/logistics/return',
+        component: LogisticsReturn,
         layout: LogisticsLayout
     }
 ]

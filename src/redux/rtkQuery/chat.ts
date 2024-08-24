@@ -26,7 +26,8 @@ export interface payloadSendMessage {
     id_room?: string
     id_customer: string
     id_shop: string
-    content: string
+    content?: string
+    thumbnail?: string
 }
 export const chatApi = createApi({
     reducerPath: 'chatQuery',

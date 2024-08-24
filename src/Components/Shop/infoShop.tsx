@@ -5,6 +5,7 @@ import { useFollowMutation } from "src/redux/rtkQuery/shop";
 import { setOpen, setShopSelected } from "src/redux/slices/chatSlice";
 import { ToastProps } from "src/Type";
 import Toast from "../toast/Toast";
+import { useGetRatingByIdShopQuery } from "src/redux/rtkQuery/product-review";
 
 interface Props {
     shop: any,
@@ -16,6 +17,7 @@ const InfoShop: React.FC<Props> = ({ shop , refecth , countProduct }) => {
     const [toast, setToast] = useState<ToastProps | null>(null);
     const [follow] = useFollowMutation();
     const dispatch = useDispatch();
+    const {data: ratingShop} = useGetRatingByIdShopQuery(shop?._id);
     const handleSetToast = (toast: any) => {
         setToast({ ...toast, message: toast.message, type: toast.type, onClose: () => setToast(null) });
     }
@@ -28,8 +30,12 @@ const InfoShop: React.FC<Props> = ({ shop , refecth , countProduct }) => {
       }
     };
     const handleFollow = async () => {
-        await follow({ customerId: user?.sub, shopId: shop?._id }).unwrap()
-        refecth()
+        if(!user) {
+            handleSetToast({ message: ' bạn cần đăng nhập để theo dõi', type: "error" });
+        }else{
+            await follow({ customerId: user?.sub, shopId: shop?._id }).unwrap()
+            refecth()
+        }
     }
     return (
         <>
@@ -103,7 +109,8 @@ const InfoShop: React.FC<Props> = ({ shop , refecth , countProduct }) => {
                         <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="review"><defs><linearGradient id="a" x1="10" x2="54" y1="31.5" y2="31.5" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ed1c24"></stop><stop offset="1" stop-color="#f9ed32"></stop></linearGradient></defs><path fill="url(#a)" d="M21,14h0a2,2,0,0,1-2-2V8a2,2,0,0,1,2-2h0a2,2,0,0,1,2,2v4A2,2,0,0,1,21,14Zm13-2V8a2,2,0,0,0-2-2h0a2,2,0,0,0-2,2v4a2,2,0,0,0,2,2h0A2,2,0,0,0,34,12Zm11,0V8a2,2,0,0,0-2-2h0a2,2,0,0,0-2,2v4a2,2,0,0,0,2,2h0A2,2,0,0,0,45,12Zm9,11V44.58l-1.83,1.83a2,2,0,0,1-1.41.59H48a4,4,0,0,0-4,4v2.39a2,2,0,0,1-.89,1.67l-.09.07L40.81,57H13a3,3,0,0,1-3-3V23ZM49.52,35.38a2.78,2.78,0,0,0-2.25-1.89l-1.43-.2a.78.78,0,0,1-.59-.43l-.65-1.32A2.77,2.77,0,0,0,42.12,30h0a2.78,2.78,0,0,0-2.49,1.55L39,32.87a.76.76,0,0,1-.56.42l-1.45.2a2.71,2.71,0,0,0-1.58.83s-.08-.07-.1-.12l-.71-1.43a2.94,2.94,0,0,0-5.26,0l-.7,1.43a.81.81,0,0,1-.12.14,2.73,2.73,0,0,0-1.6-.85l-1.43-.2a.78.78,0,0,1-.59-.43l-.65-1.32A2.76,2.76,0,0,0,21.74,30h0a2.74,2.74,0,0,0-2.46,1.54l-.67,1.33a.76.76,0,0,1-.56.42l-1.46.2A2.77,2.77,0,0,0,15,38.21l1.06,1a.74.74,0,0,1,.22.67l-.25,1.44a2.77,2.77,0,0,0,2.73,3.24,2.71,2.71,0,0,0,1.29-.32l1.3-.68a.81.81,0,0,1,.71,0l1.3.68a3.25,3.25,0,0,0,2.46.14,2.91,2.91,0,0,0,4.24,2.11l1.42-.74a.88.88,0,0,1,.86,0l1.42.74a2.91,2.91,0,0,0,3.08-.22A2.87,2.87,0,0,0,38,44.44a3.24,3.24,0,0,0,2.42-.15l1.31-.68a.77.77,0,0,1,.71,0l1.3.68a2.71,2.71,0,0,0,1.29.32,2.77,2.77,0,0,0,2.73-3.24l-.25-1.43a.76.76,0,0,1,.23-.69l1-1A2.75,2.75,0,0,0,49.52,35.38Zm4.48,12V49a8,8,0,0,1-8,8H43.9l.37-.31A4,4,0,0,0,46,53.39V51a2,2,0,0,1,2-2h2.76a4.06,4.06,0,0,0,2.83-1.17ZM26.11,41.88a.91.91,0,0,0-.26-.83L24.7,39.94a2.9,2.9,0,0,1,.64-4.65l-.18,0a2.79,2.79,0,0,1-2.09-1.54l-.64-1.3a.75.75,0,0,0-.7-.43h0a.74.74,0,0,0-.68.43l-.66,1.32a2.78,2.78,0,0,1-2.07,1.52l-1.47.2a.73.73,0,0,0-.61.53.72.72,0,0,0,.19.78l1.05,1a2.76,2.76,0,0,1,.8,2.43L18,41.71a.76.76,0,0,0,.3.75.77.77,0,0,0,.83.06l1.29-.68a2.71,2.71,0,0,1,2.58,0l1.29.67A1.75,1.75,0,0,0,26.1,42Zm9.78.88a.89.89,0,0,1,0-.32l0-.23a2.9,2.9,0,0,1,.84-2.59l1.14-1.11a.93.93,0,0,0,.24-1,.91.91,0,0,0-.75-.63l-1.58-.23-.19,0a.59.59,0,0,1-.13,0l-.07,0a2.91,2.91,0,0,1-1.82-1.49l-.7-1.44a.92.92,0,0,0-.84-.51.91.91,0,0,0-.83.51l-.71,1.44a2.94,2.94,0,0,1-1.88,1.51l0,0H28.4a1.29,1.29,0,0,1-.21.06l-1.58.23a.93.93,0,0,0-.51,1.59l1.14,1.11a2.9,2.9,0,0,1,.84,2.59l-.27,1.58a.93.93,0,0,0,1.35,1L30.58,44a2.91,2.91,0,0,1,2.72,0l1.42.74a.93.93,0,0,0,1.35-1ZM47,35.47l-1.45-.2a2.79,2.79,0,0,1-2.09-1.54l-.65-1.3a.74.74,0,0,0-.68-.43h0a.75.75,0,0,0-.7.43l-.65,1.31a2.77,2.77,0,0,1-2.07,1.53l-.16,0a2.87,2.87,0,0,1,1.38,1.65,2.92,2.92,0,0,1-.74,3L38,41.05a1,1,0,0,0-.27.83l0,.13a1.74,1.74,0,0,0,1.73.51l1.31-.68a2.71,2.71,0,0,1,2.58,0l1.29.67a.77.77,0,0,0,1.12-.81l-.25-1.44a2.79,2.79,0,0,1,.81-2.47l1-1a.72.72,0,0,0,.19-.78A.73.73,0,0,0,47,35.47ZM51,10H47v2a4,4,0,0,1-8,0V10H36v2a4,4,0,0,1-8,0V10H25v2a4,4,0,0,1-8,0V10H13a3,3,0,0,0-3,3v6H54V13A3,3,0,0,0,51,10Z"></path></svg>
                         <div className="flex items-center gap-1 font-normal">
                             <p className="text-sm text-gray-700">Đánh giá:</p>
-                            <p className="text-sm text-blue-500">{shop?.star}</p>
+                            <p className="text-sm text-blue-500">{ratingShop?.rating}</p>
+                            <p>({ratingShop?.listReview.length} đánh giá)</p>
                         </div>
                     </div>
                 </div>

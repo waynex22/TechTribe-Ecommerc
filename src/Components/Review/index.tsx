@@ -21,7 +21,7 @@ const Review: React.FC<Props> = ({ product }) => {
         <>
             <div className="w-full bg-white rounded-lg p-4 mt-4 min-h-[400px]">
                 <h2>Đánh giá sản phẩm</h2>
-                <TabFilterReview handleSetRate={setRateSelected} tab={RateSelected} product={product} />
+                <TabFilterReview handleSetRate={setRateSelected} tab={RateSelected} product={product} reviews={reviews} />
                 {filters && filters.length > 0 ? filters.map((item: any) => <ItemReview key={item._id} review={item} />) : <EmptyReview />}
         </div >
         </>

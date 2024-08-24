@@ -5,6 +5,7 @@ import {
   useRegisterMutation,
 } from "../../redux/rtkQuery/auth";
 import { validateForm, FormErrors } from "../../utils/validatetor";
+import Spinner from "../spinner/Spinner";
 interface AuthModalProps {
   show: boolean;
   onClose: () => void;
@@ -16,8 +17,9 @@ interface FormData {
   password: string;
   confirmPassword: string;
 }
-const AuthModal: React.FC<AuthModalProps> = ({ show, onClose , setToast}) => {
+const AuthModal: React.FC<AuthModalProps> = ({ show, onClose, setToast }) => {
   const [getUser] = useGetInfoUserMutation();
+  const [loading, setLoading] = useState<boolean>(false);
   const [
     login,
     { data: loginData, isSuccess: loginSuccess, isError: LoginError },
@@ -39,7 +41,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose , setToast}) => {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
-  
+
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => {
@@ -55,6 +57,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose , setToast}) => {
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
+      setLoading(true);
       e.preventDefault();
       const validationErrors = validateForm(formData);
       setErrors(validationErrors);
@@ -70,24 +73,26 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose , setToast}) => {
             phone: formData.phone,
             password: formData.password,
           })
-          if(registerResutl?.data?.message){
-            setToast({  message: registerResutl.data.message, type: "success" });
+          if (registerResutl?.data?.message) {
+            setToast({ message: registerResutl.data.message, type: "success" });
             onClose();
-          }else{
+          } else {
             onClose();
-          }          
+          }
         } else {
           const loginResutl = await login({
             phone: formData.phone,
             password: formData.password,
           })
-          if(loginResutl?.data?.access_token){
+          if (loginResutl?.data?.access_token) {
             setToast({ message: 'Đăng nhập thành công', type: "success" });
+            setLoading(false);
             onClose();
-          }else{
+          } else {
             setToast({ message: loginResutl.data.message, type: "error" });
+            setLoading(false);
           }
-          }    
+        }
       }
     },
     [formData, isRegister]
@@ -110,6 +115,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose , setToast}) => {
     return null;
   }
   return (
+    <>
+    <Spinner loading={loading} />
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-start justify-center z-50">
       <div className="bg-white mt-[100px] rounded-2xl relative shadow-xl transform transition-all w-fit">
         <svg
@@ -265,6 +272,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ show, onClose , setToast}) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

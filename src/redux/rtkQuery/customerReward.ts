@@ -25,7 +25,7 @@ export const customerRewardApi = createApi({
             query: (payload: any) => ({
                 url: `customer-reward/refund/${payload.customerId}`,
                 method: 'PATCH',
-                body: payload.coin,
+                body: payload.coin.fixed(2),
             }),
         }),
     }),

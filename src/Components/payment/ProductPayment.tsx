@@ -30,11 +30,15 @@ const ProductPayment: React.FC<Props> = ({ subOrder, refecth }) => {
                                     {item?.items?.map((item: any, itemIndex: number) => (
                                         <div key={itemIndex} className="flex items-center justify-between p-2 gap-x-2 w-full">
                                             <div className="flex items-center justify-start p-2 gap-x-7 w-[80%]>">
-                                                <img
-                                                    src={`http://localhost:8080/uploads/${item.productPriceId?.id_product[0]?.thumbnails[0]}`}
-                                                    className="object-cover w-[80px] h-[80px] rounded-md"
-                                                    alt=""
-                                                />
+                                                {item?.productPriceId?.id_color[0]?.thumbnail ? (
+                                                    <>
+                                                        <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_color[0]?.thumbnail}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                                    </>
+                                                )}
                                                 <div className="flex flex-col">
                                                     <div className="text-sm font-light-nomal">
                                                         {item.productPriceId?.id_product[0]?.name}

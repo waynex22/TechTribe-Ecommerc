@@ -1,10 +1,13 @@
 interface Props {
     handleSetRate: (tab: number) => void;
     tab: number;
-    product: any
+    product: any;
+    reviews?: any;
 }
-const TabFilterReview: React.FC<Props> = ({ handleSetRate, tab, product }) => {
-
+const TabFilterReview: React.FC<Props> = ({ handleSetRate, tab, product , reviews}) => {
+  const getCountReviewByRating = (rating: number) => {
+    return reviews?.filter((item: any) => item.rating === rating).length
+  }
   return (
       <div className="border bg-primary/20 backdrop-blur-sm p-4 border-primary/40 border-dashed my-2 rounded-lg">
         <div className="flex items-center justify-between gap-4">
@@ -46,12 +49,12 @@ const TabFilterReview: React.FC<Props> = ({ handleSetRate, tab, product }) => {
             </div>
             <div className="w-[80%]">
                 <div className="flex items-center gap-2">
-                    <button onClick={() => handleSetRate(0)} className={`border border-primary/40 px-4 py-2 rounded-md text-[14px] text-primary ${tab === 0 ? 'bg-primary/40 text-white' : 'bg-white text-primary'}`}>Tất cả</button>
-                    <button onClick={() => handleSetRate(5)} className={`border border-primary/40 px-4 py-2 rounded-md text-[14px] text-primary ${tab === 5 ? 'bg-primary/40 text-white' : 'bg-white text-primary'}`}>5 sao</button>
-                    <button onClick={() => handleSetRate(4)} className={`border border-primary/40 px-4 py-2 rounded-md text-[14px] text-primary ${tab === 4 ? 'bg-primary/40 text-white' : 'bg-white text-primary'}`}>4 sao</button>
-                    <button onClick={() => handleSetRate(3)} className={`border border-primary/40 px-4 py-2 rounded-md text-[14px] text-primary ${tab === 3 ? 'bg-primary/40 text-white' : 'bg-white text-primary'}`}>3 sao</button>
-                    <button onClick={() => handleSetRate(2)} className={`border border-primary/40 px-4 py-2 rounded-md text-[14px] text-primary ${tab === 2 ? 'bg-primary/40 text-white' : 'bg-white text-primary'}`}>2 sao</button>
-                    <button onClick={() => handleSetRate(1)} className={`border border-primary/40 px-4 py-2 rounded-md text-[14px] text-primary ${tab === 1 ? 'bg-primary/40 text-white' : 'bg-white text-primary'}`}>1 sao</button>
+                    <button onClick={() => handleSetRate(0)} className={`border border-primary/40 px-4 py-2 rounded-md text-[14px] text-primary ${tab === 0 ? 'bg-primary/40 text-white' : 'bg-white text-primary'}`}>Tất cả ({reviews?.length})</button>
+                    <button onClick={() => handleSetRate(5)} className={`border border-primary/40 px-4 py-2 rounded-md text-[14px] text-primary ${tab === 5 ? 'bg-primary/40 text-white' : 'bg-white text-primary'}`}>5 sao ({getCountReviewByRating(5)})</button>
+                    <button onClick={() => handleSetRate(4)} className={`border border-primary/40 px-4 py-2 rounded-md text-[14px] text-primary ${tab === 4 ? 'bg-primary/40 text-white' : 'bg-white text-primary'}`}>4 sao ({getCountReviewByRating(4)})</button>
+                    <button onClick={() => handleSetRate(3)} className={`border border-primary/40 px-4 py-2 rounded-md text-[14px] text-primary ${tab === 3 ? 'bg-primary/40 text-white' : 'bg-white text-primary'}`}>3 sao ({getCountReviewByRating(3)})</button>
+                    <button onClick={() => handleSetRate(2)} className={`border border-primary/40 px-4 py-2 rounded-md text-[14px] text-primary ${tab === 2 ? 'bg-primary/40 text-white' : 'bg-white text-primary'}`}>2 sao ({getCountReviewByRating(2)})</button>
+                    <button onClick={() => handleSetRate(1)} className={`border border-primary/40 px-4 py-2 rounded-md text-[14px] text-primary ${tab === 1 ? 'bg-primary/40 text-white' : 'bg-white text-primary'}`}>1 sao ({getCountReviewByRating(1)})</button>
                 </div>
             </div>
         </div>
