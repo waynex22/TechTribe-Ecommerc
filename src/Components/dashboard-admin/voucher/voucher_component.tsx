@@ -8,13 +8,16 @@ import {
   useGetAllVoucherAdminQuery,
 } from "src/redux/rtkQuery/admin";
 import { toast } from "react-toastify";
+import AdminVoucherComponentIsLoading from "./admin_voucher_isLoading";
+
+
 
 const AdminVoucherComponent: React.FC = () => {
   const today = new Date();
   const [setOpenModal, setOpenModalsetOpenModal] = useState(false);
   const handleOpen = () => setOpenModalsetOpenModal(true);
   const handleClose = () => setOpenModalsetOpenModal(false);
-  const { data: adminvouchers, refetch } = useGetAllVoucherAdminQuery({
+  const { data: adminvouchers, refetch, isLoading } = useGetAllVoucherAdminQuery({
     refetchOnMountOrArgChange: true,
   });
   const [expiredVoucher, setExpiredVoucher] = useState<AdminVoucherDataToGet[]>(
@@ -61,6 +64,8 @@ const AdminVoucherComponent: React.FC = () => {
       return true;
     });
   },[adminvouchers]);
+  
+  if(isLoading) return <AdminVoucherComponentIsLoading/>
   return (
     <div className="bg-white rounded-lg overflow-hidden">
       <div className=" mt-2 ms-2 flex items-center mb-4 text-gray-100 ">

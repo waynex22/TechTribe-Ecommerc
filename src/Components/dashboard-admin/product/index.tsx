@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FaHome } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useGetAllShopQuery, useGetBanShopQuery } from "src/redux/rtkQuery/admin";
 import { useGetProductQuery } from "src/redux/rtkQuery/product";
-import { useGetAllUserQuery } from "src/redux/rtkQuery/user_customers";
-// import AdminUserComponentIsLoading from "./admin_shop_isLoading";
+import AdminShopComponentIsLoading from "../shop/admin_shop_isLoading";
 
 const AdminProductComponent: React.FC = () => {
   const {
@@ -25,7 +23,7 @@ const AdminProductComponent: React.FC = () => {
     
   },[])
 
-//   if(isLoading) return <AdminShopComponentIsLoading/>
+  if(isLoading) return <AdminShopComponentIsLoading/>
   return (
     <div className="bg-white rounded-lg overflow-hidden">
       <div className=" ms-2 mt-2 flex items-center mb-4 text-gray-100 ">

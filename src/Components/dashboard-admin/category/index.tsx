@@ -11,6 +11,7 @@ import { useGetcategoryQuery } from "src/redux/rtkQuery/category";
 import AdminModalAddCategory from "./modal_add_category";
 import AdminModalAddCategoryDetail from "./modal_add_category-detail";
 import AdminCategoryDetail from "./category-detail";
+import AdminCategoryComponentIsLoading from "./admin_category_isLoading";
 
 const AdminCategoryComponent: React.FC = () => {
   const [idCategory, setIdCategory] = useState<string>("");
@@ -24,11 +25,12 @@ const AdminCategoryComponent: React.FC = () => {
   const handleOpenDetail = () => setOpenModalCreCateDetail(true);
   const handleCloseDetail = () => setOpenModalCreCateDetail(false);
 
-  const { data: categorys, refetch } = useGetcategoryQuery();
+  const { data: categorys, refetch, isLoading } = useGetcategoryQuery();
   const handleRefetch = () => {
     refetch();
   };
 
+  if(isLoading) return <AdminCategoryComponentIsLoading/>
   return (
     <div className="max-h-screen overflow-y-scroll">
       <div className=" mt-2 ms-2 flex items-center mb-4 text-gray-100 ">

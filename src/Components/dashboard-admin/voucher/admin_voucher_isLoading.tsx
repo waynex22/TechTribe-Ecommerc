@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-const AdminShopComponentIsLoading: React.FC = () => {
+const AdminVoucherComponentIsLoading: React.FC = () => {
+
   return (
     <div>
       <div className="flex items-center mb-4 text-gray-100">
@@ -17,6 +18,9 @@ const AdminShopComponentIsLoading: React.FC = () => {
               <div className="rounded-full object-cover border animate__animated h-12 animate-pulse bg-gray-200 w-40 mx-2"></div>
             </th>
             <th className=" rounder-sm">
+              <div className="rounded-full object-cover border animate__animated h-12 animate-pulse bg-gray-200 w-40 mx-2"></div>
+            </th>
+            <th className=" rounder-sm ">
               <div className="rounded-full object-cover border animate__animated h-12 animate-pulse bg-gray-200 w-40 mx-2"></div>
             </th>
             <th className=" rounder-sm">
@@ -42,11 +46,17 @@ const AdminShopComponentIsLoading: React.FC = () => {
               <td className="text-center animate__animated rounded-lg">
                 <p className="items-center animate__animated h-10 rounded-lg animate-pulse bg-gray-200 w-40 mx-2"></p>
               </td>
-              <td className="text-center animate__animated h rounded-lg">
+              <td className="text-center animate__animated rounded-lg">
                 <p className="items-center animate__animated h-10 rounded-lg animate-pulse bg-gray-200 w-40 mx-2"></p>
               </td>
               <td className="text-center animate__animated rounded-lg">
-                <button className=" mx-2 rounded min-w-16 text-sm cursor-pointe duration-200 h-12 ms-2 py-1 animate-pulse bg-gray-200"></button>
+                <p className="items-center animate__animated h-10 rounded-lg animate-pulse bg-gray-200 w-40 mx-2"></p>
+              </td>
+              <td className="text-center animate__animated rounded-lg">
+                <p className="items-center animate__animated h-10 rounded-lg animate-pulse bg-gray-200 w-40 mx-2"></p>
+              </td>
+              <td className="text-center animate__animated rounded-lg">
+                <p className="items-center animate__animated h-10 rounded-lg animate-pulse bg-gray-200 w-40 mx-2"></p>
               </td>
             </tr>
           ))}
@@ -56,4 +66,4 @@ const AdminShopComponentIsLoading: React.FC = () => {
   );
 };
 
-export default AdminShopComponentIsLoading;
+export default AdminVoucherComponentIsLoading;

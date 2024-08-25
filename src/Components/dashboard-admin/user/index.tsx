@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { FaHome } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useGetAllShopQuery, useGetBanShopQuery } from "src/redux/rtkQuery/admin";
 import { useGetAllUserQuery } from "src/redux/rtkQuery/user_customers";
 import UserList from "./search_user";
-// import AdminUserComponentIsLoading from "./admin_shop_isLoading";
+import AdminUserComponentIsLoading from "./admin_user_isLoading";
 
 const AdminUserComponent: React.FC = () => {
   const {
@@ -13,17 +12,11 @@ const AdminUserComponent: React.FC = () => {
     refetch
   } = useGetAllUserQuery();
 
-  // const {
-  //   data: banshops,
-  //   error,
-  //   refetch
-  // } = useGetBanShopQuery();
-
   useEffect(() => {
     refetch()
   },[])
 
-//   if(isLoading) return <AdminShopComponentIsLoading/>
+  if(isLoading) return <AdminUserComponentIsLoading/>
   return (
     <div className="bg-white rounded-lg overflow-hidden">
       <div className=" ms-2 mt-2 flex items-center mb-4 text-gray-100 ">
