@@ -104,7 +104,8 @@ const ComponentUserChangePassword: React.FC = () => {
   };
   return (
     <>
-      <div className="mx-6 border-b py-6">
+    <div className="p-4 bg-white rounded-lg min-h-[600px]">
+    <div className="mx-6 border-b py-6">
         <div className="text-xl font-normal">Đổi mật khẩu</div>
         <div className="text-lg text-gray-500 font-light mt-1">
           Để bảo mật tài khoản, vui lòng không chia sẻ mật khẩu cho người khác
@@ -192,6 +193,7 @@ const ComponentUserChangePassword: React.FC = () => {
           </Button>
         </Box>
       </div>
+    </div>
     </>
   );
 };

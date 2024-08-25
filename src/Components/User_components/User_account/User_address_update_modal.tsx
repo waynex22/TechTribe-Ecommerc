@@ -136,7 +136,7 @@ const AddressModal: React.FC<AddressModalProps> = ({
     }));
   };
 
-  console.log(addressDataToUpdate);
+  // console.log(addressDataToUpdate);
 
   const handleAddressTypeChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -398,11 +398,11 @@ const AddressModal: React.FC<AddressModalProps> = ({
             aria-label="Loại địa chỉ"
             fullWidth
           >
-            <ToggleButton value={false} aria-label="Nhà riêng">
-              Nhà riêng
+            <ToggleButton value={false} aria-label="Văn phòng">
+            Văn phòng
             </ToggleButton>
-            <ToggleButton value={true} aria-label="Văn phòng">
-              Văn phòng
+            <ToggleButton value={true} aria-label="Nhà riêng">
+            Nhà riêng
             </ToggleButton>
           </ToggleButtonGroup>
           <Button

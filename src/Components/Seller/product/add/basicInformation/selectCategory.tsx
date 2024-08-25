@@ -5,10 +5,12 @@ import { categoryDetail } from '../../../../../utils/types/categoryDetail'
 import { category } from '../../../../../utils/types/category'
 import ShowCategory, { handleNameCategory } from './showCategory'
 import Popup from '../../../../../Page/popup/popup'
+import { FormErrorsProduct } from '../../../../../utils/validatetor/createproduct'
 
-const SelectCategory = ({handleValueCategory,valueCategory}: {
+const SelectCategory = ({handleValueCategory,valueCategory, errForm}: {
     handleValueCategory:(value:categoryDetail|category) => void
     valueCategory:categoryDetail|category
+    errForm: FormErrorsProduct
 }) => {
     const [showCategory, setShowCategory] = useState(false)
     const { data: dataCategory } = useGetcategoryQuery()
@@ -22,6 +24,7 @@ const SelectCategory = ({handleValueCategory,valueCategory}: {
             <div className=' flex gap-4 items-center'>
                 <div className=' w-60 text-right'>
                     <p> <span className=' text-red-600'>*</span> Danh mục sản phẩm</p>
+                    { errForm.category && <p className=' text-red-600'> {errForm.category} </p> }
                 </div>
                 <div className=' flex-1'>
                     {valueCategory && dataCateDetail && dataCategory ?

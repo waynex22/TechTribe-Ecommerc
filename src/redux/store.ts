@@ -6,16 +6,44 @@ import { specificationsSlice } from './rtkQuery/specifications';
 import { authSlice } from './rtkQuery/auth'
 import authReducer from './slices/authSlice';
 import cartReducer from './slices/cartSlice';
+import chatReducer from './slices/chatSlice'
 import { productSclice } from './rtkQuery/product';
-// import { cartSlice } from './rtkQuery/cart';
 import { userApi } from './rtkQuery/user_customers';
 import { cartApi } from './rtkQuery/cart';
 import { orderApi } from './rtkQuery/order';
 import { searchApi } from './rtkQuery/search';
 import { voucherApi } from './rtkQuery/voucher';
 import { adminApi } from './rtkQuery/admin'
+import { shopApi } from './rtkQuery/shop';
+import { chatApi } from './rtkQuery/chat';
+import { productReviewApi } from './rtkQuery/product-review';
+import { notificationApi } from './rtkQuery/notification';
+import { customerRewardApi } from './rtkQuery/customerReward';
+import { walletApi } from './rtkQuery/wallet';
+import shopReducer  from './features/shop'
+import productReducer  from './features/product'
+import voucherReducer  from './features/voucher'
+import flashSaleReducer  from './features/flashSale'
+import roomChatReducer  from './features/message'
+import OrderReducer  from './features/orderSeller'
+import AutoReplyReducer  from './features/autoReplyMessage'
+import MessageShortCutReducer  from './features/messageShortCut'
+import ReviewReducer  from './features/productReviewSeller'
+import NotificationReducer  from './features/notification'
+import DiscountReducer  from './features/discount'
 export const store = configureStore({
   reducer: {
+    shop: shopReducer,
+    product: productReducer,
+    voucher: voucherReducer,
+    flashSale: flashSaleReducer,
+    roomChat: roomChatReducer,
+    order: OrderReducer,
+    autoReply: AutoReplyReducer,
+    messageShortCut: MessageShortCutReducer,
+    review: ReviewReducer,
+    notification: NotificationReducer,
+    discount: DiscountReducer,
     [authSlice.reducerPath]: authSlice.reducer,
     [userApi.reducerPath]: userApi.reducer,
     [adminApi.reducerPath]: adminApi.reducer,
@@ -27,8 +55,15 @@ export const store = configureStore({
     [orderApi.reducerPath]: orderApi.reducer,
     [searchApi.reducerPath]: searchApi.reducer,
     [voucherApi.reducerPath]: voucherApi.reducer,
+    [shopApi.reducerPath]: shopApi.reducer,
+    [chatApi.reducerPath]: chatApi.reducer,
+    [productReviewApi.reducerPath]: productReviewApi.reducer,
+    [notificationApi.reducerPath]: notificationApi.reducer,
+    [customerRewardApi.reducerPath]: customerRewardApi.reducer,
+    [walletApi.reducerPath]: walletApi.reducer,
     auth: authReducer,
-    cart: cartReducer
+    cart: cartReducer,
+    chat: chatReducer
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware()
@@ -37,14 +72,18 @@ export const store = configureStore({
       .concat(categorySlice.middleware)
       .concat(categoryDetailSlice.middleware)
       .concat(specificationsSlice.middleware)
-      // .concat(cartSlice.middleware)
       .concat(userApi.middleware)
       .concat(adminApi.middleware)
       .concat(cartApi.middleware)
       .concat(searchApi.middleware)
       .concat(voucherApi.middleware)
+      .concat(shopApi.middleware)
+      .concat(chatApi.middleware)
+      .concat(productReviewApi.middleware)
+      .concat(notificationApi.middleware)
+      .concat(customerRewardApi.middleware)
+      .concat(walletApi.middleware)
       .concat(orderApi.middleware),
-
 });
 
 setupListeners(store.dispatch);

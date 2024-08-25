@@ -1,6 +1,18 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { apiUrl } from "src/config";
 
+export interface allUser  {
+  _id: string,
+  name: string,
+  avata: string,
+  phone: string,
+  role: string
+}
+
+interface UserCountResponse {
+  count: number;
+}
+
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
@@ -52,7 +64,7 @@ export const userApi = createApi({
       }),
     }),
     addAddress: builder.mutation({
-      query: ({addressData, token}: {addressData: {fullName: string, phoneNumber:string, address: string, addressType: boolean, province: string, district: string, ward: string, customerId: string}, token: string}) => ({
+      query: ({addressData, token}: {addressData: {fullName: string, phoneNumber:string, address: string, addressType: boolean, province: string, district: string, ward: string, customerId: string , isDefault?: boolean }, token: string}) => ({
         url: "/address",
         method: "POST",
         body: addressData,
@@ -113,9 +125,25 @@ export const userApi = createApi({
           Authorization: `Bearer ${token}`,
         }
       })
+    }),
+    countUser: builder.query({
+      query: () => `/customer/count-user`
+    }),
+    getAllUser: builder.query<allUser[], void>({
+      query:() => `/customer`
+    }),
+    getUserByMonth: builder.query({
+      query: ({year, month}: {year: number, month: number}) => ({
+        url: `/customer/count/month`,
+        method: "GET",
+        params: {year, month}
+      })
+    }),
+    findOneById: builder.query({
+      query: (_id: string) => `/customer/findbyid/${_id}`
     })
   }),
 });
 
-export const {useGetAdminVoucherMutation,useGetVoucherDetailMutation,useGetVoucherWalletQuery,useGetAddressByUserIdQuery,useGetUserMutation,useUpdateAvatarMutation,useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation } = userApi;
+export const {useFindOneByIdQuery,useGetUserByMonthQuery,useGetAllUserQuery,useCountUserQuery,useGetAdminVoucherMutation,useGetVoucherDetailMutation,useGetVoucherWalletQuery,useGetAddressByUserIdQuery,useGetUserMutation,useUpdateAvatarMutation,useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation } = userApi;
 // export const {useGetUserMutation,useUpdateAvatarMutation,useUpdateAddressMutation ,useUpdateUserMutation, useUpdatePasswordUserMutation, useAddAddressMutation, useGetAddressByIdCustomerMutation, useDeleteAddressMutation, useSetDefaultAddressMutation, useGetAddressByIdMutation, useGetAddressByUserIdQuery } = userApi;

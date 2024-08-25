@@ -15,13 +15,29 @@ import ScrollToTop from "./Components/scroll/autoScrollTop";
 import { userProfileRouter } from "./Routes/UserProfileRoute";
 import CheckSubOrder from "./Components/payment/checkSubOrder";
 import { adminRoute } from "./Routes/adminRoute";
+import ChatWidget from "./Components/Chat/ChatWidget";
+import { useSelector } from "react-redux";
+import ChatIcon from "./Components/Chat/ChatIcon";
+import { useDispatch } from "react-redux";
+import { setOpen } from "./redux/slices/chatSlice";
+import GuardAdminRoute from "./Routes/GuardAdminRoute";
+
 
 const App: React.FC = () => {
+  const {chat} = useSelector((state: any) => state.chat);
+  const dispatch = useDispatch();
+  const handleOpen = () => {
+    dispatch(setOpen(true));
+  }
   return (
     <Router>
       <div className="App">
         <ScrollToTop />
         <CheckSubOrder />
+        <ChatIcon onClick={handleOpen} />
+        {chat && <ChatWidget />}
+      <ScrollToTop />
+      <CheckSubOrder />
         <Routes>
           {publicRoutes.map((route, index) => {
             const Layout = route.layout || DefaultLayout;
@@ -82,11 +98,11 @@ const App: React.FC = () => {
                 key={index}
                 path={route.path}
                 element={
-                  <PrivateRoute>
+                  <GuardAdminRoute>
                     <Layout>
                       <Page />
                     </Layout>
-                  </PrivateRoute>
+                  </GuardAdminRoute>
                 }
               >
                 {route.children &&

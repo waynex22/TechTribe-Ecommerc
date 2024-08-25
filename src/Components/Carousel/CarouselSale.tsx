@@ -7,7 +7,7 @@ const CarouselSale: React.FC = () => {
         <div className="col-span-2 rounded-lg overflow-hidden row-span-2 h-56 sm:h-64 xl:h-80 2xl:h-96">
           <Carousel className="">
             <img
-              src="https://salt.tikicdn.com/cache/w750/ts/tikimsp/0a/e0/f6/351e1b794bbd0cdfa9eeae0bc3666da0.jpg.webp"
+              src="https://salt.tikicdn.com/cache/w750/ts/tikimsp/b6/b0/07/28e029868d3d4b19095d34d210f4a81b.jpg.webp"
               alt=""
               className="object-cover w-full h-full"
             />
@@ -21,7 +21,7 @@ const CarouselSale: React.FC = () => {
         <div className="col-span-2 h-56 sm:h-64 xl:h-80 2xl:h-96 rounded-lg overflow-hidden">
           <img
             loading="lazy"
-            src="https://salt.tikicdn.com/cache/w750/ts/tikimsp/1c/dd/63/fbc1285a64df45f44bb0472242b0b11f.png.webp"
+            src="https://salt.tikicdn.com/cache/w750/ts/tikimsp/b6/b0/07/28e029868d3d4b19095d34d210f4a81b.jpg.webp"
             alt=""
             className="object-cover w-full h-full"
           />

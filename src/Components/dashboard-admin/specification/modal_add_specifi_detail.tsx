@@ -10,6 +10,7 @@ import {
 } from "src/redux/rtkQuery/categoryDetail";
 import { FaEye } from "react-icons/fa";
 import { useCreateSpecifiDetailMutation, useGetSpecifiDetailByIdSpecifiQuery } from "src/redux/rtkQuery/specifications";
+import AdminFormUpdateSpecifi from "./form_update_specifi_detail";
 
 interface AdminSpecifiDetailDataToCreate {
   name: string;
@@ -44,6 +45,12 @@ const AdminModalAddSpecifiDetail: React.FC<modalCreateAdminVoucherProps> = ({
   const [errors, setErrors] = useState({
     name: "",
   });
+  const [idSpecifiDetail, setIdSpecifi] = useState<string>('');
+  const [nameSpecifiDetail, setnameSpecifi] = useState<string>('');
+  const [openFormUpdate, setOpenFormUpdate] = useState(false);
+  const handleOpenFormUpdate= () => setOpenFormUpdate(true);
+  const handleCloseFormUpdate = () => setOpenFormUpdate(false);
+
   
   useEffect(() => {
     const token = getToken("access_token");
@@ -152,13 +159,14 @@ const AdminModalAddSpecifiDetail: React.FC<modalCreateAdminVoucherProps> = ({
                           </p>
                         </td>
                         <td className="p-2 text-gray-500 font-light text-center">
-                            <button className="text-xs rounded min-w-32 text-red-500 bg-red-200 bg-opacity-80 cursor-pointe duration-200 ms-2 py-1 px-2">
-                               Xóa thông số
+                            <button onClick={() => (setnameSpecifi(specifiDetail.name),handleOpenFormUpdate(), setIdSpecifi(specifiDetail._id))} className="text-xs rounded min-w-32 text-amber-500 bg-amber-200 bg-opacity-80 cursor-pointe duration-200 ms-2 py-1 px-2">
+                               Sửa thông số
                             </button>
                         </td>
                       </tr>
                     ))
                   : null}
+                  <AdminFormUpdateSpecifi name_specifi={nameSpecifiDetail} handleRefetch={refetch} id_specifi={idSpecifiDetail} openModalCreateVoucher={openFormUpdate} handleClose={handleCloseFormUpdate}/>
               </tbody>
             </table>
             <div className="my-4 flex justify-between items-center">

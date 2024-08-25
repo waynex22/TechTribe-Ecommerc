@@ -1,7 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const PaymentLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const location = useLocation();
   return (
 
     <div className='flex flex-col min-h-screen'>
@@ -9,7 +10,7 @@ const PaymentLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         <div className="container mx-auto">
           <div className="flex items-center gap-4">
             <Link to="/"><img src="https://i.imgur.com/1rzy8ne.png" className="w-[60px] h-[60px]" alt="" /></Link>
-            <h3 className="font-light-normal uppercase text-xl text-primary">Thanh Toán</h3>
+            <h3 className="font-light-normal uppercase text-xl text-primary">{location.pathname === '/checkout/address' ? 'Địa chỉ giao hàng' : 'Thanh toán'}</h3>
           </div>
         </div>
       </div>

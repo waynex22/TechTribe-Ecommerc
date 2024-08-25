@@ -1,7 +1,7 @@
 import React from 'react';
 import shipping from './shipping.gif'
 import { formatNumberVnd } from 'src/utils/fortmartNumberVnd';
-import { formatDate, formatDateAndTime } from 'src/utils/formartDate';
+import { formatDateAndTime } from 'src/utils/formartDate';
 import { Link } from 'react-router-dom';
 interface Props {
     order: any
@@ -16,7 +16,7 @@ const OrderItem: React.FC<Props> = ({ order }) => {
             <div className="p-4">
                     <div className="flex items-center justify-between border-b border-dashed border-gray-200">
                         <div className="flex items-center gap-2">
-                            <svg className="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="store"><path fill="#0795ff" d="M27.4,9.553l-3-6A1,1,0,0,0,23.5,3H8.5a1,1,0,0,0-.895.553l-3,6A1,1,0,0,0,5.5,11h21A1,1,0,0,0,27.4,9.553Z"></path><path fill="#0795ff" d="M27,10V24a5,5,0,0,1-5,5H10a5,5,0,0,1-5-5V10A1,1,0,0,1,6,9H26A1,1,0,0,1,27,10Z"></path><path fill="#dfe8f4" d="M26 9H6a3 3 0 00-3 3v2a3.983 3.983 0 007 2.618 3.947 3.947 0 006 0 3.947 3.947 0 006 0A3.983 3.983 0 0029 14V12A3 3 0 0026 9zM21 25v4H11V25a5 5 0 0110 0z"></path></svg>
+                            <img src={order?.shopId?.thumbnail} className='w-10 h-10 rounded-full object-cover' alt="" />
                             <p className="font-nomal text-gray-500 text-sm">{order?.shopId?.name} Store</p>
                             <button className="flex items-center gap-1 p-1 rounded-md bg-blue-500 text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
@@ -28,8 +28,7 @@ const OrderItem: React.FC<Props> = ({ order }) => {
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" />
                                 </svg>
-
-                                <p className="text-[12px]">Xem shop</p>
+                                <Link to={`/shop/${order?.shopId._id}`} className="text-[12px]">Xem shop</Link>
                             </button>
                         </div>
                         <div className="flex items-center gap-4">
@@ -53,12 +52,12 @@ const OrderItem: React.FC<Props> = ({ order }) => {
                            )}
                         </div>
                     </div>
-                    <Link to={`/profile/purchase/order/${order?._id}`} className='flex flex-col items-center cursor-pointer'>
+                    <Link to={`/me/purchase/order/${order?._id}`} className='flex flex-col items-center cursor-pointer'>
                         {order?.items?.map((item: any, index: number) => (
                             <>
                             <div key={index} className='flex items-center justify-between w-full my-2 '>
                                 <div className='flex items-center gap-2'>
-                                    <img src={item?.productPriceId?.id_product[0]?.thumbnails[0]} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                                    <img src={`http://localhost:8080/uploads/${item?.productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
                                     <div>
                                         <p className='font-normal text-[14px]'>{item?.productPriceId?.id_product[0]?.name}</p>
                                         <p className='text-[12px] text-gray-400'>Phân loại hàng : {item?.productPriceId?.id_color?.length > 0 && item?.productPriceId?.id_size?.length > 0  ? item?.productPriceId?.id_color[0]?.value + ' , ' + item?.productPriceId?.id_size[0]?.value : item?.productPriceId?.id_size[0]?.value || item?.productPriceId?.id_color[0]?.value}</p>
@@ -66,7 +65,16 @@ const OrderItem: React.FC<Props> = ({ order }) => {
                                     </div>
                                 </div>
                                 <div className='flex items-center gap-4'>
+                                {item?.discountDetailId ? (
+                                    <>
+                                      <del className='font-normal text-[14px] text-gray-400'>{formatNumberVnd(item?.productPriceId?.price * item?.quantity)}đ</del>
+                                      <p className="font-normal text-[14px] text-red-400">{formatNumberVnd(item?.productPriceId?.price * item?.quantity * (100 - item?.discountDetailId?.percent) / 100)}đ</p>
+                                    </>
+                                ):(
+                                    <>
                                     <p className='font-normal text-[14px] text-red-400'>{item?.productPriceId?.price ? formatNumberVnd(item?.productPriceId?.price * item?.quantity) : 0}đ</p>
+                                    </>
+                                )}
                                 </div>
                             </div>
                             </>

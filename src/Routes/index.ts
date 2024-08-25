@@ -5,6 +5,9 @@ import { DefaultLayout, PaymentLayout } from "../Layouts";
 import CartPage from "../Page/Cart";
 import PaymentPage from "../Page/Payment";
 import QueryProductPage from "../Page/QueryProduct";
+import ShopPage from "src/Page/Shop";
+import OrderSuccessPage from "src/Page/OrderSuccess";
+import CheckOutAddress from "src/Page/Address";
 const publicRoutes: Route[]  = [
     {
         path: '/',
@@ -17,8 +20,24 @@ const publicRoutes: Route[]  = [
         layout: DefaultLayout,
     },
     {
+        path: "/shop/:id",
+        component: ShopPage,
+        layout: DefaultLayout,
+        needChat: true
+    },
+    {
         path: "/checkout/payment",
         component: PaymentPage,
+        layout: PaymentLayout,
+    },
+    {
+        path: "/checkout/payment/success",
+        component: OrderSuccessPage,
+        layout: PaymentLayout,
+    },
+    {
+        path: "/checkout/address",
+        component: CheckOutAddress,
         layout: PaymentLayout,
     },
     {
@@ -30,6 +49,7 @@ const publicRoutes: Route[]  = [
         path: '/product/:slug',
         component: ProductDetail,
         layout: DefaultLayout,
+        needChat: true
     },
 ]
 export { publicRoutes };

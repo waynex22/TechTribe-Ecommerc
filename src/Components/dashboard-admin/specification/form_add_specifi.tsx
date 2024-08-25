@@ -2,8 +2,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import "animate.css";
 import { toast } from "react-toastify";
 import { getToken } from "src/utils/localStorage/token";
-import { RiCoupon3Fill } from "react-icons/ri";
-import { useCreateCategoryMutation } from "src/redux/rtkQuery/category";
+
 import { useCreateSpecifiMutation } from "src/redux/rtkQuery/specifications";
 
 interface AdminSpectifiDataToCreate {
@@ -44,7 +43,7 @@ const AdminFormAddSpecifi: React.FC<modalCreateAdminVoucherProps> = ({
 
   const handleSubmitCreateCategory = async () => {
     try {
-      if (validate() ) {
+      if (validate()) {
         const response = await createSpecifi(adminSpecifiDataToCreate).unwrap();
         if (response.status === 201) {
           toast.success(response.message);
@@ -91,7 +90,6 @@ const AdminFormAddSpecifi: React.FC<modalCreateAdminVoucherProps> = ({
     <div className="w-full max-w-xl px-2 animate__backInDown animate__animated overflow-hidden me-2">
       <div className="">
         <div className=" flex items-center">
-          
           <div className="min-w-64 me-2">
             <input
               onChange={handleChange}
@@ -109,16 +107,15 @@ const AdminFormAddSpecifi: React.FC<modalCreateAdminVoucherProps> = ({
               onClick={handleSubmitCreateCategory}
               className=" cursor-pointer px-4 py-1 me-1 bg-green-100 duration-300 text-green-500 hover:text-green-600 rounded flex items-center"
             >
-              Tạo <RiCoupon3Fill className="ms-1" />
+              Tạo
             </button>
             <button
               onClick={handleClose}
               className="px-4 py-1 me-1 bg-gray-300 hover:bg-gray-400 duration-300 text-white rounded mr-2"
             >
-              Hủy X
+              Hủy
             </button>
           </div>
-          
         </div>
       </div>
     </div>

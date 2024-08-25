@@ -6,6 +6,8 @@ import { formatDate } from "../../utils/formartDate";
 import { useUpdateItemsSubOrderMutation } from "../../redux/rtkQuery/order";
 import Spinner from "../spinner/Spinner";
 import { sortByValidity } from "../../utils/sortVoucher";
+import EmptyVoucher from "./EmptyVoucher";
+import { checkTimeValidVoucher } from "src/utils/checkDiscount";
 interface Props {
     subOrder?: any,
     itemsSubOrder?: any,
@@ -20,11 +22,12 @@ const VoucherShop: React.FC<Props> = ({ subOrder, itemsSubOrder, refecth }) => {
     const { data: vouchers = [], isLoading } = useGetVoucherByShopQuery(itemsSubOrder?.shopId?._id);
     const isVoucherValid = (voucher: Voucher) => {
         const isOrderValueValid = itemsSubOrder?.total >= voucher.minimum_order_value;
+        const isDateValid = checkTimeValidVoucher(voucher.time_start, voucher.time_end);
         if (voucher.id_product.length > 0) {
             const isProductValid = voucher.id_product.some((id: any) => subOrder?.subOrder?.id_product?.includes(id));
-            return isOrderValueValid && isProductValid;
+            return isOrderValueValid && isProductValid && isDateValid;
         }
-        return isOrderValueValid;
+        return isOrderValueValid && isDateValid;
     };
     const sortedVouchers = vouchers ? sortByValidity(vouchers, isVoucherValid) : [];
     const handleChooseVoucher = async (voucher: Voucher) => {
@@ -101,7 +104,9 @@ const VoucherShop: React.FC<Props> = ({ subOrder, itemsSubOrder, refecth }) => {
                                 <h2 className="text-lg font-semibold">Mã Giảm Giá</h2>
                             </div>
                             <div className="space-y-4 min-h-[300px] max-h-[500px] overflow-y-auto">
-                                {sortedVouchers && sortedVouchers.map((item: Voucher, index: number) => {
+                                {sortedVouchers && sortedVouchers.length > 0 ? (
+                                    <>
+                                    {sortedVouchers && sortedVouchers.map((item: Voucher, index: number) => {
                                     const valid = isVoucherValid(item);
                                     return (
                                         <div
@@ -155,6 +160,13 @@ const VoucherShop: React.FC<Props> = ({ subOrder, itemsSubOrder, refecth }) => {
                                         </div>
                                     );
                                 })}
+                                    </>
+                                ): (
+                                    <>
+                                    <EmptyVoucher />
+                                    </>
+                                )}
+                                
                             </div>
                         </div>
                     </div>

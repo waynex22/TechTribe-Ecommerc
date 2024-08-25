@@ -15,7 +15,7 @@ const ProductQuery: React.FC<Props> = ({ query, sort }) => {
         if (!Products) return;
 
         let filteredProducts = Products.filter((item: any) =>
-            item.id_categoryDetail[0].name === query
+            item.id_categoryDetail[0].name === query || item.name.toLowerCase().includes(query.toLowerCase())
         );
 
         if (sort?.priceMinMax) {

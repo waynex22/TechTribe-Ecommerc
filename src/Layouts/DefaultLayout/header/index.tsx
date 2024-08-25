@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import Search from "../../../Components/subComponent/search";
 import { ToastProps } from "../../../Type";
 import Toast from "../../../Components/toast/Toast";
+import NotificationModal from "./notification";
 const Header: React.FC = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
@@ -27,7 +28,7 @@ const Header: React.FC = () => {
   }
   const [toast, setToast] = useState<ToastProps | null>(null);
   const handleSetToast = (toast: ToastProps) => {
-    setToast({ ...toast, message: toast.message, type: toast.type , onClose: () => setToast(null) });
+    setToast({ ...toast, message: toast.message, type: toast.type, onClose: () => setToast(null) });
   }
   useEffect(() => {
     const refreshTokenFromStorage = localStorage.getItem("refresh_token");
@@ -60,11 +61,12 @@ const Header: React.FC = () => {
   const handleMenuClose = () => {
     setMenuOpen(false);
   };
+
   const totalItemsInCart = cart?.cart?.cartItems?.reduce((acc: number, item: any) => acc + item.items.length, 0);
   return (
     <>
       <div className="bg-white text-center">
-      {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
+        {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
         <div className="md:container md:mx-auto flex items-center justify-between py-2">
           <Link to="/">
             <img src="https://i.imgur.com/1rzy8ne.png" className="w-[60px] h-[60px]" alt="" />
@@ -145,7 +147,7 @@ const Header: React.FC = () => {
                     <div className="flex flex-col pb-4 justify-center items-center"></div>
                     <div className="flex justify-center items-center hover:underline transition duration-150 ease-in-out">
                       <Link
-                        to="/profile"
+                        to="/me"
                         className="block px-4 py-2 w-full text-sm text-white"
                       >
                         Thông tin tài khoản
@@ -153,7 +155,7 @@ const Header: React.FC = () => {
                     </div>
                     <div className="flex justify-center items-center hover:underline transition duration-150 ease-in-out">
                       <Link
-                        to="/profile/purchase"
+                        to="/me/purchase"
                         className="block px-4 py-2 w-full text-sm text-white"
                       >
                         Đơn hàng của tôi
@@ -172,26 +174,7 @@ const Header: React.FC = () => {
               </div>
             )}
             <AuthModal show={showModal} onClose={handleCloseModal} setToast={handleSetToast}></AuthModal>
-            <div className="flex items-center justify-center">
-              <div className="flex mx-2 text-primary">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="size-6 relative"
-                >
-                  <path d="M4.214 3.227a.75.75 0 0 0-1.156-.955 8.97 8.97 0 0 0-1.856 3.825.75.75 0 0 0 1.466.316 7.47 7.47 0 0 1 1.546-3.186ZM16.942 2.272a.75.75 0 0 0-1.157.955 7.47 7.47 0 0 1 1.547 3.186.75.75 0 0 0 1.466-.316 8.971 8.971 0 0 0-1.856-3.825Z" />
-                  <path
-                    fillRule="evenodd"
-                    d="M10 2a6 6 0 0 0-6 6c0 1.887-.454 3.665-1.257 5.234a.75.75 0 0 0 .515 1.076 32.91 32.91 0 0 0 3.256.508 3.5 3.5 0 0 0 6.972 0 32.903 32.903 0 0 0 3.256-.508.75.75 0 0 0 .515-1.076A11.448 11.448 0 0 1 16 8a6 6 0 0 0-6-6Zm0 14.5a2 2 0 0 1-1.95-1.557 33.54 33.54 0 0 0 3.9 0A2 2 0 0 1 10 16.5Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <div className="absolute w-[12px] h-[16px] top-[20px] ml-4 rounded-full bg-red-500 text-white text-[12px]">
-                  5
-                </div>
-              </div>
-            </div>
+            <NotificationModal user={user} />            
             <div className="w-[1px] bg-gray-300 h-[22px] mx-2"></div>
             <Link to='/checkout/cart' onClick={handleCartClick}>
               <div className="flex items-center justify-center">
@@ -208,11 +191,11 @@ const Header: React.FC = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                    {cart?.cart?.cartItems && 
+                  {cart?.cart?.cartItems &&
                     <div className="absolute w-[12px] h-[16px] top-[20px] ml-4 rounded-full bg-red-500 text-white text-[12px]">
-                    {totalItemsInCart}
-                  </div>
-                    }
+                      {totalItemsInCart}
+                    </div>
+                  }
                 </div>
               </div>
             </Link>

@@ -111,12 +111,24 @@ export const adminApi = createApi({
                     Authorization: `Bearer ${token}`,
                 }
             })
-        })
-
-        
+        }),
+        getShopByMonth: builder.query({
+            query: ({ year, month }) =>({
+                url:`/shop/count/month`,
+                method: "GET",
+                params: {year, month}
+            }) 
+        }),
+        getProductByMonth: builder.query({
+            query: ({ year, month }) =>({
+                url:`/product/count/month`,
+                method: "GET",
+                params: {year, month}
+            }) 
+        }),
     })
 
     
 })
 
-export const {useDeleteAdminVoucherMutation ,useGetAllVoucherAdminQuery,useCreateAdminVoucherMutation,useGetCheckStatusBanShopQuery,useGetBanShopByIdShopQuery, useGetAllShopQuery, useGetBanShopQuery,useUpdateBanShopMutation} = adminApi
+export const {useGetProductByMonthQuery,useGetShopByMonthQuery,useDeleteAdminVoucherMutation ,useGetAllVoucherAdminQuery,useCreateAdminVoucherMutation,useGetCheckStatusBanShopQuery,useGetBanShopByIdShopQuery, useGetAllShopQuery, useGetBanShopQuery,useUpdateBanShopMutation} = adminApi

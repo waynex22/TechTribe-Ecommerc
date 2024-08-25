@@ -3,7 +3,7 @@ import { useGetCartMeQuery, useGetCartSelectQuery, useSelectAllCartMutation } fr
 import CartItem from "./CartItem";
 import { useEffect, useState } from "react";
 import { formatNumberVnd } from "../../utils/fortmartNumberVnd";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCreateSubOrderMutation } from "../../redux/rtkQuery/order";
 import Spinner from "../spinner/Spinner";
 import { ToastProps } from "../../Type";
@@ -15,8 +15,10 @@ import { discountPrice } from "src/utils/getMinMax/getMinMaxPrice";
 
 const Cart: React.FC = () => {
   const { user } = useSelector((state: any) => state.auth);
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
-  const { data: cart, isLoading } = useGetCartMeQuery(user?.sub, {
+  const history = useNavigate();
+  const { data: cart, isLoading, refetch: cartRefecth } = useGetCartMeQuery(user?.sub, {
     skip: !user,
   });
   const { data: cartSelect , refetch: refetchCartSelect } = useGetCartSelectQuery(user?.sub, {
@@ -29,10 +31,16 @@ const Cart: React.FC = () => {
   const [toast, setToast] = useState<ToastProps | null>(null);
   const [checkedAll, setCheckedAll] = useState(false);
   const [selectAll] = useSelectAllCartMutation();
-  const {data : addressUser } = useGetAddressByUserIdQuery(user?.sub, {
-    skip: !user
+  const {data : addressUser  , refetch } = useGetAddressByUserIdQuery(user?.sub, {
+    skip: !user ,
   });
-  
+  useEffect(() => {
+    if(!user?.sub){
+      return history('/')
+    }
+    cartRefecth();
+    refetch();
+  },[user?.sub, refetch, cartRefecth ,location.pathname ])
   const handleSetToast = (toast: any) => {
     setToast({ ...toast, message: toast.message, type: toast.type, onClose: () => setToast(null) });
   }
@@ -104,9 +112,17 @@ const Cart: React.FC = () => {
       return;
     }
     if(addressUser.length === 0) {
-      navigate('/checkout/address')
+      handleSetToast({ message: 'Thêm địa chỉ giao hàng', type: "error" });
+      navigate('/checkout/address');
+      return;
     }
-    const defaultAddress = addressUser?.find((item: any) => item.isDefault);
+    const defaultAddress = addressUser?.find((item: any) => {
+     if(addressUser.length === 1) {
+      return item
+     }else {
+      return item.isDefault
+     }
+    });
     const payload = {
       customerId: customerId,
       items: listProductSelect,
@@ -202,21 +218,7 @@ const Cart: React.FC = () => {
                 {cart?.cartItems.map((item: any, index: number) => (
                   <>
                   <div key={index} className="bg-white rounded-md flex items-center justify-start p-2 gap-x-2">
-                        
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="size-5 text-gray-500"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"
-                          />
-                        </svg>
+                        <img src={`http://localhost:8080/uploads/${item.shopId?.thumbnail}`} alt="" className="w-[40px] h-[40px] rounded-full object-cover" />
                         <div className="text-sm font-light-medium">
                           {item.shopId?.name}
                         </div>
@@ -283,8 +285,8 @@ const Cart: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="bg-red-500 rounded-md mt-5 p-4 text-center cursor-pointer">
-                <div onClick={() => handlePayment(user?.sub)}><span className="text-white text-md font-light-bold">Đặt hàng</span></div>
+              <div onClick={() => handlePayment(user?.sub)} className="bg-red-500 rounded-md mt-5 p-4 text-center cursor-pointer">
+                <div><span className="text-white text-md font-light-bold">Đặt hàng</span></div>
               </div>
             </div>
           </div>

@@ -24,7 +24,10 @@ export const productSclice = createApi({
     getProductByPrice: builder.query<product[], string>({
       query: (price) => `product/price/${price}`
     }),
+    countProduct: builder.query({
+      query: () => `product/count-product`
+    })
     })
   })
 
-export const { useGetProductQuery , useGetProductByIdQuery , useGetProductByCategoryQuery , useGetProductByShopQuery , useGetProductBySearchQuery , useGetProductByPriceQuery} = productSclice;
+export const {useCountProductQuery ,useGetProductQuery , useGetProductByIdQuery , useGetProductByCategoryQuery , useGetProductByShopQuery , useGetProductBySearchQuery , useGetProductByPriceQuery} = productSclice;

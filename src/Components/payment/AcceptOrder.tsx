@@ -22,6 +22,7 @@ const AcceptOrder: React.FC<Props> = ({ subOrder, items }) => {
     const handleBackToCart = () => {
         setModal(false);
         history('/checkout/cart');
+        removeIdOrderNotComplete();
     }
     const handleCreateOrder = async () => {
         setLoading(true);
@@ -33,9 +34,11 @@ const AcceptOrder: React.FC<Props> = ({ subOrder, items }) => {
             coin: subOrder?.coin,
             coinRefunt: subOrder?.coinRefunt,
             voucherShipping: subOrder?.voucherShipping?._id,
+            costShipping: subOrder?.costShipping,
             methodPayment: subOrder?.methodPayment,
             subTotal: subOrder?.subTotal,
-            total: subOrder?.total,
+            totalDiscount: subOrder?.totalDisCount,
+            total: subOrder?.total - subOrder?.totalDisCount,
             items: items,
             subOrderId: subOrder?._id
         }
@@ -44,7 +47,7 @@ const AcceptOrder: React.FC<Props> = ({ subOrder, items }) => {
             if (data.status === 200) {
                 removeIdOrderNotComplete();
                 refetch();
-                history(`/profile/purchase`);
+                history(`/checkout/payment/success`);
             } else {
                 setModal(true);
                 setLoading(false);
@@ -55,9 +58,6 @@ const AcceptOrder: React.FC<Props> = ({ subOrder, items }) => {
             setLoading(false);
         }
     }
-    // console.log(items);
-
-
     if (!subOrder) return <></>
     return (
         <>
@@ -83,11 +83,11 @@ const AcceptOrder: React.FC<Props> = ({ subOrder, items }) => {
                     <p className="text-gray-400 font-normal text-sm">Phí vận chuyển</p>
                     <p className="text-sm">{subOrder?.costShipping ? formatNumberVnd(subOrder?.costShipping) + ' đ' : ''}</p>
                 </div>
-                {subOrder?.totalDiscountShop > 0 && (
+                {subOrder?.totalDisCount > 0 && (
                     <>
                         <div className="flex items-center justify-between my-1">
-                            <p className="text-gray-400 font-normal text-sm">Voucher Shop</p>
-                            <p className="text-sm text-green-400">-{formatNumberVnd(subOrder?.totalDiscountShop)} đ</p>
+                            <p className="text-gray-400 font-normal text-sm">Voucher từ 2T</p>
+                            <p className="text-sm text-green-400">-{formatNumberVnd(subOrder?.totalDisCount)} đ</p>
                         </div>
                     </>
                 )}

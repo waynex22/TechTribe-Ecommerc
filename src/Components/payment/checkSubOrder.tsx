@@ -11,9 +11,9 @@ const CheckSubOrder: React.FC = () => {
   const [deleteSubOrder] = useDeleteSubOrderMutation();
   const [orderId, setOrderId] = useState<any>(null);
   const { user } = useSelector((state: any) => state.auth);
-  const {data: order , refetch} = useGetSubOrderQuery(user?.sub, {
-    skip: !user,
-  })
+  // const {data: order , refetch} = useGetSubOrderQuery(user?.sub, {
+  //   skip: !user,
+  // })
   const location = useLocation();
   const history = useNavigate();
 
@@ -36,14 +36,16 @@ const CheckSubOrder: React.FC = () => {
 
   const handleDelete = async () => {
     removeIdOrderNotComplete();
-    if(order.subOrder) {
-      await deleteSubOrder(order?.subOrder?._id).unwrap();
-      handleClose();
-    }else {
-      await deleteSubOrder(orderId).unwrap();
-      handleClose();
-    }
-    refetch();
+    await deleteSubOrder(orderId).unwrap();
+    handleClose();
+    // if(order.subOrder) {
+    //   await deleteSubOrder(order?.subOrder?._id).unwrap();
+    //   handleClose();
+    // }else {
+    //   await deleteSubOrder(orderId).unwrap();
+    //   handleClose();
+    // }
+    // refetch();
   };
 // console.log(order);
 

@@ -11,6 +11,9 @@ import { ToastProps } from "../../Type";
 import { discountPrice, getMinMaxPriceInArr } from "../../utils/getMinMax/getMinMaxPrice";
 import ProductItem from "./ProductItem";
 import { product } from "src/utils/types/product";
+import { useDispatch } from "react-redux";
+import { setOpen, setShopSelected } from "src/redux/slices/chatSlice";
+import Review from "../Review";
 const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [updateCart] = useUpdateCartMutation();
@@ -114,7 +117,15 @@ const ProductDetail: React.FC = () => {
       }
     }
   }
-
+  const dispatch = useDispatch();
+  const handleChatClick = (shopId: string, shopName: string) => {
+    if (!user) {
+      handleSetToast({ message: 'Bạn cần đăng nhập để chat', type: "error" });
+    } else {
+      dispatch(setShopSelected({ shopId, shopName }));
+      dispatch(setOpen(true));
+    }
+  };
 
   if (isLoading) return <ProductDetailLoading />;
   const minMaxPrice = getMinMaxPriceInArr(product?.product_price);
@@ -159,24 +170,22 @@ const ProductDetail: React.FC = () => {
   );
 
   const discountedPrice: any = isDiscount ? discountPrice(ProductPriceSelected.price, isDiscount.percent) : null;
-  console.log(product);
-
   return (
     <>
       <div className="container mx-auto">
         {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
         <div className="grid lg:grid-cols-7 md:grid-col-2 gap-6">
           <div className="col-span-2 ">
-            <div className=" bg-white h-fit rounded-xl">
+            <div className=" bg-white h-fit rounded-lg">
               <div className="p-4 ">
                 <img
                   src={product?.thumbnails[indexThumbnail]}
                   alt=""
-                  className="border-solid border-[1px] border-gray-200 rounded-xl w-[368px] h-[368px] object-cover"
+                  className="border-solid border-[1px] border-gray-200 rounded-lg w-[368px] h-[368px] object-cover"
                 />
                 <div className="flex space-x-2 mt-2">
                   {product?.thumbnails.map((item: string, index: number) => (
-                    <div key={index} className={`${indexThumbnail === index ? 'border-solid border-[1px] border-blue-500 rounded-xl' : ''}border-solid border-[1px] cursor-pointer border-gray-200 rounded-sm p-1`}>
+                    <div key={index} className={`${indexThumbnail === index ? 'border-solid border-[1px] border-blue-500 rounded-lg' : ''}border-solid border-[1px] cursor-pointer border-gray-200 rounded-sm p-1`}>
                       <img
                         onClick={() => setIndexThumbnail(index)}
                         src={item}
@@ -202,8 +211,8 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="col-span-3">
-            <div className="p-4  bg-white h-fit rounded-xl">
+          <div className="col-span-3 overflow-y-auto overflow-x-hidden">
+            <div className="p-4  bg-white h-fit rounded-lg">
               <div className="flex items-center justify-start gap-4">
                 <img
                   src="https://salt.tikicdn.com/ts/upload/94/36/e7/c5297f3fad0a83fb56f98be877904467.png"
@@ -296,7 +305,7 @@ const ProductDetail: React.FC = () => {
                         className={`p-1 border rounded-lg cursor-pointer relative w-[100px] flex items-center justify-around ${selectedColor === color._id
                           ? "border-blue-600 border-2"
                           : "border-gray-200"
-                          } ${!isOnStock(color._id, selectedSize) ? "opacity-10" : ""}`}
+                          } ${!isOnStock(color._id, selectedSize) ? "opacity-30" : ""}`}
                       >
                         {selectedColor === color._id && (
                           <div className="absolute top-[-1px] right-0">
@@ -329,7 +338,7 @@ const ProductDetail: React.FC = () => {
                         className={` border rounded-lg cursor-pointer relative py-2 px-3  ${selectedSize === size._id
                           ? "border-blue-600 border-2"
                           : "border-gray-200"
-                          } ${isOnStock(size._id, selectedColor) ? "opacity-10" : ""}`}
+                          } ${isOnStock(size._id, selectedColor) ? "opacity-30" : ""}`}
                       >
                         {selectedSize === size._id && (
                           <div className="absolute top-[-1px] right-0">
@@ -347,7 +356,7 @@ const ProductDetail: React.FC = () => {
                 </div>
               ) : null}
             </div>
-            <div className="p-4 mt-4 bg-white rounded-xl">
+            <div className="p-4 mt-4 bg-white rounded-lg">
               <h3>Vận chuyển</h3>
               <div className="flex items-center gap-2 my-2">
                 <img
@@ -378,7 +387,7 @@ const ProductDetail: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="p-4 mt-4 bg-white rounded-xl">
+            <div className="p-4 mt-4 bg-white rounded-lg">
               <h3>Chính sách mua hàng</h3>
               <div className="flex items-center justify-start gap-4 my-2">
                 <img
@@ -412,7 +421,7 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
             <div>
-              <div className="p-4 mt-4 bg-white rounded-xl">
+              <div className="p-4 mt-4 bg-white rounded-lg">
                 <h3>Thông tin chi tiết</h3>
                 {product && product?.product_specifications?.map((specification: any, index: number) => (
                   <>
@@ -425,11 +434,11 @@ const ProductDetail: React.FC = () => {
                 ))}
               </div>
             </div>
-            <div className="p-4 mt-4 bg-white rounded-xl">
+            <div className="p-4 mt-4 bg-white rounded-lg">
               <h3>Mô tả sản phẩm</h3>
-              <div dangerouslySetInnerHTML={{ __html: product?.description ?? '' }} />
+              <div className="text-sm font-light text-gray-600" dangerouslySetInnerHTML={{ __html: product?.description ?? '' }} />
             </div>
-            <div className="p-4 mt-4 bg-white rounded-xl">
+            <div className="p-4 mt-4 bg-white rounded-lg">
               <h3>Sản phẩm tương tự</h3>
               <div className="grid md:grid-cols-4 lg:grid-cols-3 gap-4 items-center mt-2">
                 {listProductLikeCategory?.slice(0, 6).map((item: any, index: number) => (
@@ -437,12 +446,13 @@ const ProductDetail: React.FC = () => {
                 ))}
               </div>
             </div>
+           
           </div>
-          <div className="col-span-2 bg-white h-fit rounded-xl">
+          <div className="col-span-2 bg-white h-fit rounded-lg">
             <div className="p-4">
               <div className="flex gap-4 ">
                 <img
-                  src={`http://localhost:8080/uploads/${product?.id_shop[0]?.thumbnail}`}
+                  src={product?.id_shop[0]?.thumbnail}
                   alt=""
                   className="rounded-full w-12 h-12 object-cover"
                 />
@@ -479,7 +489,7 @@ const ProductDetail: React.FC = () => {
                   </div>
                   <div className="my-2">
                     <div className="flex items-center justify-start gap-4">
-                      <div className="w-[100px] cursor-pointer h-[30px] bg-transparent border-2 flex items-center border-primary rounded-lg">
+                      <div onClick={() => handleChatClick(product?.id_shop[0]?._id, product?.id_shop[0]?.name)} className="w-[100px] cursor-pointer h-[30px] bg-transparent border-2 flex items-center border-primary rounded-lg">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
@@ -499,7 +509,7 @@ const ProductDetail: React.FC = () => {
                         </p>
                       </div>
                       <Link
-                        to="/"
+                        to={`/shop/${product?.id_shop[0]?._id}`}
                         className="w-[100px] h-[30px] bg-transparent border-2 flex items-center border-gray-400 rounded-lg"
                       >
                         <svg
@@ -533,11 +543,13 @@ const ProductDetail: React.FC = () => {
                     src={product?.thumbnails[0]}
                     alt=""
                   />
-                  <div className="flex items-center gap-2">
-                    <span className="text-md font-light-bold">{ProductPriceSelected?.id_color[0]?.value}</span>
-                    ,
-                    <span className="text-md font-light-bold">{ProductPriceSelected?.id_size[0]?.value}</span>
-                  </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-md font-light-bold">{ProductPriceSelected?.id_color[0]?.value}</span>
+                      {selectedSize && selectedColor && (
+                        <>,</>
+                      )}
+                      <span className="text-md font-light-bold">{ProductPriceSelected?.id_size[0]?.value}</span>
+                    </div>
 
                   <div className="flex items-start justify-normal gap-2">
 
@@ -589,6 +601,9 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="w-[71%]">
+        <Review  product={product}/>
         </div>
       </div>
     </>

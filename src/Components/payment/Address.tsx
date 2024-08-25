@@ -7,7 +7,7 @@ interface Props {
     subOrder?: Order | any;
     refecth: () => void
 }
-const Address: React.FC<Props> = ({ subOrder , refecth }) => {
+const Address: React.FC<Props> = ({ subOrder, refecth }) => {
     const { data: addressUser } = useGetAddressByUserIdQuery(subOrder?.customerId._id, {
         skip: !subOrder
     });
@@ -28,13 +28,13 @@ const Address: React.FC<Props> = ({ subOrder , refecth }) => {
             refecth();
         } catch (error) {
             console.error(error);
-        }finally {
+        } finally {
             setLoading(false);
         }
     }
     return (
         <>
-        <Spinner loading={loading} />
+            <Spinner loading={loading} />
             <div className="bg-white rounded-lg">
                 <div className="flex items-start justify-between font-light-bold text-sm">
                     <p className="text-gray-400">Giao tới</p>
@@ -51,8 +51,8 @@ const Address: React.FC<Props> = ({ subOrder , refecth }) => {
                     <p className='text-gray-500 text-sm'>{subOrder?.address?.phoneNumber}</p>
                 </div>
                 <div className="mt-4 flex items-start  gap-2">
-                    <div className={`${subOrder?.address?.isDefault ? 'bg-green-400/20' : 'bg-yellow-400/20 '} backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center`}>
-                        <p className={`text-[12px] ${subOrder?.address?.isDefault ? 'text-green-400/50' : 'text-yellow-400/50'}`}>{subOrder?.address?.isDefault ? 'Nhà' : 'Khác'}</p>
+                    <div className={`${subOrder?.address?.addressType ? 'bg-green-400/20' : 'bg-yellow-400/20 '} backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center`}>
+                        <p className={`text-[12px] ${subOrder?.address?.addressType ? 'text-green-400/50' : 'text-yellow-400/50'}`}>{subOrder?.address?.addressType ? 'Nhà' : 'Khác'}</p>
                     </div>
                     <span className="text-[14px] text-gray-400">{subOrder?.address?.address + ', ' + subOrder?.address?.ward + ', ' + subOrder?.address?.district + ', ' + subOrder?.address?.province}</span>
                 </div>
@@ -71,24 +71,24 @@ const Address: React.FC<Props> = ({ subOrder , refecth }) => {
                                 <>
                                     <div key={item._id} className='mt-2 p-2 border border-solid border-gray-200 rounded-lg flex items-center justify-between'>
                                         <div className='flex items-center gap-2'>
-                                            {item.isDefault ? <div className="bg-green-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
+                                            {item.addressType ? <div className="bg-green-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
                                                 <p className="text-[12px] text-green-400/50">Nhà</p>
-                                            </div> : 
-                                            <div className="bg-yellow-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
-                                            <p className="text-[12px] text-yellow-400/50">Khác</p>
-                                        </div>}
+                                            </div> :
+                                                <div className="bg-yellow-400/20 backdrop-blur-0 py-1 px-1.5 rounded-md text-center items-center flex justify-center">
+                                                    <p className="text-[12px] text-yellow-400/50">Cơ quan</p>
+                                                </div>}
                                             <div>
                                                 <div className='flex items-center gap-2'>
-                                                <p className='text-[12px] text-gray-500 font-light'>{item.fullName}</p>
-                                                <div className='w-[1px] h-[12px] bg-gray-500'></div>
-                                                <p className='text-[12px] text-gray-500 font-light'>{item.phoneNumber}</p>
+                                                    <p className='text-[12px] text-gray-500 font-light'>{item.fullName}</p>
+                                                    <div className='w-[1px] h-[12px] bg-gray-500'></div>
+                                                    <p className='text-[12px] text-gray-500 font-light'>{item.phoneNumber}</p>
                                                 </div>
                                                 <p className='text-[12px] text-gray-500 font-light'>Địa chỉ : {item.address + ', ' + item.ward + ', ' + item.district + ', ' + item.province}</p>
                                             </div>
                                         </div>
                                         <div className='w-2/5 flex items-center justify-end'>
                                             {item._id !== subOrder?.address?._id ? <input onClick={() => handleSelectAddress(item._id)} type="radio" name="address" className='w-4 h-4 cursor-pointer' /> :
-                                               <input type="radio" name="address" className='w-4 h-4' defaultChecked />
+                                                <input type="radio" name="address" className='w-4 h-4' defaultChecked />
                                             }
                                         </div>
                                     </div>

@@ -187,7 +187,7 @@ const AdminModalAddCategory: React.FC<modalCreateAdminVoucherProps> = ({
               onClick={handleSubmitCreateCategory}
               className=" cursor-pointer px-4 py-2 bg-green-100 duration-300 text-green-500 hover:text-green-600 rounded flex items-center"
             >
-              Tạo <RiCoupon3Fill className="ms-1" />
+              Tạo
             </button>
           </div>
         </div>

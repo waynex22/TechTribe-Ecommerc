@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { apiUrl } from '../../config'
-import { dataToCreateSpecification, dataToCreateSpecificationDetail, specifications, specificationsDetail } from '../../utils/types/specifications'
+import { dataToCreateSpecification, dataToCreateSpecificationDetail, dataToUpdateSpecificationDetail, specifications, specificationsDetail } from '../../utils/types/specifications'
 
 export const specificationsSlice = createApi({
   reducerPath: 'specificationsQuery',
@@ -31,10 +31,20 @@ export const specificationsSlice = createApi({
           Authorization: `Bearer ${token}`,
         }
       })
+    }),
+    updateSpecificationDetail: builder.mutation({
+      query: ({data, token}: {data: dataToUpdateSpecificationDetail, token: string}) => ({
+        url: `specification-detail`,
+        method: "PATCH",
+        body: data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
     })
 
     
   })
 })
 
-export const { useCreateSpecifiDetailMutation,useCreateSpecifiMutation,useGetSpecifiDetailByIdSpecifiQuery ,useGetspecificationsQuery, useGetspecificationsDetailQuery } = specificationsSlice
+export const { useUpdateSpecificationDetailMutation,useCreateSpecifiDetailMutation,useCreateSpecifiMutation,useGetSpecifiDetailByIdSpecifiQuery ,useGetspecificationsQuery, useGetspecificationsDetailQuery } = specificationsSlice

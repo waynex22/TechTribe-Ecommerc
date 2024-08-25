@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^43.0.0",
+    "@ckeditor/ckeditor5-react": "^9.0.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
@@ -23,12 +25,15 @@
     "autoprefixer": "^10.4.19",
     "axios": "^1.7.2",
     "buffer": "^6.0.3",
+    "chart.js": "^4.4.4",
+    "ckeditor5": "^43.0.0",
     "flowbite": "^2.3.0",
     "flowbite-react": "^0.10.1",
     "jwt-decode": "^4.0.0",
     "nodemon": "^3.1.3",
     "path": "^0.12.7",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
     "react-datepicker": "^7.1.0",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
@@ -39,6 +44,8 @@
     "react-spinners": "^0.14.1",
     "react-tailwindcss-select": "^1.8.5",
     "react-toastify": "^10.0.5",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
     "stream": "^0.0.3",
     "util": "^0.12.5",
     "web-vitals": "^2.1.4"
@@ -68,6 +75,7 @@
     ]
   },
   "devDependencies": {
+    "@types/chart.js": "^2.9.41",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/jwt-decode": "^3.1.0",
     "@types/react-redux": "^7.1.33",

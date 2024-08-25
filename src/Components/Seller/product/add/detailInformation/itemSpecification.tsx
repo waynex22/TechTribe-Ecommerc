@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react"
 import { specifications, specificationsDetail } from "../../../../../utils/types/specifications"
+import { typeProductSpecification } from "../../../../../utils/types/product"
 
-const ItemSpecification = ({handleSpecification, id_specification, listSpecifications, listSpecificationDetail }: {
+const ItemSpecification = ({handleSpecification, id_specification, listSpecifications, listSpecificationDetail,product_specifications }: {
     listSpecifications: specifications[]
     listSpecificationDetail: specificationsDetail[]
     id_specification:string
     handleSpecification: (idSpecification:string, idSpecificationDetail:string) => void
+    product_specifications?: typeProductSpecification[]
+
 }) => {
     const [specification, setSpecification] = useState({} as specifications)
     const [listValue, setListValue] = useState([] as specificationsDetail[])
@@ -32,9 +35,16 @@ const ItemSpecification = ({handleSpecification, id_specification, listSpecifica
                 <option value="" > - - - - - - - - - - - - </option>
                 {listValue &&
                     listValue.map((item)=>{
+                        let check = false;
+                        product_specifications?.forEach(spec => {
+                            if(spec.id_specifications_detail.includes(item._id))
+                            check = spec.id_specifications_detail.includes(item._id)
+                        })
                         return (
-                            <option key={item._id} value={item._id}>{item.name} </option>
-                        )
+                          <option key={item._id} value={item._id} selected={check}>
+                            {item.name}
+                          </option>
+                        );
                     })
                 }
             </select>

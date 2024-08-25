@@ -47,31 +47,32 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
     key: string,
     value: string | typeSpecifications[] | TypeVariation | typeProductPrice[] | File[]
   ) => {
-    setFormAddProduct({ 
-      ...formAddProduct, 
-      [key]: value });
+    setFormAddProduct({
+      ...formAddProduct,
+      [key]: value
+    });
   }
   const handleVaritaion = (value: TypeVariation) => {
     let newPrice: typeProductPrice[] = []
     let sizeNames: string[] = [];
     let colorNames: string[] = [];
-    
+
     if (value['Size']) {
       sizeNames = value['Size'].map(size => size.name);
     }
-    
+
     if (value['Màu sắc']) {
       colorNames = value['Màu sắc'].map(color => color.name);
     }
-    
-    if(formAddProduct.productPrice) {
+
+    if (formAddProduct.productPrice) {
       newPrice = formAddProduct.productPrice.filter(p => {
         const matchSize = p.name_size ? sizeNames.includes(p.name_size) : true;
         const matchColor = p.name_color ? colorNames.includes(p.name_color) : true;
         return matchSize && matchColor;
       });
-      setFormAddProduct({ 
-        ...formAddProduct, 
+      setFormAddProduct({
+        ...formAddProduct,
         variation: value,
       });
     }
@@ -92,7 +93,7 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
     setLoader(true)
 
     requestApi(`product/${product._id}`, 'PATCH', formAddProduct, 'application/json')
-      .then( async (data) => {
+      .then(async (data) => {
         const newData = { ...formAddProduct, id_product: product._id }
         await createVariation(newData)
         toast.success('sửa thành công')
@@ -119,12 +120,12 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
   }
   const createVariation = async (dataFormNew: typeFormCreateProduct) => {
     await requestApi('product-price/variation', 'PATCH', dataFormNew, 'application/json')
-      .then( async () => {
+      .then(async () => {
         await createProductPrice(dataFormNew)
       })
       .catch(errPrice => {
-          setLoader(false)
-          toast.error('Có lỗi khi thêm tiền')
+        setLoader(false)
+        toast.error('Có lỗi khi thêm tiền')
         console.log(errPrice);
       })
   }
@@ -132,12 +133,12 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
   const createProductPrice = async (newData: typeFormCreateProduct) => {
     await requestApi('product-price', 'PATCH', newData, 'application/json')
       .then(() => {
-          setLoader(false)
-          navigate('/seller/product/list')
+        setLoader(false)
+        navigate('/seller/product/list')
       })
       .catch(errPrice => {
-          setLoader(false)
-          toast.error('Có lỗi khi thêm tiền')
+        setLoader(false)
+        toast.error('Có lỗi khi thêm tiền')
         console.log(errPrice);
       })
   }
@@ -209,12 +210,12 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
           {formAddProduct.id_categoryDetail ?
             <>
               <DetailInformation product={product} formAddProduct={formAddProduct} handleFormAddproduct={handleFormAddproduct} />
-              <VariationsProduct             
-              errForm={errForm} 
-              product={product} 
-              formAddProduct={formAddProduct} 
-              handleFormAddproduct={handleFormAddproduct}
-              onHandleVaritaion={handleVaritaion}
+              <VariationsProduct
+                errForm={errForm}
+                product={product}
+                formAddProduct={formAddProduct}
+                handleFormAddproduct={handleFormAddproduct}
+                onHandleVaritaion={handleVaritaion}
               />
             </>
             :
@@ -223,18 +224,18 @@ const EditProduct = ({ idProduct }: { idProduct: string }) => {
               <DefaultInfoAddProduct title='Thông tin khác' />
             </>
           }
-<div className=' flex flex-row-reverse py-4 gap-5'>
-        <button
-          className=' px-4 py-2 rounded shadow-md text-white font-semibold border bg-primary hover:border-primary hover:bg-white hover:text-primary'
-          onClick={(e) => updateProduct(e)}>
-          Xác nhận
-        </button>
-        <Link 
-        className=' px-4 py-2 rounded shadow-md hover:bg-gray-200 hover:border'
-        to={'/seller/product/list'}>
-          Hủy
-        </Link>
-      </div>
+          <div className=' flex flex-row-reverse py-4 gap-5'>
+            <button
+              className=' px-4 py-2 rounded shadow-md text-white font-semibold border bg-primary hover:border-primary hover:bg-white hover:text-primary'
+              onClick={(e) => updateProduct(e)}>
+              Xác nhận
+            </button>
+            <Link
+              className=' px-4 py-2 rounded shadow-md hover:bg-gray-200 hover:border'
+              to={'/seller/product/list'}>
+              Hủy
+            </Link>
+          </div>
         </div>
       }
     </>

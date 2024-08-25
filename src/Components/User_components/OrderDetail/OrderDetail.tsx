@@ -1,21 +1,79 @@
 import { Link, useParams } from "react-router-dom";
-import { useGetOrderByIdQuery } from "src/redux/rtkQuery/order";
+import { useCancelOrderMutation, useGetOrderByIdQuery, useUpdateItemsOrderMutation } from "src/redux/rtkQuery/order";
 import { formatDate, formatDateAndTime } from "src/utils/formartDate";
 import ItemDetail from "./itemDetail";
+import Toast from "src/Components/toast/Toast";
+import { ToastProps } from "src/Type";
+import { useState } from "react";
+import ModalRating from "./ModalRating";
+import { useUpdateStatusTimeMutation } from "src/redux/rtkQuery/product-review";
+import ModalAccept from "src/Components/modal/ModalAccept";
+import OrderCancel from "./OrderCancel";
+import { useAddCoinRefundMutation } from "src/redux/rtkQuery/customerReward";
 
 const OrderDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
-    const { data: order, isLoading } = useGetOrderByIdQuery(slug ? slug : '', { skip: !slug });
-    if (isLoading) return <div className="w-full h-screen flex items-center justify-center"></div>
+    const [updateOrder] = useUpdateItemsOrderMutation();
+    const [updateTime] = useUpdateStatusTimeMutation();
+    const [updateCoinRefunt] = useAddCoinRefundMutation();
+    const [cancelOrder] = useCancelOrderMutation();
+    const [openModal, setOpenModal] = useState(false);
+    const [modalAccept , setModalAccept] = useState(false);
+    const [modalAction , setModalAction] = useState<(() => void) | null>(null);
+    const [toast, setToast] = useState<ToastProps | null>(null);
+    const { data: order, isLoading, refetch } = useGetOrderByIdQuery(slug ? slug : '', { skip: !slug });
+    const handleUpdate = async (key: string) => {
+        await updateOrder({ _id: order?._id, status: key });
+        await updateTime({ id: order?._id, key: key, value: new Date() });
+        if(order?.coinRefunt > 0 && order.status === 'Hoàn thành') {
+            await  updateCoinRefunt({ customerId: order?.customerId, coin: order?.coinRefunt });
+        }
+        setToast({ message: 'Cập nhật thành công', type: 'success', onClose: () => setToast(null) });
+        refetch();
+    }
     // console.log(order);
+    const handleCancelOrder = async () => {
+        await cancelOrder({ _id: order?._id });
+        await updateTime({ id: order?._id, key: 'user_cancel', value: new Date() });
+        setToast({ message: 'Huỷ đơn hàng thành công', type: 'success', onClose: () => setToast(null) });
+        refetch();
+    }
+
+    const openModalAccept = () => {
+        setModalAccept(true);
+        setModalAction(() => handleCancelOrder);
+    }
+    const handleConfirm = async () => {
+        if (modalAction) {
+          await modalAction();
+        }
+        setModalAccept(false);
+      };
+    
+      const handleCancel = () => {
+        setModalAccept(false);
+      };
     const getKeyUpdateItem = (key: string) => {
         return order?.statusUpdate?.filter((item: any) => item.key === key).map((item: any) => item.value);
     }
+    const checkRefuntOrder = (endDate: string) => {
+        const now = new Date();
+        const dateRefund = new Date(endDate);
+        return now.getTime() < dateRefund.getTime();
+    }
+    const checkAutoCancel = order?.statusUpdate?.every((item: any) => item.key === 'auto_cancel');
     if (isLoading) return <div className="w-full h-screen flex items-center justify-center">isLoading</div>
     return (
         <>
+        <ModalAccept
+          isOpen={modalAccept}
+          message="Bạn có chắc muốn huỷ đơn hàng này"
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+            {toast && <Toast message={toast.message} type={toast.type} onClose={toast.onClose} />}
             <div className="flex items-center justify-between border-b border-dashed p-4 bg-white rounded-lg">
-                <Link to="/profile/purchase" className="flex items-center gap-1 text-sm text-gray-500 cursor-pointer uppercase">
+                <Link to="/me/purchase" className="flex items-center gap-1 text-sm text-gray-500 cursor-pointer uppercase">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                     </svg>
@@ -28,7 +86,14 @@ const OrderDetail: React.FC = () => {
                 </div>
             </div>
             <div className="border-b border-dashed p-4 flex items-center justify-center bg-white rounded-lg">
-                <div className="flex items-center justify-start">
+                {order?.status === 'Đã huỷ' ?  (
+                    <>
+                    <OrderCancel />
+                    </>
+                ):
+                (
+                    <>
+                    <div className="flex items-center justify-start">
                     <div className="flex flex-col items-start justify-start">
                         <div className="flex items-center ">
                             <div className="border p-4 border-green-400 rounded-full">
@@ -61,13 +126,13 @@ const OrderDetail: React.FC = () => {
                 <div className="flex items-center justify-start">
                     <div className="flex flex-col items-start justify-start">
                         <div className="flex items-center">
-                            <div className={`border  p-4 rounded-full ${order?.status !== 'Chờ xác nhận' ? 'border-green-400' : 'border-gray-200'}`}>
+                            <div className={`border  p-4 rounded-full ${order?.status !== 'Chờ xác nhận' && order?.status !== 'Đã huỷ' ? 'border-green-400' : 'border-gray-200'}`}>
                                 <svg className="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="favorite-store"><rect width="21.5" height="15.5" x="1.25" y="7.25" fill="#aff9f7" rx="2.75"></rect><circle cx="17" cy="7" r="5.75" fill="#13e4ea"></circle><path fill="#13e4ea" d="M18.7,10.186a.748.748,0,0,1-.379-.1L17,9.311l-1.319.772a.751.751,0,0,1-1.1-.842l.408-1.512L13.934,6.712a.75.75,0,0,1,.521-1.289H15.7l.641-1.21a.781.781,0,0,1,1.326,0l.641,1.21h1.241a.75.75,0,0,1,.521,1.289L19.015,7.729l.408,1.512a.751.751,0,0,1-.725.945ZM17,7.692a.754.754,0,0,1,.379.1l.119.07-.047-.172a.752.752,0,0,1,.2-.734l.052-.05a.752.752,0,0,1-.517-.384L17,6.166l-.189.358a.752.752,0,0,1-.517.384l.052.05a.752.752,0,0,1,.2.734l-.047.172.119-.07A.754.754,0,0,1,17,7.692Z"></path><path fill="#aff9f7" d="M9 12.75H6a.75.75 0 010-1.5H9a.75.75 0 010 1.5zM12 15.75H6a.75.75 0 010-1.5h6a.75.75 0 010 1.5z"></path><rect width="21.5" height="15.5" x="1.25" y="7.25" fill="#13e4ea" rx="2.75"></rect><circle cx="17" cy="7" r="5" fill="#13e4ea"></circle><path fill="#fff" d="M19.95,5.992a.683.683,0,0,0-.633-.427h-1.13l-.583-1.1a.711.711,0,0,0-1.208,0l-.583,1.1h-1.13a.683.683,0,0,0-.475,1.174l.958.926-.372,1.377a.683.683,0,0,0,1,.767l1.2-.7,1.2.7a.683.683,0,0,0,1-.767l-.372-1.377.958-.926A.683.683,0,0,0,19.95,5.992Z"></path><path fill="#aff9f7" d="M9 12.75H6a.75.75 0 010-1.5H9a.75.75 0 010 1.5zM12 15.75H6a.75.75 0 010-1.5h6a.75.75 0 010 1.5z"></path><line x1="9" x2="10.1" y1="8" y2="8" fill="none" stroke="#007da1" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></line><path fill="none" stroke="#007da1" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.64,8.86A1.979,1.979,0,0,1,22,10V20a2.006,2.006,0,0,1-2,2H4a2.006,2.006,0,0,1-2-2V10A2.006,2.006,0,0,1,4,8H7"></path><circle cx="17" cy="7" r="5" fill="none" stroke="#007da1" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></circle><circle cx="6" cy="19" r="1" fill="#aff9f7"></circle><circle cx="9" cy="19" r="1" fill="#aff9f7"></circle><circle cx="12" cy="19" r="1" fill="#aff9f7"></circle><circle cx="15" cy="19" r="1" fill="#aff9f7"></circle><circle cx="18" cy="19" r="1" fill="#aff9f7"></circle></svg>
                             </div>
-                            <div className={`w-[150px] h-[1px] ${order?.status !== 'Chờ xác nhận' ? 'bg-green-400' : 'bg-gray-200'}`}></div>
+                            <div className={`w-[150px] h-[1px] ${order?.status !== 'Chờ xác nhận' && order?.status !== 'Đã huỷ' ? 'bg-green-400' : 'bg-gray-200'}`}></div>
                         </div>
                         <div className="min-h-[100px]">
-                            {order?.status !== 'Chờ xác nhận' && (
+                            {order?.status !== 'Chờ xác nhận' && order?.status !== 'Đã huỷ' && (
                                 <>
                                     <p className="text-gray-800 text-sm font-normal">Đã xác nhận</p>
                                     <p className="text-[12px] text-gray-400 font-normal">{formatDateAndTime(getKeyUpdateItem('Xác nhận')[0])}</p>
@@ -115,7 +180,7 @@ const OrderDetail: React.FC = () => {
                 <div className="flex items-center justify-start">
                     <div className="flex flex-col items-start justify-start">
                         <div className="flex items-center">
-                            <div className="border border-gray-200 p-4 rounded-full">
+                            <div className={`border p-4 rounded-full ${order?.rateDate === true ? 'border-green-400' : 'border-gray-200'}`}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" id="star"><g fill="#fff" transform="translate(5 -1031.362)"><circle cx="8" cy="1044.362" r="13" fill="#ffa40b" fill-rule="evenodd"></circle><path fill="#ff7712" className="leading-normal indent-0 text-left no-underline decoration-solid decoration-black normal-case isolate mix-blend-normal list-none"
                                     d="M14.152 25.94a13 13 0 0 0 1.057-.13 13 13 0 0 0 1.268-.285 13 13 0 0 0 1.234-.408 13 13 0 0 0 1.185-.531 13 13 0 0 0 1.127-.647 13 13 0 0 0 1.057-.755 13 13 0 0 0 .977-.858 13 13 0 0 0 .886-.951 13 13 0 0 0 .786-1.035 13 13 0 0 0 .68-1.108 13 13 0 0 0 .566-1.17 13 13 0 0 0 .445-1.22 13 13 0 0 0 .32-1.26 13 13 0 0 0 .05-.328l-5.005-5.004c-.005-.005-.012-.006-.017-.012a1.183 1.183 0 0 0-.315-.199 3.325 3.325 0 0 0-.625-.209c-.465-.114-1.032-.2-1.605-.28-.012 0-.022-.001-.034-.003l-4.582-4.582c-.028-.029-.068-.05-.101-.076-.032-.026-.059-.053-.096-.075-.019-.01-.04-.018-.06-.027a.713.713 0 0 0-.301-.068c-.334 0-.504.174-.647.324-.142.15-.264.326-.39.53-.253.405-.51.916-.764 1.435-.253.519-.5 1.045-.71 1.453-.106.204-.203.38-.28.502-.046.072-.09.124-.11.148a1.2 1.2 0 0 1-.175.055 6.969 6.969 0 0 1-.567.102c-.455.066-1.035.128-1.61.199-.574.07-1.142.147-1.609.254-.233.053-.44.111-.628.197-.189.086-.412.188-.518.504-.106.315.01.531.11.713.098.181.23.352.384.535.19.224.415.462.658.705l2.102 2.102.039.054c.001.032.005.1-.002.184-.012.144-.04.342-.078.568-.078.453-.196 1.02-.307 1.586-.11.567-.213 1.132-.256 1.608-.02.237-.029.45-.005.656.01.094.027.195.062.297a.694.694 0 0 0 .147.242c.007.008.007.017.015.025l6.242 6.242z" color="#000" font-family="sans-serif" font-weight="400" transform="translate(-5 1031.362)"></path><path className="leading-normal indent-0 text-left no-underline decoration-black normal-case isolate-auto mix-blend-normal list-none"
                                         d="M78.804 1014.566c-.313 0-.471.179-.605.333a3.343 3.343 0 0 0-.366.545c-.237.418-.478.945-.715 1.48-.237.534-.468 1.075-.665 1.496-.099.21-.19.39-.262.516-.043.074-.084.126-.103.152-.029.012-.087.038-.165.058-.132.034-.317.07-.53.104-.427.068-.969.132-1.507.205-.538.072-1.07.151-1.507.261a2.864 2.864 0 0 0-.59.204c-.176.088-.384.194-.483.519-.099.325.01.546.103.733.092.187.214.363.359.551.289.376.671.79 1.062 1.203.39.412.788.82 1.092 1.156.151.167.28.318.367.432.05.067.083.127.1.155 0 .033.005.102-.001.19a7.936 7.936 0 0 1-.074.584c-.072.466-.184 1.051-.288 1.635-.103.583-.199 1.163-.239 1.653-.02.245-.027.466-.005.677.022.212.05.461.3.665.252.203.477.159.668.12.191-.04.381-.112.589-.205.415-.185.893-.456 1.371-.736.478-.28.955-.568 1.34-.781.192-.107.362-.194.489-.25.074-.031.135-.047.164-.055.03.01.09.025.165.059.125.057.294.148.484.257.382.22.855.517 1.329.806.474.288.947.567 1.36.76.206.096.395.172.586.215.19.042.415.09.669-.109.254-.199.285-.448.31-.659.025-.21.02-.432.005-.677a18.65 18.65 0 0 0-.215-1.657c-.095-.586-.198-1.172-.264-1.64a7.942 7.942 0 0 1-.065-.586c-.005-.087 0-.156.003-.19.016-.026.05-.086.102-.152.088-.113.219-.261.373-.426.308-.33.712-.731 1.109-1.137.396-.405.785-.813 1.08-1.183.147-.186.27-.36.366-.545.096-.185.208-.404.114-.731-.095-.327-.301-.436-.476-.528a2.905 2.905 0 0 0-.586-.214c-.435-.117-.967-.206-1.504-.288-.537-.082-1.077-.156-1.503-.231a6.253 6.253 0 0 1-.529-.114c-.077-.022-.135-.049-.163-.06-.019-.027-.06-.08-.101-.154a7.515 7.515 0 0 1-.254-.521c-.191-.424-.414-.97-.643-1.508a17.777 17.777 0 0 0-.693-1.492 3.362 3.362 0 0 0-.359-.55c-.131-.157-.287-.342-.6-.345zm-.009 1.17c.05.073.098.136.162.254.195.355.423.868.648 1.397.225.53.448 1.077.652 1.53.102.225.198.427.294.599.095.172.164.31.34.453.176.143.317.174.495.224.178.049.382.09.609.131.454.081.997.155 1.524.235.528.081 1.041.17 1.408.268.122.033.19.064.27.095-.049.076-.089.145-.17.248-.249.313-.623.71-1.013 1.107-.39.399-.795.801-1.124 1.153-.165.176-.31.34-.43.492-.119.152-.218.267-.287.495-.07.227-.053.384-.041.585.012.2.039.426.074.676.07.498.174 1.087.267 1.662.093.575.175 1.138.203 1.552.009.136.003.217 0 .31-.08-.027-.153-.048-.268-.101-.347-.162-.807-.43-1.272-.713-.466-.284-.94-.582-1.348-.817a7.042 7.042 0 0 0-.559-.296c-.169-.077-.299-.145-.518-.147-.219 0-.35.064-.52.138-.17.075-.358.173-.563.286-.41.227-.89.518-1.36.793-.47.275-.932.534-1.282.69-.116.052-.188.071-.27.097-.001-.093-.006-.174.005-.31.034-.413.124-.975.226-1.548.101-.573.214-1.16.291-1.657a8.72 8.72 0 0 0 .084-.675c.015-.2.034-.357-.032-.586-.066-.229-.163-.345-.28-.5a7.74 7.74 0 0 0-.423-.499c-.323-.358-.723-.767-1.107-1.172a16.142 16.142 0 0 1-.995-1.125c-.081-.105-.12-.174-.167-.251.08-.03.149-.06.27-.091.369-.093.884-.172 1.413-.243.528-.071 1.072-.135 1.527-.208.228-.036.433-.075.611-.121s.32-.075.498-.215.25-.277.347-.447c.098-.17.197-.37.302-.594.21-.449.442-.992.675-1.518a17.34 17.34 0 0 1 .668-1.385c.066-.117.114-.179.166-.252z" color="#000" font-family="sans-serif" font-weight="400" overflow="visible" transform="matrix(1.06795 0 0 .97117 -76.11 50.762)"></path></g></svg>
@@ -127,21 +192,61 @@ const OrderDetail: React.FC = () => {
                                     <p className="text-gray-800 text-sm font-normal">Đánh giá</p>
                                 </>
                             )}
+                            {order?.rateDate === true && (
+                                <>
+                                    <p className="text-gray-800 text-sm font-normal">Đã đánh giá</p>
+                                    <p className="text-[12px] text-gray-400 font-normal">{formatDateAndTime(getKeyUpdateItem('rateDate')[0])}</p>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
+                    </>
+                )}
             </div>
+            {!order?.statusShipping && order.status !== 'Đã huỷ' && (
+                <div className="bg-white p-4 rounded-lg border-b border-gray-200 border-dashed">
+                    <div className="flex items-start justify-between">
+                        <div className="flex flex-col gap-2">
+                            <p className="text-[12px] text-gray-400 font-normal">Nếu quá 3 ngày đơn hàng chưa được xác nhận và gửi đi thì đơn hàng sẽ tự động huỷ</p>
+                        </div>
+                        <div className="flex flex-col gap-y-2">
+                                <div onClick={openModalAccept} className="flex items-center cursor-pointer justify-center px-4 py-2 bg-white rounded-md border border-primary/40 text-primary/70 hover:bg-primary/50 hover:text-white">
+                                    <p className="font-normal text-sm">Huỷ đơn</p>
+                                </div>
+                        </div>
+                    </div>
+
+                </div>
+            )}
             {order?.statusShipping === 'Đã giao hàng' && (
                 <div className="bg-white p-4 rounded-lg border-b border-gray-200 border-dashed">
                     <div className="flex items-start justify-between">
-                        <p className="text-[12px] text-gray-400 font-normal">Nếu hàng nhận được có vấn đề, bạn có thể gửi yêu cầu Trả hàng/Hoàn tiền trước {formatDate(getKeyUpdateItem(order?.statusShipping)[0])}</p>
+                        <div className="flex flex-col gap-2">
+                            {order?.statusShipping === 'Đã giao hàng' && order?.status !== 'Hoàn thành' && (
+                                <p className="text-[12px] text-gray-400 font-normal">Nếu hàng nhận được có vấn đề, bạn có thể gửi yêu cầu Trả hàng/Hoàn tiền trước {formatDate(order?.DeliveryTime)}</p>
+                            )}
+                            {order?.statusShipping === 'Đã giao hàng' && order?.rateDate === false && (
+                                <p className="text-[12px] text-gray-400 font-normal">Đánh giá sản phẩm để có trải nghiệm tốt hơn và nhận được 200 xu</p>
+                            )}
+                        </div>
                         <div className="flex flex-col gap-y-2">
-                            <div className="flex items-center cursor-pointer justify-center px-4 py-2 bg-red-500 rounded-md border border-red-600">
-                                <p className="text-white font-normal text-sm">Đánh Giá</p>
-                            </div>
-                            <div className="flex items-center cursor-pointer justify-center px-4 py-2 rounded-md border border-gray-400">
-                            <p className="font-normal text-sm"> Yêu Cầu Trả Hàng / Hoàn Tiền</p>
-                            </div>
+                            {order?.statusShipping === 'Đã giao hàng' && order?.status === 'Đang vận chuyển' && (
+                                <div onClick={() => handleUpdate('Hoàn thành')} className="flex items-center cursor-pointer justify-center px-4 py-2 bg-red-500 rounded-md border border-red-600">
+                                    <p className="text-white font-normal text-sm">Xác nhận hoàn thành đơn hàng</p>
+                                </div>
+                            )}
+                            {order?.rateDate === false && (
+                                <div onClick={() => setOpenModal(true)} className="flex items-center cursor-pointer justify-center px-4 py-2 bg-primary/80 rounded-md border border-primary">
+                                    <p className="text-white font-normal text-sm">Đánh Giá</p>
+                                </div>
+                            )}
+
+                            {order?.statusShipping === 'Đã giao hàng' && checkRefuntOrder(order?.DeliveryTime) && (
+                                <div className="flex items-center cursor-pointer justify-center px-4 py-2 rounded-md border border-gray-400">
+                                    <p className="font-normal text-sm"> Yêu Cầu Trả Hàng / Hoàn Tiền</p>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -158,6 +263,44 @@ const OrderDetail: React.FC = () => {
                     <div className="h-full w-[1px] bg-gray-200"></div>
                     <div className="w-[50%]">
                         <ol className="relative border-s border-gray-200">
+                            {order?.status === 'Đã huỷ' && (
+                                <>
+                                {checkAutoCancel ? (
+                                <>
+                                <li className="ms-5">
+                                    <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
+                                        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="delivery-box"><rect width="60" height="46" x="2" y="9" fill="#ffc239" rx="1"></rect><path fill="#ffd55d" d="M61,9H9V26.456A21.543,21.543,0,0,0,30.544,48H62V10A1,1,0,0,0,61,9Z"></path><rect width="14" height="18" x="25" y="9" fill="#e8e4d8"></rect><rect width="20" height="12" x="38" y="39" fill="#e8e4d8"></rect><rect width="2" height="8" x="53" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="50" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="47" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="44" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="41" y="41" fill="#7a7b7d"></rect><rect width="2" height="2" x="5" y="38" fill="#fff"></rect><rect width="10" height="2" x="9" y="38" fill="#fff"></rect><rect width="9" height="2" x="5" y="42" fill="#fff"></rect><rect width="3" height="2" x="16" y="42" fill="#fff"></rect><rect width="2" height="2" x="5" y="46" fill="#fff"></rect><rect width="10" height="2" x="9" y="46" fill="#fff"></rect><rect width="9" height="2" x="5" y="50" fill="#fff"></rect><rect width="3" height="2" x="16" y="50" fill="#fff"></rect></svg>
+                                    </div>
+                                    <time className="mb-1 text-[12px] font-normal leading-none text-gray-400 ">{formatDateAndTime(getKeyUpdateItem('auto_cancel')[0])}</time>
+                                    <p className="text-sm font-semibold text-gray-900 ">Đã huỷ</p>
+                                    <p className="text-sm font-normal text-gray-500 ">Đơn hàng đã huỷ vì không có phản hồi từ shop</p>
+                                </li>
+                                </>
+                            ): (
+                                <>
+                                 <li className="ms-5">
+                                    <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
+                                        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="delivery-box"><rect width="60" height="46" x="2" y="9" fill="#ffc239" rx="1"></rect><path fill="#ffd55d" d="M61,9H9V26.456A21.543,21.543,0,0,0,30.544,48H62V10A1,1,0,0,0,61,9Z"></path><rect width="14" height="18" x="25" y="9" fill="#e8e4d8"></rect><rect width="20" height="12" x="38" y="39" fill="#e8e4d8"></rect><rect width="2" height="8" x="53" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="50" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="47" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="44" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="41" y="41" fill="#7a7b7d"></rect><rect width="2" height="2" x="5" y="38" fill="#fff"></rect><rect width="10" height="2" x="9" y="38" fill="#fff"></rect><rect width="9" height="2" x="5" y="42" fill="#fff"></rect><rect width="3" height="2" x="16" y="42" fill="#fff"></rect><rect width="2" height="2" x="5" y="46" fill="#fff"></rect><rect width="10" height="2" x="9" y="46" fill="#fff"></rect><rect width="9" height="2" x="5" y="50" fill="#fff"></rect><rect width="3" height="2" x="16" y="50" fill="#fff"></rect></svg>
+                                    </div>
+                                    <time className="mb-1 text-[12px] font-normal leading-none text-gray-400 ">{formatDateAndTime(getKeyUpdateItem('user_cancel')[0])}</time>
+                                    <p className="text-sm font-semibold text-gray-900 ">Đã huỷ</p>
+                                    <p className="text-sm font-normal text-gray-500 ">Bạn đã huỷ đơn hàng này</p>
+                                </li>
+                                </>
+                            )}
+                                </>
+                            )}
+                            {order?.status === 'Hoàn thành' && (
+                                <li className="ms-5">
+                                    <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
+                                        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="delivery-box"><rect width="60" height="46" x="2" y="9" fill="#ffc239" rx="1"></rect><path fill="#ffd55d" d="M61,9H9V26.456A21.543,21.543,0,0,0,30.544,48H62V10A1,1,0,0,0,61,9Z"></path><rect width="14" height="18" x="25" y="9" fill="#e8e4d8"></rect><rect width="20" height="12" x="38" y="39" fill="#e8e4d8"></rect><rect width="2" height="8" x="53" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="50" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="47" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="44" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="41" y="41" fill="#7a7b7d"></rect><rect width="2" height="2" x="5" y="38" fill="#fff"></rect><rect width="10" height="2" x="9" y="38" fill="#fff"></rect><rect width="9" height="2" x="5" y="42" fill="#fff"></rect><rect width="3" height="2" x="16" y="42" fill="#fff"></rect><rect width="2" height="2" x="5" y="46" fill="#fff"></rect><rect width="10" height="2" x="9" y="46" fill="#fff"></rect><rect width="9" height="2" x="5" y="50" fill="#fff"></rect><rect width="3" height="2" x="16" y="50" fill="#fff"></rect></svg>
+                                    </div>
+                                    <time className="mb-1 text-[12px] font-normal leading-none text-gray-400 ">{formatDateAndTime(getKeyUpdateItem('Hoàn thành')[0])}</time>
+                                    <p className="text-sm font-semibold text-gray-900 ">Hoàn thành</p>
+                                    <p className="text-sm font-normal text-gray-500 ">Xác nhận đơn hàng thành công</p>
+                                </li>
+
+                            )}
                             {order?.statusShipping === 'Đã giao hàng' && (
                                 <li className="ms-5">
                                     <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
@@ -247,7 +390,7 @@ const OrderDetail: React.FC = () => {
                                     <p className="text-sm font-normal text-gray-500 ">Đã gửi hàng cho đơn vị vận chuyển</p>
                                 </li>
                             )}
-                            {order?.status !== 'Chờ xác nhận' && (
+                            {order?.status !== 'Chờ xác nhận' && order?.status !== 'Đã huỷ' && (
                                 <li className="ms-5">
                                     <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
                                         <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="delivery-box"><rect width="60" height="46" x="2" y="9" fill="#ffc239" rx="1"></rect><path fill="#ffd55d" d="M61,9H9V26.456A21.543,21.543,0,0,0,30.544,48H62V10A1,1,0,0,0,61,9Z"></path><rect width="14" height="18" x="25" y="9" fill="#e8e4d8"></rect><rect width="20" height="12" x="38" y="39" fill="#e8e4d8"></rect><rect width="2" height="8" x="53" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="50" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="47" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="44" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="41" y="41" fill="#7a7b7d"></rect><rect width="2" height="2" x="5" y="38" fill="#fff"></rect><rect width="10" height="2" x="9" y="38" fill="#fff"></rect><rect width="9" height="2" x="5" y="42" fill="#fff"></rect><rect width="3" height="2" x="16" y="42" fill="#fff"></rect><rect width="2" height="2" x="5" y="46" fill="#fff"></rect><rect width="10" height="2" x="9" y="46" fill="#fff"></rect><rect width="9" height="2" x="5" y="50" fill="#fff"></rect><rect width="3" height="2" x="16" y="50" fill="#fff"></rect></svg>
@@ -270,6 +413,7 @@ const OrderDetail: React.FC = () => {
                 </div>
             </div>
             <ItemDetail item={order} />
+            <ModalRating openModal={openModal} onClose={() => setOpenModal(false)} items={order} refecth={refetch} setToast={setToast} />
         </>
     )
 }

@@ -12,6 +12,12 @@ export type dataToCreateSpecificationDetail = {
     id_specification: string
 }
 
+export type dataToUpdateSpecificationDetail = {
+    name: string,
+    id: string
+}
+
+
 export type specificationsDetail = {
     _id:string;
     id_specification: string,
