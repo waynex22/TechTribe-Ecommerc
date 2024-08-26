@@ -13,7 +13,7 @@ const TabFilterReview: React.FC<Props> = ({ handleSetRate, tab, product , review
         <div className="flex items-center justify-between gap-4">
             <div className="w-[20%]">
                 <div className="flex items-end gap-1 text-primary/50">
-                    <h3 className="text-2xl">{product?.rating.toFixed(1)}</h3>
+                    <h3 className="text-2xl">{product?.rating?.toFixed(1)}</h3>
                     <p>trên</p>
                     <p>5</p>
                 </div>

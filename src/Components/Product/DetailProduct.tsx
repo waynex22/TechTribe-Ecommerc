@@ -478,7 +478,7 @@ const ProductDetail: React.FC = () => {
                     />
                     <div className="w-[1px] py-2 bg-gray-200"></div>
 
-                    <span className="text-sm">{ratingShop?.rating}</span>
+                    <span className="text-sm">{ratingShop?.rating || 0}</span>
                     <span>
                       <svg
                         stroke="currentColor"
