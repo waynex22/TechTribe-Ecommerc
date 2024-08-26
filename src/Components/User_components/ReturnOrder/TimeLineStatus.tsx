@@ -4,7 +4,9 @@ interface Props {
     returnOrder: any
 }
 const TimeLineStatus: React.FC<Props> = ({ returnOrder }) => {
-
+    const getKeyUpdateItem = (key: string) => {
+        return returnOrder?.statusUpdate?.filter((item: any) => item.key === key).map((item: any) => item.value);
+    }
     return (
         <>
             <div className="flex items-center justify-start">
@@ -48,7 +50,7 @@ const TimeLineStatus: React.FC<Props> = ({ returnOrder }) => {
                         {returnOrder?.status !== 'Đã tiếp nhận' && returnOrder?.status !== 'Từ chối' && (
                             <>
                                 <p className="text-gray-800 text-sm font-normal">Đã gửi hàng lại</p>
-                                <p className="text-[12px] text-gray-400 font-normal">{formatDateAndTime(returnOrder?.returnDate)}</p>
+                                <p className="text-[12px] text-gray-400 font-normal">{formatDateAndTime(getKeyUpdateItem('Đã gửi hàng lại')[0])}</p>
                             </>
                         )}
                     </div>
@@ -65,7 +67,7 @@ const TimeLineStatus: React.FC<Props> = ({ returnOrder }) => {
                         {returnOrder?.status === 'Kiểm tra hoàn hàng' || returnOrder?.status === 'Hoàn tiền' && (
                             <>
                                 <p className="text-gray-800 text-sm font-normal">Kiểm tra hàng hoàn</p>
-                                <p className="text-[12px] text-gray-400 font-normal">{formatDateAndTime(returnOrder?.returnDate)}</p>
+                                <p className="text-[12px] text-gray-400 font-normal">{formatDateAndTime(getKeyUpdateItem('Hoàn tiền')[0])}</p>
                             </>
                         )
                         }
@@ -84,7 +86,7 @@ const TimeLineStatus: React.FC<Props> = ({ returnOrder }) => {
                                 {returnOrder?.status === 'Hoàn tiền' && (
                                     <>
                                      <p className="text-gray-800 text-sm font-normal">Đã hoàn tiền</p>
-                                     <p className="text-[12px] text-gray-400 font-normal">{formatDateAndTime(returnOrder?.returnDate)}</p>
+                                     <p className="text-[12px] text-gray-400 font-normal">{formatDateAndTime(getKeyUpdateItem('Hoàn tiền')[0])}</p>
                                      </>
                                 )}
                             </div>

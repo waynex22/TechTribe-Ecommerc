@@ -161,7 +161,14 @@ export const orderApi = createApi({
                 method: 'GET'
             })
         }),
+        updateReturnOrder: builder.mutation<any, any>({
+            query: (payload) => ({
+                url: `return-order/${payload.id}`,
+                method: 'PATCH',
+                body: payload
+            })
+        })
     }),
 });
 
-export const { useGetSubOrderQuery, useCreateSubOrderMutation, useDeleteSubOrderMutation , useUpdateSubOrderDtoMutation, useUpdateItemsSubOrderMutation, useCreateOrderMutation, useGetOrderByUserIdQuery, useGetOrderByIdQuery , useUpdateItemsOrderMutation, useCancelOrderMutation, useGetAllOrderQuery, useReturnOrderMutation, useGetReturnOrderByItemOrderIdQuery, useDeliveryFailedMutation, useGetReturnOrderQuery } = orderApi;
+export const { useGetSubOrderQuery, useCreateSubOrderMutation, useDeleteSubOrderMutation , useUpdateSubOrderDtoMutation, useUpdateItemsSubOrderMutation, useCreateOrderMutation, useGetOrderByUserIdQuery, useGetOrderByIdQuery , useUpdateItemsOrderMutation, useCancelOrderMutation, useGetAllOrderQuery, useReturnOrderMutation, useGetReturnOrderByItemOrderIdQuery, useDeliveryFailedMutation, useGetReturnOrderQuery, useUpdateReturnOrderMutation } = orderApi;

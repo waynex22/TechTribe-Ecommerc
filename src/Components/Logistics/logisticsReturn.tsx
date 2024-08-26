@@ -2,10 +2,9 @@ import { useGetReturnOrderQuery } from "src/redux/rtkQuery/order";
 import SpinLoading from "../spinner/spinLoading";
 import ItemShip from "./item";
 import { Link } from "react-router-dom";
+import ItemReturn from "./itemReturn";
 const LogisticsReturn: React.FC = () => {
-    const { data: orders, isLoading } = useGetReturnOrderQuery();
-    console.log(orders);
-    
+    const { data: orders, isLoading  , refetch} = useGetReturnOrderQuery();
     return (
         <>
          <div className="flex items-center gap-4 my-2">
@@ -32,20 +31,20 @@ const LogisticsReturn: React.FC = () => {
                                         <td className="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Địa chỉ lấy hàng</td>
                                         <td className="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Số điện thoại</td>
                                         <td className="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">
-                                            Tiền thu hộ
+                                            Chờ lấy hàng
                                             <svg xmlns="http://www.w3.org/2000/svg" className="float-right mt-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
                                             </svg>
                                         </td>
-                                        <td className="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Status</td>
+                                        <td className="whitespace-normal py-4 text-sm font-medium text-gray-500 sm:px-3">Trạng thái</td>
                                     </tr>
                                 </thead>
 
-                                {/* <tbody className="bg-white lg:border-gray-300">
-                                    {listOrderShipping?.map((order: any, index: number) => (
-                                        <ItemShip key={index} item={order} />
+                                <tbody className="bg-white lg:border-gray-300">
+                                    {orders?.map((order: any, index: number) => (
+                                        <ItemReturn key={index} item={order} refecth={refetch}/>
                                     ))}
-                                </tbody> */}
+                                </tbody>
                             </table>
                         </div>
                     </>

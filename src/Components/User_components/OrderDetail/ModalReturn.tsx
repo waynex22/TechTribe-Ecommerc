@@ -27,6 +27,7 @@ type PayloadReturn = {
     itemsOrderId: string;
     shopId: string;
     itemsReturn: ItemReturn[] | [];
+    statusUpdate: { key: string; value: Date }[]
 }
 const ModalReturn: React.FC<Props> = ({ items, openModal, onClose, refecth, setToast }) => {
     const [loading, setLoading] = useState(false);
@@ -35,7 +36,8 @@ const ModalReturn: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
             customerId: items.customerId?._id,
             itemsOrderId: items._id,
             shopId: items.shopId._id,
-            itemsReturn: []
+            itemsReturn: [],
+            statusUpdate: []
         }
     );
     const handleGetPriceItem = (productPriceId: string) => {
@@ -81,9 +83,9 @@ const ModalReturn: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
         });
     };
     const returnReasons = [
-        { value: 'Hư hỏng', label: 'Đồ bị lỗi , hỏng hóc' },
+        { value: 'Hư hỏng, bị lỗi', label: 'Đồ bị lỗi , hỏng hóc' },
         { value: 'Hàng không đúng mẫu', label: 'Hàng không giống mô tả' },
-        { value: 'Sai kích cỡ', label: 'Hàng không đúng kích thước' },
+        { value: 'Sai kích cỡ', label: 'Hàng không đúng kích thước , giao sai' },
         { value: 'Khác', label: 'Lý do khác' }
     ];
 

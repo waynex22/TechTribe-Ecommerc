@@ -31,10 +31,24 @@ const ReturnOrder: React.FC = () => {
                             <p className="text-sm text-primary">{returnOrder?.status}</p>
                         </div>
                     </div>
-                    {returnOrder.status === 'Đã tiếp nhận' && (
+                    {returnOrder?.status === 'Đã tiếp nhận' && (
                         <>
                             <div className="border-b border-dashed p-4 flex items-center justify-center bg-white rounded-lg">
                                 <p className="text-xs text-gray-400">Đơn vị vận chuyển sẽ đến lấy hàng trong vòng 1 - 2 ngày tới</p>
+                            </div>
+                        </>
+                    )}
+                    {returnOrder?.status === 'Đã gửi hàng lại' && (
+                        <>
+                            <div className="border-b border-dashed p-4 flex items-center justify-center bg-white rounded-lg">
+                                <p className="text-xs text-gray-400">Đơn hàng đã được hoàn lại , đang chờ cửa hàng kiểm tra hàng và xem xét đơn hoàn</p>
+                            </div>
+                        </>
+                    )}
+                     {returnOrder?.status === 'Hoàn tiền' && (
+                        <>
+                            <div className="border-b border-dashed p-4 flex items-center justify-center bg-white rounded-lg">
+                                <p className="text-xs text-gray-400">Bạn sẽ được hoàn lại tiền vào ví trong 24h</p>
                             </div>
                         </>
                     )}

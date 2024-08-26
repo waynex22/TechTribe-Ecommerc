@@ -9,13 +9,12 @@ import ModalAccept from "../modal/ModalAccept";
 import Spinner from "../spinner/Spinner";
 import { checkDiscount } from "src/utils/checkDiscount";
 import { discountPrice } from "src/utils/getMinMax/getMinMaxPrice";
-import CountDown from "../Clock/CountDown";
 interface CartItemProps {
   itemCart: any;
 }
 const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
   const { user } = useSelector((state: any) => state.auth);
-  const { productPriceId, quantity ,discountDetailId } = itemCart;
+  const { productPriceId, quantity, discountDetailId } = itemCart;
   const { refetch } = useGetCartMeQuery(user?.sub);
   const [updateCart] = useUpdateCartMutation();
   const { data: cartSelect, refetch: refetchCartSelect } = useGetCartSelectQuery(user?.sub);
@@ -35,11 +34,11 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
     setToast({ ...toast, message: toast.message, type: toast.type, onClose: () => setToast(null) });
   }
   const handleUpdateCart = async (customerId: string, quantity: number) => {
-    if(isDiscount){
-      if(discountDetailId.limit_customer !== "Không giới hạn" && quantity === 1){
+    if (isDiscount) {
+      if (discountDetailId.limit_customer !== "Không giới hạn" && quantity === 1) {
         const checkQuantityLimit = itemCart.quantity + 1 > discountDetailId.limit_customer;
-        if(checkQuantityLimit){
-          handleSetToast({ message: 'Bạn chỉ có thể mua tối đa ('+discountDetailId.limit_customer+') sản phẩm này với chương trình khuyến mãi!', type: "error" });
+        if (checkQuantityLimit) {
+          handleSetToast({ message: 'Bạn chỉ có thể mua tối đa (' + discountDetailId.limit_customer + ') sản phẩm này với chương trình khuyến mãi!', type: "error" });
           return
         }
       }
@@ -99,7 +98,7 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
     setIsModalOpen(false);
   };
   const handleSelectdProduct = async (productPriceId: any) => {
-    if(productPriceId.stock === 0 || quantity > productPriceId.stock || quantity < 0 ) return;
+    if (productPriceId.stock === 0 || quantity > productPriceId.stock || quantity < 0) return;
     const payload: any = {
       customerId: user?.sub,
       productPriceId: productPriceId._id,
@@ -115,7 +114,7 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
     }
   }
   useEffect(() => {
-    if(itemCart?.discountDetailId){
+    if (itemCart?.discountDetailId) {
       setIsDiscount(checkDiscount(itemCart?.discountDetailId?.id_discount?.time_start, itemCart?.discountDetailId?.id_discount?.time_end));
     }
   }, [discountDetailId]);
@@ -140,15 +139,15 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
                 className="w-5 h-5 focus:ring-0 rounded-md border-solid border-[1px] border-gray-300 checked:bg-secondary transition-all duration-300"
               />
               <div className="flex items-center justify-start p-2 gap-x-2">
-              {productPriceId?.id_color[0]?.thumbnail ? (
-                                    <>
-                                        <img src={`http://localhost:8080/uploads/${productPriceId?.id_color[0]?.thumbnail}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
-                                    </>
-                                ) : (
-                                    <>
-                                        <img src={`http://localhost:8080/uploads/${productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
-                                    </>
-                                )}
+                {productPriceId?.id_color[0]?.thumbnail ? (
+                  <>
+                    <img src={`http://localhost:8080/uploads/${productPriceId?.id_color[0]?.thumbnail}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                  </>
+                ) : (
+                  <>
+                    <img src={`http://localhost:8080/uploads/${productPriceId?.id_product[0]?.thumbnails[0]}`} alt="" className='w-[82px] h-[82px] rounded-lg' />
+                  </>
+                )}
                 <div className="flex flex-col ">
                   {isDiscount && itemCart?.discountDetailId ? (
                     <div className="flex items-center gap-2">
@@ -158,9 +157,9 @@ const CartItem: React.FC<CartItemProps> = ({ itemCart }) => {
                     </div>
                   ) : (
                     <>
-                    {isDiscount == false && itemCart?.discountDetailId && <span className="text-[10px] font-light line-through text-red-600">
-                      Chương trình khuyến mãi đã kết thúc
-                    </span>}
+                      {isDiscount == false && itemCart?.discountDetailId && <span className="text-[10px] font-light line-through text-red-600">
+                        Chương trình khuyến mãi đã kết thúc
+                      </span>}
                     </>
                   )}
                   <Link to={`/product/${productPriceId?.id_product[0]?._id}`} className="text-sm font-light-nomal">

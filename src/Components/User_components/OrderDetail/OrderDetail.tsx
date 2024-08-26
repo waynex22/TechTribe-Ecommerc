@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useCancelOrderMutation, useGetOrderByIdQuery, useUpdateItemsOrderMutation } from "src/redux/rtkQuery/order";
+import { useCancelOrderMutation, useGetOrderByIdQuery, useGetReturnOrderByItemOrderIdQuery, useUpdateItemsOrderMutation } from "src/redux/rtkQuery/order";
 import { formatDate, formatDateAndTime } from "src/utils/formartDate";
 import ItemDetail from "./itemDetail";
 import Toast from "src/Components/toast/Toast";
@@ -9,7 +9,6 @@ import ModalRating from "./ModalRating";
 import { useUpdateStatusTimeMutation } from "src/redux/rtkQuery/product-review";
 import ModalAccept from "src/Components/modal/ModalAccept";
 import OrderCancel from "./OrderCancel";
-import { useAddCoinRefundMutation } from "src/redux/rtkQuery/customerReward";
 import SpinLoading from "src/Components/spinner/spinLoading";
 import ModalReturn from "./ModalReturn";
 
@@ -17,7 +16,6 @@ const OrderDetail: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const [updateOrder] = useUpdateItemsOrderMutation();
     const [updateTime] = useUpdateStatusTimeMutation();
-    const [updateCoinRefunt] = useAddCoinRefundMutation();
     const [cancelOrder] = useCancelOrderMutation();
     const [openModal, setOpenModal] = useState(false);
     const [openModalReturn, setOpenModalReturn] = useState(false);
@@ -25,6 +23,9 @@ const OrderDetail: React.FC = () => {
     const [modalAction , setModalAction] = useState<(() => void) | null>(null);
     const [toast, setToast] = useState<ToastProps | null>(null);
     const { data: order, isLoading, refetch } = useGetOrderByIdQuery(slug ? slug : '', { skip: !slug });
+    const { data: returnOrder, isLoading: isLoadingReturn } = useGetReturnOrderByItemOrderIdQuery(slug as string, {
+        skip: !slug
+    });
     const handleUpdate = async (key: string) => {
         await updateOrder({ _id: order?._id, status: key });
         await updateTime({ id: order?._id, key: key, value: new Date() });
@@ -59,7 +60,9 @@ const OrderDetail: React.FC = () => {
         const dateRefund = new Date(endDate);
         return now.getTime() < dateRefund.getTime();
     }
-    const checkAutoCancel = order?.statusUpdate?.every((item: any) => item.key === 'auto_cancel');
+    const checkAuto = (key: string) => {
+        return order?.statusUpdate?.some((item: any) => item.key === key);
+    };
     if (isLoading) return <div className="w-full h-screen flex items-center justify-center"><SpinLoading loading={isLoading} /></div>
     return (
         <>
@@ -239,7 +242,7 @@ const OrderDetail: React.FC = () => {
                                     <p className="text-white font-normal text-sm">Đánh Giá</p>
                                 </div>
                             )}
-                            {order?.statusShipping === 'Đã giao hàng' && checkRefuntOrder(order?.DeliveryTime) && order?.status !== 'Hoàn hàng' && (
+                            {order?.statusShipping === 'Đã giao hàng' && checkRefuntOrder(order?.DeliveryTime) && order?.status !== 'Hoàn hàng' && order?.status !== 'Hoàn thành' && (
                                 <div onClick={() => setOpenModalReturn(true)} className="flex items-center cursor-pointer justify-center px-4 py-2 rounded-md border border-gray-400">
                                     <p className="font-normal text-sm"> Yêu Cầu Trả Hàng / Hoàn Tiền</p>
                                 </div>
@@ -266,7 +269,7 @@ const OrderDetail: React.FC = () => {
                         <ol className="relative border-s border-gray-200">
                             {order?.status === 'Đã huỷ' && order.statusShipping !== 'Giao không thành công' && (
                                 <>
-                                {checkAutoCancel ? (
+                                {checkAuto('auto_cancel') ? (
                                 <>
                                 <li className="ms-5">
                                     <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
@@ -307,15 +310,31 @@ const OrderDetail: React.FC = () => {
                             )
                                 }
                             {order?.status === 'Hoàn thành' && (
-                                <li className="ms-5">
+                                <>
+                                {checkAuto('auto_success') ? (
+                                    <>
+                                    <li className="ms-5">
+                                    <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
+                                        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="delivery-box"><rect width="60" height="46" x="2" y="9" fill="#ffc239" rx="1"></rect><path fill="#ffd55d" d="M61,9H9V26.456A21.543,21.543,0,0,0,30.544,48H62V10A1,1,0,0,0,61,9Z"></path><rect width="14" height="18" x="25" y="9" fill="#e8e4d8"></rect><rect width="20" height="12" x="38" y="39" fill="#e8e4d8"></rect><rect width="2" height="8" x="53" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="50" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="47" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="44" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="41" y="41" fill="#7a7b7d"></rect><rect width="2" height="2" x="5" y="38" fill="#fff"></rect><rect width="10" height="2" x="9" y="38" fill="#fff"></rect><rect width="9" height="2" x="5" y="42" fill="#fff"></rect><rect width="3" height="2" x="16" y="42" fill="#fff"></rect><rect width="2" height="2" x="5" y="46" fill="#fff"></rect><rect width="10" height="2" x="9" y="46" fill="#fff"></rect><rect width="9" height="2" x="5" y="50" fill="#fff"></rect><rect width="3" height="2" x="16" y="50" fill="#fff"></rect></svg>
+                                    </div>
+                                    <time className="mb-1 text-[12px] font-normal leading-none text-gray-400 ">{formatDateAndTime(getKeyUpdateItem('auto_success')[0])}</time>
+                                    <p className="text-sm font-semibold text-gray-900 ">Hoàn thành</p>
+                                    <p className="text-sm font-normal text-gray-500 ">Đơn hàng đã tự đánh dấu là thành công</p>
+                                </li>
+                                    </>
+                                ):(
+                                    <>
+                                     <li className="ms-5">
                                     <div className="absolute w-fit h-fit p-2 bg-gray-100 rounded-full mt-1.5 -start-[18px] border border-white">
                                         <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" id="delivery-box"><rect width="60" height="46" x="2" y="9" fill="#ffc239" rx="1"></rect><path fill="#ffd55d" d="M61,9H9V26.456A21.543,21.543,0,0,0,30.544,48H62V10A1,1,0,0,0,61,9Z"></path><rect width="14" height="18" x="25" y="9" fill="#e8e4d8"></rect><rect width="20" height="12" x="38" y="39" fill="#e8e4d8"></rect><rect width="2" height="8" x="53" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="50" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="47" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="44" y="41" fill="#7a7b7d"></rect><rect width="2" height="8" x="41" y="41" fill="#7a7b7d"></rect><rect width="2" height="2" x="5" y="38" fill="#fff"></rect><rect width="10" height="2" x="9" y="38" fill="#fff"></rect><rect width="9" height="2" x="5" y="42" fill="#fff"></rect><rect width="3" height="2" x="16" y="42" fill="#fff"></rect><rect width="2" height="2" x="5" y="46" fill="#fff"></rect><rect width="10" height="2" x="9" y="46" fill="#fff"></rect><rect width="9" height="2" x="5" y="50" fill="#fff"></rect><rect width="3" height="2" x="16" y="50" fill="#fff"></rect></svg>
                                     </div>
                                     <time className="mb-1 text-[12px] font-normal leading-none text-gray-400 ">{formatDateAndTime(getKeyUpdateItem('Hoàn thành')[0])}</time>
                                     <p className="text-sm font-semibold text-gray-900 ">Hoàn thành</p>
-                                    <p className="text-sm font-normal text-gray-500 ">Xác nhận đơn hàng thành công</p>
+                                    <p className="text-sm font-normal text-gray-500 ">Bạn đã xác nhận đơn hàng hoàn thành</p>
                                 </li>
-
+                                    </>
+                                )}
+                                </>
                             )}
                             {order?.status === 'Hoàn hàng' && (
                                 <li className="ms-5">

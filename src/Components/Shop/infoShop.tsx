@@ -6,6 +6,7 @@ import { setOpen, setShopSelected } from "src/redux/slices/chatSlice";
 import { ToastProps } from "src/Type";
 import Toast from "../toast/Toast";
 import { useGetRatingByIdShopQuery } from "src/redux/rtkQuery/product-review";
+import { formatDateAgo } from "src/utils/formartDate";
 
 interface Props {
     shop: any,
@@ -93,7 +94,7 @@ const InfoShop: React.FC<Props> = ({ shop , refecth , countProduct }) => {
                         <svg className="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="championship"><path fill="#98db7c" d="M31 11.2a1 1 0 0 0-.21-.83A1 1 0 0 0 30 10H2a1 1 0 0 0-.77.37 1 1 0 0 0-.23.83L2 16l-1 4.8a1 1 0 0 0 .21.83A1 1 0 0 0 2 22h28a1 1 0 0 0 .77-.37 1 1 0 0 0 .23-.83L30 16Z"></path><path fill="#82d361" d="M3 20.8 4 16l-1-4.8a1 1 0 0 1 .21-.83A1 1 0 0 1 4 10H2a1 1 0 0 0-.77.37 1 1 0 0 0-.23.83L2 16l-1 4.8a1 1 0 0 0 .21.83A1 1 0 0 0 2 22h2a1 1 0 0 1-.77-.37A1 1 0 0 1 3 20.8zM6 16a10.94 10.94 0 0 0 1.79 6h18.42a11 11 0 0 0 0-12H7.79A10.94 10.94 0 0 0 6 16z"></path><circle cx="16" cy="16" r="11" fill="#ff9838"></circle><path fill="#ff8709" d="M6 17a11 11 0 0 1 18.25-8.25 11 11 0 1 0-15.5 15.5A10.92 10.92 0 0 1 6 17Z"></path><path fill="#fff5f5" d="M21.91 14.5a1.85 1.85 0 0 0-1.76-1.28h-1.83l-.57-1.74a1.84 1.84 0 0 0-3.5 0l-.57 1.74h-1.83a1.85 1.85 0 0 0-1.09 3.34l1.48 1.07-.56 1.74a1.83 1.83 0 0 0 .67 2.06 1.8 1.8 0 0 0 1.08.36 1.91 1.91 0 0 0 1.09-.35L16 20.36l1.48 1.08a1.85 1.85 0 0 0 2.84-2.07l-.56-1.74 1.48-1.07a1.83 1.83 0 0 0 .67-2.06Z"></path><path fill="#efe2dd" d="M11.09 15.5a1.85 1.85 0 0 1 1.76-1.28h1.83l.57-1.74A1.82 1.82 0 0 1 17 11.21a2 2 0 0 1 .69.14 1.83 1.83 0 0 0-3.44.13l-.57 1.74h-1.83a1.85 1.85 0 0 0-1.09 3.34l.46.33a1.81 1.81 0 0 1-.13-1.39zm8.23-1.28h1.83a1.93 1.93 0 0 1 .69.15 1.83 1.83 0 0 0-1.69-1.15H19zm-6.64 6.15.56-1.74-1.07-.77-.49 1.51a1.83 1.83 0 0 0 .67 2.06 1.44 1.44 0 0 0 .39.2 1.81 1.81 0 0 1-.06-1.26z"></path></svg>
                         <div className="flex items-center gap-1 font-normal">
                             <p className="text-sm text-gray-700">Tham gia :</p>
-                            <p className="text-sm text-blue-500">1 năm trước</p>
+                            <p className="text-sm text-blue-500">{formatDateAgo(shop?.createdAt)}</p>
                         </div>
                     </div>
                 </div>

@@ -54,10 +54,10 @@ const NotificationModal: React.FC<Props> = ({ user }) => {
                     <div className='absolute right-0 top-[-15px] w-[200px] bg-transparent p-6'></div>
                     <div className="font-light-bold text-sm mb-2">Thông Báo Mới Nhận</div>
                     {notifications?.slice(0, 5).map((notif: any, index: number) => (
-                        <div key={index} className="flex items-start justify-start gap-4 mb-2">
+                        <Link to={notif.type == 'order' ? `/me/purchase/order/${notif.orderItemsId?._id}` : `/me/wallet`} onClick={() => handleReadNotification()} key={index} className="flex items-start justify-start gap-4 mb-2 cursor-pointer hover:opacity-80">
                             <div className="flex items-center justify-center w-[20%]">
                                 {notif.type == 'order' ? (
-                                    <>
+                                    <>  
                                         {notif.orderItemsId?.items[0].productPriceId?.id_color[0]?.thumbnail ? (
                                             <>
                                                 <img src={`http://localhost:8080/uploads/${notif.orderItemsId?.items[0].productPriceId?.id_color[0]?.thumbnail}`} className="w-16 h-16 rounded-sm" alt="" />
@@ -81,7 +81,7 @@ const NotificationModal: React.FC<Props> = ({ user }) => {
                                 <p className="text-xs text-gray-800 text-start font-light">{notif.content}</p>
                                 <p className='text-xs text-gray-800 font-light'>{formatDateAndTime(notif.createdAt)}</p>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                     {notifications?.length > 5 && (
                         <Link to="/me/notification" className="text-primary font-normal text-sm">Xem tất cả</Link>
