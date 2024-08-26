@@ -38,7 +38,7 @@ export const productReviewApi = createApi({
         }),
         updateStatusTime: builder.mutation<any, UpdateStatusTime>({
             query: (payload) => ({
-                url: `items-order/updateStatusTime`,
+                url: `items-order/updateStatusTime/123`,
                 method: 'PATCH',
                 body: payload
             }),

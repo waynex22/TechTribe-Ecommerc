@@ -68,7 +68,7 @@ const ProductDetail: React.FC = () => {
   };
   const listProductLikeCategory = useMemo(() => {
     return products?.filter((item: product) =>
-      item.id_categoryDetail[0].name === product?.id_categoryDetail[0].name && item._id !== product?._id
+      item.id_categoryDetail[0]?.name === product?.id_categoryDetail[0]?.name && item._id !== product?._id
     );
   }, [products, product]);
   const isDiscount: any = product?.discount?.find((item: any) => item.id_productPrice == ProductPriceSelected?._id);
@@ -218,7 +218,7 @@ const ProductDetail: React.FC = () => {
                       alt=""
                     />
                     <span className="ml-3 font-light text-sm">
-                      Sản phẩm hót
+                      Sản phẩm mới
                     </span>
                   </div>
                 </div>

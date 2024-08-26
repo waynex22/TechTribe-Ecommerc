@@ -62,8 +62,8 @@ const ProductItem = ({ product }: any) => {
             )}
           </div>
         </div>
-        <div className="my-2 h-fit">
-          <p className="text-sm font-light">{name.substring(0, 50)}{name.length > 40 ? '...' : ''}</p>
+        <div className="my-2 h-fit min-h-[50px]">
+          <p className="text-sm font-light">{name.substring(0, 40)}{name.length > 40 ? '...' : ''}</p>
         </div>
         <div className="flex items-center my-2 gap-1">
             <svg

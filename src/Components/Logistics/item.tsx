@@ -18,7 +18,7 @@ const ItemShip: React.FC<Props> = ({ item , refecth }) => {
         if(item.statusShipping === 'Đã giao hàng') return
         const deliveryTime = new Date();
         await updateOrder({ _id: item?._id, statusShipping: key ,DeliveryTime: deliveryTime.setDate(deliveryTime.getDate() + 7)});
-        await updateTime({ id: item?._id, key: key, value: new Date() });
+        // await updateTime({ id: item?._id, key: key, value: new Date() });
         refecth();
     }
     const handledeliveryFailed = async () => {

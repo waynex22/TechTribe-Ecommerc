@@ -6,14 +6,14 @@ interface Props {
 }
 const TabFilterReview: React.FC<Props> = ({ handleSetRate, tab, product , reviews}) => {
   const getCountReviewByRating = (rating: number) => {
-    return reviews?.filter((item: any) => item.rating === rating).length
+    return reviews?.filter((item: any) => item.rating === rating).length;
   }
   return (
       <div className="border bg-primary/20 backdrop-blur-sm p-4 border-primary/40 border-dashed my-2 rounded-lg">
         <div className="flex items-center justify-between gap-4">
             <div className="w-[20%]">
                 <div className="flex items-end gap-1 text-primary/50">
-                    <h3 className="text-2xl">{product?.rating}</h3>
+                    <h3 className="text-2xl">{product?.rating.toFixed(1)}</h3>
                     <p>trên</p>
                     <p>5</p>
                 </div>

@@ -26,7 +26,7 @@ const ReturnOrder: React.FC = () => {
                             <p>Trở lại</p>
                         </Link>
                         <div className="flex items-center justify-between uppercase text-sm gap-2">
-                            <p>Mã yêu cầu. 2TRF{returnOrder?._id.slice(0, 6)}</p>
+                            <p>Mã yêu cầu. 2TRF{returnOrder?._id?.slice(0, 6)}</p>
                             <div className="w-[1px] h-4 bg-gray-600"></div>
                             <p className="text-sm text-primary">{returnOrder?.status}</p>
                         </div>

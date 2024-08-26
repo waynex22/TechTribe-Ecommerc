@@ -155,7 +155,7 @@ const ModalRating: React.FC<Props> = ({ items, openModal, onClose, refecth, setT
                 rateDate: true
             });
             updateTime({
-                id: items?._id,
+                id: items._id,
                 key: 'rateDate',
                 value: new Date()
             })
